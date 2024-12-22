@@ -16,50 +16,31 @@ export default function Staff() {
   const { data: staffMembers, isLoading, error } = useQuery({
     queryKey: ["staff"],
     queryFn: async () => {
-      console.log("Fetching staff members...");
-      
-      // Get the current user
       const { data: { user }, error: userError } = await supabase.auth.getUser();
-      if (userError) {
-        console.error("Auth error:", userError);
-        throw userError;
-      }
-      console.log("Current user:", user);
+      if (userError) throw userError;
 
-      // Get the user's business
       const { data: businesses, error: businessError } = await supabase
         .from("businesses")
         .select("*")
         .limit(1);
       
-      if (businessError) {
-        console.error("Business error:", businessError);
-        throw businessError;
-      }
-      console.log("Business data:", businesses);
+      if (businessError) throw businessError;
 
       if (!businesses || businesses.length === 0) {
-        console.log("No business found for user");
         return [];
       }
 
-      // Get staff members for the business
       const { data, error } = await supabase
         .from("staff_members")
         .select("*")
         .eq('business_id', businesses[0].id);
       
-      if (error) {
-        console.error("Error fetching staff:", error);
-        throw error;
-      }
-      console.log("Staff data:", data);
+      if (error) throw error;
       return data;
     },
   });
 
   if (error) {
-    console.error("Query error:", error);
     toast({
       title: "Error loading staff members",
       description: error.message,

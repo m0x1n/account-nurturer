@@ -16,50 +16,31 @@ export default function Clients() {
   const { data: clients, isLoading, error } = useQuery({
     queryKey: ["clients"],
     queryFn: async () => {
-      console.log("Fetching clients...");
-      
-      // Get the current user
       const { data: { user }, error: userError } = await supabase.auth.getUser();
-      if (userError) {
-        console.error("Auth error:", userError);
-        throw userError;
-      }
-      console.log("Current user:", user);
+      if (userError) throw userError;
 
-      // Get the user's business
       const { data: businesses, error: businessError } = await supabase
         .from("businesses")
         .select("*")
         .limit(1);
       
-      if (businessError) {
-        console.error("Business error:", businessError);
-        throw businessError;
-      }
-      console.log("Business data:", businesses);
+      if (businessError) throw businessError;
 
       if (!businesses || businesses.length === 0) {
-        console.log("No business found for user");
         return [];
       }
 
-      // Get clients for the business
       const { data, error } = await supabase
         .from("clients")
         .select("*")
         .eq('business_id', businesses[0].id);
       
-      if (error) {
-        console.error("Error fetching clients:", error);
-        throw error;
-      }
-      console.log("Clients data:", data);
+      if (error) throw error;
       return data;
     },
   });
 
   if (error) {
-    console.error("Query error:", error);
     toast({
       title: "Error loading clients",
       description: error.message,
