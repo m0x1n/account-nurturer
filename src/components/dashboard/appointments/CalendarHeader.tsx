@@ -50,6 +50,8 @@ export function CalendarHeader({
   };
 
   const handleStaffSelect = (staffId: string) => {
+    if (!safeStaffMembers.length) return;
+
     if (view === 'week') {
       // In week view, only allow single selection
       onStaffChange([staffId]);
