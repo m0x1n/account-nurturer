@@ -79,8 +79,8 @@ export function DashboardContent() {
     <main className="flex-1 overflow-y-auto">
       <div className="container px-4 py-6">
         <div className="flex items-center justify-between mb-8">
-          <h1 className="text-3xl font-bold">Insights snapshot</h1>
           <div className="flex items-center gap-4">
+            <h1 className="text-3xl font-bold">Insights snapshot</h1>
             <div className="flex items-center space-x-2">
               <Switch
                 id="insights-mode"
@@ -101,6 +101,8 @@ export function DashboardContent() {
                 )}
               </Label>
             </div>
+          </div>
+          <div className="flex items-center gap-4">
             <Button
               variant="ghost"
               size="icon"
