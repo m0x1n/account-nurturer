@@ -1,11 +1,12 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { SidebarTrigger } from "@/components/ui/sidebar";
 import { Bar, PieChart, Pie, Cell } from "recharts";
-import { ChartContainer, ChartTooltip, ChartLegend } from "@/components/ui/chart";
+import { ChartContainer, ChartTooltip } from "@/components/ui/chart";
 import { NotificationsPanel } from "./NotificationsPanel";
-import { Bell } from "lucide-react";
+import { Bell, HelpCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useState } from "react";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 
 const salesData = [
   { name: "Mon", sales: 15000 },
@@ -21,6 +22,11 @@ const clientsData = [
   { name: "New", value: 16, percentage: "18%" },
   { name: "Existing", value: 77, percentage: "82%" },
 ];
+
+const averageClientSpend = {
+  amount: "$21.60",
+  label: "Average client spend"
+};
 
 const capacityData = [
   { name: "Used", value: 24 },
@@ -119,6 +125,26 @@ export function DashboardContent() {
                     <div className="flex items-center gap-2">
                       <span className="text-sm font-medium">Total Clients</span>
                       <span className="text-sm text-muted-foreground">93 | 100%</span>
+                    </div>
+                  </div>
+                  <div className="pt-4 border-t">
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-2">
+                        <span className="text-sm font-medium">{averageClientSpend.label}</span>
+                        <TooltipProvider>
+                          <Tooltip>
+                            <TooltipTrigger asChild>
+                              <Button variant="ghost" size="icon" className="h-4 w-4 p-0">
+                                <HelpCircle className="h-4 w-4" />
+                              </Button>
+                            </TooltipTrigger>
+                            <TooltipContent>
+                              <p>Average amount spent per client</p>
+                            </TooltipContent>
+                          </Tooltip>
+                        </TooltipProvider>
+                      </div>
+                      <span className="text-sm font-bold">{averageClientSpend.amount}</span>
                     </div>
                   </div>
                 </div>
