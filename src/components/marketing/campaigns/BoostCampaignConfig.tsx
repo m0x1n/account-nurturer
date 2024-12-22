@@ -1,16 +1,16 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
-import { Switch } from "@/components/ui/switch";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useToast } from "@/hooks/use-toast";
 import { useBusinessServices } from "@/hooks/useBusinessServices";
 import { useBusinessData } from "@/hooks/useBusinessData";
 import { supabase } from "@/integrations/supabase/client";
 import { addDays, format } from "date-fns";
+import { TargetingSection } from "./boost/TargetingSection";
+import { ScheduleSection } from "./boost/ScheduleSection";
+import { OfferSection } from "./boost/OfferSection";
+import { ServicesSection } from "./boost/ServicesSection";
 
 interface BoostCampaignConfigProps {
   isOpen: boolean;
@@ -31,13 +31,12 @@ export function BoostCampaignConfig({ isOpen, onClose }: BoostCampaignConfigProp
   const [testEmail, setTestEmail] = useState("");
   const [showPreview, setShowPreview] = useState(false);
   
-  // Generate next 7 days
   const nextSevenDays = Array.from({ length: 7 }, (_, i) => {
     const date = addDays(new Date(), i);
     return {
-      date: format(date, "yyyy-MM-dd"), // Format date as ISO string
+      date: format(date, "yyyy-MM-dd"),
       enabled: true,
-      formatted: format(date, "EEE, MMM d"),
+      formatted: format(date, "EEEE (MMM d)"),
     };
   });
   
@@ -48,6 +47,14 @@ export function BoostCampaignConfig({ isOpen, onClose }: BoostCampaignConfigProp
       days.map((day, i) => 
         i === index ? { ...day, enabled: !day.enabled } : day
       )
+    );
+  };
+
+  const handleServiceToggle = (serviceId: string) => {
+    setSelectedServices(prev =>
+      prev.includes(serviceId)
+        ? prev.filter(id => id !== serviceId)
+        : [...prev, serviceId]
     );
   };
 
@@ -74,7 +81,11 @@ export function BoostCampaignConfig({ isOpen, onClose }: BoostCampaignConfigProp
               type: targetingOption,
               daysThreshold: parseInt(daysThreshold),
             },
-            schedule: scheduledDays,
+            schedule: scheduledDays.map(day => ({
+              date: day.date,
+              enabled: day.enabled,
+              formatted: day.formatted,
+            })),
             discount: {
               type: discountType,
               value: parseFloat(discountValue),
@@ -148,113 +159,47 @@ export function BoostCampaignConfig({ isOpen, onClose }: BoostCampaignConfigProp
           <DialogTitle>Configure Boost Campaign</DialogTitle>
         </DialogHeader>
 
-        <div className="space-y-6 py-4">
-          {/* Target Audience */}
-          <div className="space-y-4">
-            <Label>Target Audience</Label>
-            <RadioGroup value={targetingOption} onValueChange={setTargetingOption}>
-              <div className="flex items-center space-x-2">
-                <RadioGroupItem value="all" id="all" />
-                <Label htmlFor="all">All Contacts</Label>
-              </div>
-              <div className="flex items-center space-x-2">
-                <RadioGroupItem value="inactive" id="inactive" />
-                <Label htmlFor="inactive">No Recent Visit</Label>
-                {targetingOption === "inactive" && (
-                  <Input
-                    type="number"
-                    value={daysThreshold}
-                    onChange={(e) => setDaysThreshold(e.target.value)}
-                    className="w-20 ml-2"
-                    min="1"
-                  />
-                )}
-                <span className="text-sm text-muted-foreground">days</span>
-              </div>
-            </RadioGroup>
-          </div>
+        <div className="space-y-8 py-4">
+          <TargetingSection
+            targetingOption={targetingOption}
+            daysThreshold={daysThreshold}
+            onTargetingChange={setTargetingOption}
+            onDaysChange={setDaysThreshold}
+          />
 
-          {/* Schedule */}
-          <div className="space-y-4">
-            <Label>Campaign Schedule</Label>
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-              {scheduledDays.map((day, index) => (
-                <div key={day.formatted} className="flex items-center justify-between p-2 border rounded">
-                  <span className="text-sm">{day.formatted}</span>
-                  <Switch
-                    checked={day.enabled}
-                    onCheckedChange={() => handleDayToggle(index)}
-                  />
-                </div>
-              ))}
+          <ScheduleSection
+            days={scheduledDays}
+            onDayToggle={handleDayToggle}
+          />
+
+          <OfferSection
+            discountType={discountType}
+            discountValue={discountValue}
+            onDiscountTypeChange={setDiscountType}
+            onDiscountValueChange={setDiscountValue}
+          />
+
+          <ServicesSection
+            services={services}
+            selectedServices={selectedServices}
+            applyToAllServices={applyToAllServices}
+            onServiceToggle={handleServiceToggle}
+            onApplyToAllChange={setApplyToAllServices}
+          />
+
+          {showPreview && (
+            <div className="p-4 border rounded-lg bg-muted">
+              <h4 className="font-medium mb-2">Your offer: {discountValue}{discountType === "percent" ? "% off" : "$ off"} today & tomorrow!</h4>
             </div>
-            <p className="text-sm text-muted-foreground">
-              Campaign will end on {scheduledDays[scheduledDays.length - 1].formatted}
-            </p>
-          </div>
+          )}
 
-          {/* Offer Details */}
           <div className="space-y-4">
-            <Label>Offer Details</Label>
-            <div className="flex items-center gap-4">
-              <Select value={discountType} onValueChange={setDiscountType}>
-                <SelectTrigger className="w-[180px]">
-                  <SelectValue placeholder="Select discount type" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="percent">Percent Off</SelectItem>
-                  <SelectItem value="amount">Money Off</SelectItem>
-                </SelectContent>
-              </Select>
-              <Input
-                type="number"
-                value={discountValue}
-                onChange={(e) => setDiscountValue(e.target.value)}
-                className="w-24"
-                placeholder={discountType === "percent" ? "%" : "$"}
-              />
-            </div>
-          </div>
-
-          {/* Service Selection */}
-          <div className="space-y-4">
-            <div className="flex items-center gap-2">
-              <Switch
-                checked={applyToAllServices}
-                onCheckedChange={setApplyToAllServices}
-              />
-              <Label>Apply to all services</Label>
-            </div>
-            
-            {!applyToAllServices && services && (
-              <div className="grid grid-cols-2 gap-2">
-                {services.map((service) => (
-                  <div key={service.id} className="flex items-center gap-2">
-                    <Switch
-                      checked={selectedServices.includes(service.id)}
-                      onCheckedChange={(checked) => {
-                        setSelectedServices(prev =>
-                          checked
-                            ? [...prev, service.id]
-                            : prev.filter(id => id !== service.id)
-                        );
-                      }}
-                    />
-                    <Label>{service.name}</Label>
-                  </div>
-                ))}
-              </div>
-            )}
-          </div>
-
-          {/* Preview and Test */}
-          <div className="space-y-4">
-            <div className="flex items-center gap-4">
+            <div className="flex gap-4">
               <Button
                 variant="outline"
                 onClick={() => setShowPreview(!showPreview)}
               >
-                {showPreview ? "Hide Preview" : "Show Preview"}
+                {showPreview ? "Hide Preview" : "View Sample Email"}
               </Button>
               <div className="flex-1 flex items-center gap-2">
                 <Input
@@ -263,25 +208,11 @@ export function BoostCampaignConfig({ isOpen, onClose }: BoostCampaignConfigProp
                   value={testEmail}
                   onChange={(e) => setTestEmail(e.target.value)}
                 />
-                <Button variant="outline" onClick={handleTestEmail}>
-                  Send Test
+                <Button onClick={handleTestEmail}>
+                  Send
                 </Button>
               </div>
             </div>
-
-            {showPreview && (
-              <div className="p-4 border rounded-lg bg-muted">
-                <h4 className="font-medium mb-2">Email Preview</h4>
-                <div className="prose prose-sm">
-                  <p>Subject: Special Offer Just for You!</p>
-                  <p>
-                    {`Get ${discountType === "percent" ? `${discountValue}% off` : `$${discountValue} off`} `}
-                    {applyToAllServices ? "all services" : "selected services"}!
-                  </p>
-                  <p>Book now to take advantage of this special offer.</p>
-                </div>
-              </div>
-            )}
           </div>
         </div>
 
