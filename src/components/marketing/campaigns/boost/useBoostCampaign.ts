@@ -5,6 +5,7 @@ import { useBoostValidation } from "./validation/useBoostValidation";
 import { useAudienceCalculation } from "./audience/useAudienceCalculation";
 import { useEmailTesting } from "./email/useEmailTesting";
 import { useScheduling } from "./schedule/useScheduling";
+import { BoostSettings } from "../types/campaignSettings";
 
 export const useBoostCampaign = (
   business: any,
@@ -45,14 +46,14 @@ export const useBoostCampaign = (
       }
 
       if (existingCampaign) {
-        const settings = existingCampaign.settings || {};
+        const settings = existingCampaign.settings as BoostSettings;
         setCampaignName(existingCampaign.name);
         setTargetingOption(settings.targeting?.type || "all");
         setDaysThreshold(settings.targeting?.daysThreshold?.toString() || "30");
         setDiscountType(settings.discount?.type || "percent");
         setDiscountValue(settings.discount?.value?.toString() || "");
         setApplyToAllServices(settings.services === "all");
-        setSelectedServices(settings.services === "all" ? [] : (settings.services || []));
+        setSelectedServices(settings.services === "all" ? [] : (settings.services as string[]));
         
         if (settings.schedule) {
           setScheduledDays(settings.schedule);
@@ -99,16 +100,27 @@ export const useBoostCampaign = (
     try {
       const targetAudienceSize = await calculateTargetAudience(targetingOption, daysThreshold);
 
-      // Get the earliest and latest enabled dates from scheduledDays
       const enabledDays = scheduledDays.filter(day => day.enabled);
       const startDate = enabledDays.length > 0 ? enabledDays[0].date : null;
       const endDate = enabledDays.length > 0 ? enabledDays[enabledDays.length - 1].date : null;
 
-      // Format schedule data for database storage
       const scheduleForDb = scheduledDays.map(({ date, enabled }) => ({
         date,
         enabled
       }));
+
+      const settings: BoostSettings = {
+        targeting: {
+          type: targetingOption,
+          daysThreshold: parseInt(daysThreshold),
+        },
+        schedule: scheduleForDb,
+        discount: {
+          type: discountType,
+          value: parseFloat(discountValue),
+        },
+        services: applyToAllServices ? "all" : selectedServices,
+      };
 
       const { data: campaign, error: campaignError } = await supabase
         .from("marketing_campaigns")
@@ -120,18 +132,7 @@ export const useBoostCampaign = (
           is_active: isBoostStillValid(),
           start_date: startDate,
           end_date: endDate,
-          settings: {
-            targeting: {
-              type: targetingOption,
-              daysThreshold: parseInt(daysThreshold),
-            },
-            schedule: scheduleForDb,
-            discount: {
-              type: discountType,
-              value: parseFloat(discountValue),
-            },
-            services: applyToAllServices ? "all" : selectedServices,
-          },
+          settings,
         })
         .select()
         .single();

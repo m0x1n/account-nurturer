@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { Form } from "@/components/ui/form";
 import { Button } from "@/components/ui/button";
 import { useForm } from "react-hook-form";
@@ -9,6 +9,8 @@ import { DiscountSection } from "./last-minute/DiscountSection";
 import { LastMinuteFormValues } from "./last-minute/types";
 import { useToast } from "@/hooks/use-toast";
 import { useBusinessData } from "@/hooks/useBusinessData";
+import { useExistingCampaign } from "./hooks/useExistingCampaign";
+import { LastMinuteSettings } from "./types/campaignSettings";
 
 interface LastMinuteCampaignConfigProps {
   isOpen: boolean;
@@ -40,42 +42,7 @@ export function LastMinuteCampaignConfig({
     },
   });
 
-  useEffect(() => {
-    const loadExistingCampaign = async () => {
-      if (!business?.id) return;
-
-      const { data: existingCampaign, error } = await supabase
-        .from('marketing_campaigns')
-        .select('*')
-        .eq('campaign_subtype', 'last-minute')
-        .eq('business_id', business.id)
-        .is('archived_at', null)
-        .maybeSingle();
-
-      if (error) {
-        console.error('Error loading campaign:', error);
-        return;
-      }
-
-      if (existingCampaign) {
-        const settings = existingCampaign.settings || {};
-        form.reset({
-          isEnabled: existingCampaign.is_active,
-          sendEmail: settings.sendEmail || false,
-          sendSMS: settings.sendSMS || false,
-          enableDiscounts: settings.enableDiscounts || false,
-          discountType: settings.discountType || "percent",
-          discountValue: settings.discountValue || 25,
-          customSubject: existingCampaign.custom_subject ? true : false,
-          customMessage: existingCampaign.custom_message ? true : false,
-          subjectText: existingCampaign.custom_subject || "",
-          messageText: existingCampaign.custom_message || "",
-        });
-      }
-    };
-
-    loadExistingCampaign();
-  }, [business?.id, form]);
+  useExistingCampaign(business?.id, form, 'last-minute');
 
   const handleSubmit = async (values: LastMinuteFormValues) => {
     if (!business?.id) {
@@ -87,7 +54,6 @@ export function LastMinuteCampaignConfig({
       return;
     }
 
-    // Validate that at least one communication channel is enabled when campaign is enabled
     if (values.isEnabled && !values.sendEmail && !values.sendSMS) {
       toast({
         title: "Validation Error",
@@ -101,7 +67,14 @@ export function LastMinuteCampaignConfig({
     try {
       const now = new Date().toISOString();
       
-      // First, check if there's an existing active last-minute campaign
+      const settings: LastMinuteSettings = {
+        sendEmail: values.sendEmail,
+        sendSMS: values.sendSMS,
+        enableDiscounts: values.enableDiscounts,
+        discountType: values.discountType,
+        discountValue: values.discountValue,
+      };
+
       const { data: existingCampaign, error: queryError } = await supabase
         .from('marketing_campaigns')
         .select('id, is_active')
@@ -113,30 +86,20 @@ export function LastMinuteCampaignConfig({
       if (queryError) throw queryError;
 
       if (existingCampaign) {
-        // Update existing campaign
         const { error } = await supabase
           .from('marketing_campaigns')
           .update({
             is_active: values.isEnabled,
-            settings: {
-              sendEmail: values.sendEmail,
-              sendSMS: values.sendSMS,
-              enableDiscounts: values.enableDiscounts,
-              discountType: values.discountType,
-              discountValue: values.discountValue,
-            },
+            settings,
             custom_subject: values.customSubject ? values.subjectText : null,
             custom_message: values.customMessage ? values.messageText : null,
-            // Update start_date only when enabling
             ...(values.isEnabled && { start_date: now }),
-            // Update end_date only when disabling
             ...(!values.isEnabled && { end_date: now }),
           })
           .eq('id', existingCampaign.id);
 
         if (error) throw error;
       } else {
-        // Create new campaign
         const { error } = await supabase
           .from('marketing_campaigns')
           .insert({
@@ -145,13 +108,7 @@ export function LastMinuteCampaignConfig({
             campaign_subtype: 'last-minute',
             name: 'Last Minute Campaign',
             is_active: values.isEnabled,
-            settings: {
-              sendEmail: values.sendEmail,
-              sendSMS: values.sendSMS,
-              enableDiscounts: values.enableDiscounts,
-              discountType: values.discountType,
-              discountValue: values.discountValue,
-            },
+            settings,
             custom_subject: values.customSubject ? values.subjectText : null,
             custom_message: values.customMessage ? values.messageText : null,
             start_date: values.isEnabled ? now : null,
@@ -180,7 +137,6 @@ export function LastMinuteCampaignConfig({
     }
   };
 
-  // Calculate if save button should be disabled
   const values = form.watch();
   const isSaveDisabled = isSaving || (values.isEnabled && !values.sendEmail && !values.sendSMS);
 
