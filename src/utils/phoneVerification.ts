@@ -7,19 +7,21 @@ export const sendVerificationCode = async (phone: string, email: string) => {
     // If no session, sign in with OTP
     const { error: signInError } = await supabase.auth.signInWithOtp({
       email,
+      options: {
+        data: {
+          phone: phone // Store phone number in user metadata
+        }
+      }
     });
 
     if (signInError) {
-      if (signInError.message.includes('rate_limit')) {
-        throw new Error('For security purposes, please wait a moment before trying again');
-      }
       throw signInError;
     }
+  } else {
+    // If session exists, update phone
+    const { error: updateError } = await supabase.auth.updateUser({ phone });
+    if (updateError) throw updateError;
   }
-
-  // Update phone number
-  const { error: updateError } = await supabase.auth.updateUser({ phone });
-  if (updateError) throw updateError;
 };
 
 export const verifyPhoneNumber = async (phone: string, userId: string) => {

@@ -30,15 +30,21 @@ export const usePhoneVerification = (email: string, onSuccess: () => void) => {
       await sendVerificationCode(phone, email);
       
       toast({
-        title: "OTP Sent",
+        title: "Verification Code Sent",
         description: "Please check your phone for the verification code",
       });
       setShowOtp(true);
     } catch (error: any) {
       console.error('Error in phone verification:', error);
+      let errorMessage = error.message;
+      
+      if (error.message.includes('rate_limit')) {
+        errorMessage = 'For security purposes, please wait a moment before trying again';
+      }
+      
       toast({
         title: "Error",
-        description: error.message || "Failed to send verification code",
+        description: errorMessage,
         variant: "destructive",
       });
     } finally {
@@ -65,6 +71,7 @@ export const usePhoneVerification = (email: string, onSuccess: () => void) => {
       const { data: { user } } = await supabase.auth.getUser();
       if (user) {
         await verifyPhoneNumber(phone, user.id);
+        setIsVerified(true);
         onSuccess();
       }
     } catch (error: any) {
