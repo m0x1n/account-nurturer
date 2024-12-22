@@ -7,12 +7,20 @@ import PhoneStep from "@/components/onboarding/PhoneStep";
 import PersonalDetailsStep from "@/components/onboarding/PersonalDetailsStep";
 import BusinessStep from "@/components/onboarding/BusinessStep";
 import CompletionStep from "@/components/onboarding/CompletionStep";
+import OnboardingProgress from "@/components/onboarding/OnboardingProgress";
 
 const Onboarding = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
   const [step, setStep] = useState(1);
+  const [isLoading, setIsLoading] = useState(true);
   const totalSteps = 5;
+  const [completedSteps, setCompletedSteps] = useState({
+    email: false,
+    phone: false,
+    personalDetails: false,
+    business: false
+  });
 
   const [formData, setFormData] = useState({
     email: "",
@@ -23,32 +31,46 @@ const Onboarding = () => {
   });
 
   useEffect(() => {
-    const checkAuth = async () => {
-      const { data: { session } } = await supabase.auth.getSession();
-      if (!session) {
-        navigate('/login');
-        return;
-      }
+    const checkSession = async () => {
+      try {
+        const { data: { session } } = await supabase.auth.getSession();
+        
+        if (!session) {
+          navigate("/login");
+          return;
+        }
 
-      // Pre-fill email if user is authenticated
-      if (session.user?.email) {
-        setFormData((prev) => ({
+        // Set the email from the session
+        setFormData(prev => ({
           ...prev,
-          email: session.user?.email || "",
+          email: session.user.email || "",
         }));
+        
+        setIsLoading(false);
+      } catch (error) {
+        console.error("Session check error:", error);
+        toast({
+          title: "Error",
+          description: "Failed to check authentication status",
+          variant: "destructive",
+        });
+        navigate("/login");
       }
     };
 
-    checkAuth();
+    checkSession();
 
+    // Set up auth state change listener
     const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
       if (event === 'SIGNED_OUT') {
-        navigate('/login');
+        navigate("/login");
       }
     });
 
-    return () => subscription.unsubscribe();
-  }, [navigate]);
+    return () => {
+      subscription.unsubscribe();
+    };
+  }, [navigate, toast]);
 
   const updateFormData = (data: Partial<typeof formData>) => {
     setFormData((prev) => ({
@@ -68,6 +90,20 @@ const Onboarding = () => {
   const handleNext = () => {
     if (step < totalSteps) {
       setStep((prev) => prev + 1);
+      setCompletedSteps(prev => {
+        switch(step) {
+          case 1:
+            return { ...prev, email: true };
+          case 2:
+            return { ...prev, phone: true };
+          case 3:
+            return { ...prev, personalDetails: true };
+          case 4:
+            return { ...prev, business: true };
+          default:
+            return prev;
+        }
+      });
     } else {
       toast({
         title: "Welcome!",
@@ -85,6 +121,8 @@ const Onboarding = () => {
             formData={formData}
             updateFormData={updateFormData}
             onNext={handleNext}
+            setStep={setStep}
+            setCompletedSteps={setCompletedSteps}
           />
         );
       case 2:
@@ -127,9 +165,22 @@ const Onboarding = () => {
     }
   };
 
+  if (isLoading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-b from-gray-50 to-gray-100">
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-gray-900"></div>
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-b from-gray-50 to-gray-100 p-4">
       <div className="w-full max-w-md bg-white rounded-lg shadow-lg p-6">
+        <OnboardingProgress
+          currentStep={step}
+          totalSteps={totalSteps}
+          completedSteps={completedSteps}
+        />
         {renderStep()}
       </div>
     </div>

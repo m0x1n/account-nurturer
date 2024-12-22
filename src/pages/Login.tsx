@@ -16,6 +16,10 @@ const Login = () => {
   const [showOtp, setShowOtp] = useState(false);
 
   useEffect(() => {
+    // Clear all storage on component mount
+    localStorage.clear();
+    sessionStorage.clear();
+    
     const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
       if (event === 'SIGNED_IN' && session) {
         navigate("/onboarding");

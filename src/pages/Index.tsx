@@ -1,11 +1,35 @@
+import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
+import { supabase } from "@/integrations/supabase/client";
 
 const Index = () => {
   const navigate = useNavigate();
 
-  const handleGetStarted = () => {
-    navigate("/onboarding");
+  const handleGetStarted = async () => {
+    try {
+      // Clear any cached data
+      localStorage.clear();
+      sessionStorage.clear();
+      await supabase.auth.refreshSession();
+      
+      const { data: { session }, error: sessionError } = await supabase.auth.getSession();
+      
+      if (sessionError) {
+        console.error("Session error:", sessionError);
+        navigate("/login");
+        return;
+      }
+
+      if (session?.user) {
+        navigate("/onboarding");
+      } else {
+        navigate("/login");
+      }
+    } catch (error) {
+      console.error("Authentication error:", error);
+      navigate("/login");
+    }
   };
 
   const handleSignIn = () => {
