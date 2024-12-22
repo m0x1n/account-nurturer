@@ -19,6 +19,7 @@ interface Campaign {
   description: string;
   icon: React.ReactNode;
   isActive: boolean;
+  isDisabled?: boolean;
   isComingSoon?: boolean;
 }
 
@@ -29,7 +30,8 @@ export default function SmartCampaigns() {
       name: "Boost",
       description: "Increase bookings during specific periods with targeted promotions",
       icon: <Rocket className="h-6 w-6" />,
-      isActive: false
+      isActive: false,
+      isDisabled: false
     },
     {
       id: "last-minute",
@@ -78,7 +80,7 @@ export default function SmartCampaigns() {
   const handleToggle = (id: string) => {
     setCampaigns(prevCampaigns =>
       prevCampaigns.map(campaign =>
-        campaign.id === id
+        campaign.id === id && !campaign.isDisabled
           ? { ...campaign, isActive: !campaign.isActive }
           : campaign
       )
@@ -87,6 +89,16 @@ export default function SmartCampaigns() {
 
   const handleExpand = (id: string) => {
     setExpandedId(expandedId === id ? null : id);
+  };
+
+  const handleBoostSaveSuccess = (isActive: boolean) => {
+    setCampaigns(prevCampaigns =>
+      prevCampaigns.map(campaign =>
+        campaign.id === "boost"
+          ? { ...campaign, isActive, isDisabled: isActive }
+          : campaign
+      )
+    );
   };
 
   return (
@@ -134,6 +146,7 @@ export default function SmartCampaigns() {
                     <Switch
                       checked={campaign.isActive}
                       onCheckedChange={() => handleToggle(campaign.id)}
+                      disabled={campaign.isDisabled}
                     />
                   )}
                 </div>
@@ -143,7 +156,8 @@ export default function SmartCampaigns() {
               <div className="pl-10 pr-4 pb-4">
                 <BoostCampaignConfig 
                   isOpen={expandedId === campaign.id} 
-                  onClose={() => setExpandedId(null)} 
+                  onClose={() => setExpandedId(null)}
+                  onSaveSuccess={handleBoostSaveSuccess}
                 />
               </div>
             )}

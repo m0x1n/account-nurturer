@@ -5,7 +5,7 @@ import { useToast } from "@/hooks/use-toast";
 import { useBusinessServices } from "@/hooks/useBusinessServices";
 import { useBusinessData } from "@/hooks/useBusinessData";
 import { supabase } from "@/integrations/supabase/client";
-import { addDays, format } from "date-fns";
+import { addDays, format, isAfter } from "date-fns";
 import { TargetingSection } from "./boost/TargetingSection";
 import { ScheduleSection } from "./boost/ScheduleSection";
 import { OfferSection } from "./boost/OfferSection";
@@ -15,9 +15,10 @@ import { CampaignNameSection } from "./boost/CampaignNameSection";
 interface BoostCampaignConfigProps {
   isOpen: boolean;
   onClose: () => void;
+  onSaveSuccess?: (isActive: boolean) => void;
 }
 
-export function BoostCampaignConfig({ isOpen, onClose }: BoostCampaignConfigProps) {
+export function BoostCampaignConfig({ isOpen, onClose, onSaveSuccess }: BoostCampaignConfigProps) {
   const { toast } = useToast();
   const { data: business } = useBusinessData();
   const { data: services } = useBusinessServices(business?.id);
@@ -59,6 +60,11 @@ export function BoostCampaignConfig({ isOpen, onClose }: BoostCampaignConfigProp
     );
   };
 
+  const isBoostStillValid = () => {
+    const lastDay = scheduledDays[scheduledDays.length - 1].date;
+    return isAfter(new Date(lastDay), new Date());
+  };
+
   const handleSave = async () => {
     if (!business?.id) {
       toast({
@@ -77,7 +83,7 @@ export function BoostCampaignConfig({ isOpen, onClose }: BoostCampaignConfigProp
           business_id: business.id,
           campaign_type: "email",
           name: campaignName,
-          is_active: true,
+          is_active: isBoostStillValid(), // Set active based on dates
           settings: {
             targeting: {
               type: targetingOption,
@@ -116,6 +122,11 @@ export function BoostCampaignConfig({ isOpen, onClose }: BoostCampaignConfigProp
         });
 
       if (metricsError) throw metricsError;
+
+      const isActive = isBoostStillValid();
+      if (onSaveSuccess) {
+        onSaveSuccess(isActive);
+      }
 
       toast({
         title: "Campaign Saved",
