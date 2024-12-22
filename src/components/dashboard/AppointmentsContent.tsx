@@ -8,11 +8,13 @@ import { supabase } from "@/integrations/supabase/client";
 import { format } from "date-fns";
 import { CalendarView } from "./appointments/CalendarView";
 import { useState } from "react";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { NewAppointmentForm } from "./appointments/NewAppointmentForm";
 
 export function AppointmentsContent() {
   const [selectedStaffIds, setSelectedStaffIds] = useState<string[]>([]);
 
-  const { data: appointments, isLoading } = useQuery({
+  const { data: appointments, isLoading, refetch } = useQuery({
     queryKey: ['appointments'],
     queryFn: async () => {
       const { data, error } = await supabase
@@ -82,10 +84,22 @@ export function AppointmentsContent() {
           <div className="flex items-center gap-4">
             <h1 className="text-3xl font-bold">Appointments</h1>
           </div>
-          <Button>
-            <Calendar className="h-4 w-4 mr-2" />
-            New Appointment
-          </Button>
+          <Dialog>
+            <DialogTrigger asChild>
+              <Button>
+                <Calendar className="h-4 w-4 mr-2" />
+                New Appointment
+              </Button>
+            </DialogTrigger>
+            <DialogContent className="sm:max-w-[600px]">
+              <DialogHeader>
+                <DialogTitle>Create New Appointment</DialogTitle>
+              </DialogHeader>
+              <NewAppointmentForm onSuccess={() => {
+                refetch();
+              }} />
+            </DialogContent>
+          </Dialog>
         </div>
 
         <Tabs defaultValue="calendar" className="w-full">
