@@ -67,7 +67,10 @@ export function DashboardContent() {
             </CardHeader>
             <CardContent>
               <ChartContainer config={chartConfig} className="h-[300px]">
-                <Bar data={salesData}>
+                <Bar 
+                  data={salesData}
+                  dataKey="sales" // Added the missing dataKey prop here
+                >
                   <ChartTooltip />
                   <Bar
                     dataKey="sales"
