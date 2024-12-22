@@ -1,9 +1,70 @@
+import { useQuery } from "@tanstack/react-query";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Calendar, List } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { supabase } from "@/integrations/supabase/client";
+import { format } from "date-fns";
 
 export function AppointmentsContent() {
+  const { data: appointments, isLoading } = useQuery({
+    queryKey: ['appointments'],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('appointments')
+        .select(`
+          *,
+          client:clients(first_name, last_name),
+          service:services(name, price)
+        `)
+        .order('start_time', { ascending: true });
+
+      if (error) throw error;
+      return data;
+    }
+  });
+
+  const todayAppointments = appointments?.filter(
+    (apt) => format(new Date(apt.start_time), 'yyyy-MM-dd') === format(new Date(), 'yyyy-MM-dd')
+  );
+
+  const upcomingAppointments = appointments?.filter(
+    (apt) => new Date(apt.start_time) > new Date() && 
+    format(new Date(apt.start_time), 'yyyy-MM-dd') !== format(new Date(), 'yyyy-MM-dd')
+  );
+
+  const pastAppointments = appointments?.filter(
+    (apt) => new Date(apt.start_time) < new Date()
+  );
+
+  const renderAppointmentTable = (appointments: any[]) => (
+    <Table>
+      <TableHeader>
+        <TableRow>
+          <TableHead>Time</TableHead>
+          <TableHead>Client</TableHead>
+          <TableHead>Service</TableHead>
+          <TableHead>Status</TableHead>
+        </TableRow>
+      </TableHeader>
+      <TableBody>
+        {appointments.map((appointment) => (
+          <TableRow key={appointment.id}>
+            <TableCell>
+              {format(new Date(appointment.start_time), 'MMM d, h:mm a')}
+            </TableCell>
+            <TableCell>
+              {appointment.client?.first_name} {appointment.client?.last_name}
+            </TableCell>
+            <TableCell>{appointment.service?.name}</TableCell>
+            <TableCell className="capitalize">{appointment.status}</TableCell>
+          </TableRow>
+        ))}
+      </TableBody>
+    </Table>
+  );
+
   return (
     <main className="flex-1 overflow-y-auto">
       <div className="container px-4 py-6">
@@ -36,7 +97,13 @@ export function AppointmentsContent() {
                   <CardTitle>Today's Appointments</CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <p className="text-sm text-muted-foreground">No appointments for today</p>
+                  {isLoading ? (
+                    <p className="text-sm text-muted-foreground">Loading...</p>
+                  ) : todayAppointments?.length ? (
+                    renderAppointmentTable(todayAppointments)
+                  ) : (
+                    <p className="text-sm text-muted-foreground">No appointments for today</p>
+                  )}
                 </CardContent>
               </Card>
 
@@ -45,7 +112,13 @@ export function AppointmentsContent() {
                   <CardTitle>Upcoming Appointments</CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <p className="text-sm text-muted-foreground">No upcoming appointments</p>
+                  {isLoading ? (
+                    <p className="text-sm text-muted-foreground">Loading...</p>
+                  ) : upcomingAppointments?.length ? (
+                    renderAppointmentTable(upcomingAppointments)
+                  ) : (
+                    <p className="text-sm text-muted-foreground">No upcoming appointments</p>
+                  )}
                 </CardContent>
               </Card>
 
@@ -54,7 +127,13 @@ export function AppointmentsContent() {
                   <CardTitle>Past Appointments</CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <p className="text-sm text-muted-foreground">No past appointments</p>
+                  {isLoading ? (
+                    <p className="text-sm text-muted-foreground">Loading...</p>
+                  ) : pastAppointments?.length ? (
+                    renderAppointmentTable(pastAppointments)
+                  ) : (
+                    <p className="text-sm text-muted-foreground">No past appointments</p>
+                  )}
                 </CardContent>
               </Card>
             </div>
