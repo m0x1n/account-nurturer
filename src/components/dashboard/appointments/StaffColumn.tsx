@@ -30,7 +30,7 @@ export function StaffColumn({ staff, appointments, currentDate, currentTimeTop, 
   return (
     <div 
       className="flex-shrink-0 relative border-r" 
-      style={{ width: `${STAFF_COLUMN_WIDTH}px` }}
+      style={{ width: `${STAFF_COLUMN_WIDTH}px`, minWidth: `${STAFF_COLUMN_WIDTH}px` }}
     >
       {/* Hour grid lines */}
       {hours.map((hour) => (

@@ -18,7 +18,10 @@ interface StaffHeaderProps {
 
 export function StaffHeader({ staff, workingHours }: StaffHeaderProps) {
   return (
-    <div className="p-4 border-r flex-shrink-0" style={{ width: STAFF_COLUMN_WIDTH }}>
+    <div 
+      className="p-4 border-r flex-shrink-0" 
+      style={{ width: `${STAFF_COLUMN_WIDTH}px`, minWidth: `${STAFF_COLUMN_WIDTH}px` }}
+    >
       <div className="flex items-center gap-2 mb-2">
         <Avatar className="h-8 w-8">
           <AvatarImage src={staff.profile_image_url || undefined} alt={`${staff.first_name} ${staff.last_name}`} />
