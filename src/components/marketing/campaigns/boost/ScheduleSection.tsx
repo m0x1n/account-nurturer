@@ -27,11 +27,11 @@ export function ScheduleSection({ days, onDayToggle, readOnly }: ScheduleProps) 
             Boost will end automatically on the last day.
           </p>
         </div>
-        <div className="space-y-3">
+        <div className="space-y-2">
           {days.map((day, index) => (
             <div 
               key={day.date} 
-              className="flex items-center justify-between py-3 border-b border-gray-100 last:border-0"
+              className="flex items-center justify-between py-2 border-b border-gray-100 last:border-0"
             >
               <span className="text-sm text-gray-700">{day.formatted}</span>
               <Switch
