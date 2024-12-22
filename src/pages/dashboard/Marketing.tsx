@@ -8,11 +8,11 @@ export default function Marketing() {
     <div className="p-6 min-h-screen bg-gradient-to-br from-background to-secondary/20">
       <div className="flex items-center gap-2 mb-6">
         <Mail className="h-6 w-6 text-primary" />
-        <h1 className="text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-primary to-primary-dark">Marketing</h1>
+        <h1 className="text-2xl font-serif font-bold bg-clip-text text-transparent bg-gradient-to-r from-primary to-primary-dark">Marketing</h1>
       </div>
 
       <Tabs defaultValue="communication" className="space-y-6">
-        <TabsList className="grid grid-cols-2 md:grid-cols-5 h-auto gap-4 bg-transparent">
+        <TabsList className="grid grid-cols-2 md:grid-cols-5 h-auto gap-4 bg-transparent font-sans">
           <TabsTrigger value="communication" className="data-[state=active]:bg-primary data-[state=active]:text-white">
             Communication
           </TabsTrigger>
