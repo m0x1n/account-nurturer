@@ -6,6 +6,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { supabase } from "@/integrations/supabase/client";
 import { format } from "date-fns";
+import { CalendarView } from "./appointments/CalendarView";
 
 export function AppointmentsContent() {
   const { data: appointments, isLoading } = useQuery({
@@ -78,7 +79,7 @@ export function AppointmentsContent() {
           </Button>
         </div>
 
-        <Tabs defaultValue="list" className="w-full">
+        <Tabs defaultValue="calendar" className="w-full">
           <TabsList>
             <TabsTrigger value="list">
               <List className="h-4 w-4 mr-2" />
@@ -140,11 +141,7 @@ export function AppointmentsContent() {
           </TabsContent>
 
           <TabsContent value="calendar">
-            <Card>
-              <CardContent className="pt-6">
-                <p className="text-sm text-muted-foreground">Calendar view coming soon...</p>
-              </CardContent>
-            </Card>
+            <CalendarView />
           </TabsContent>
         </Tabs>
       </div>
