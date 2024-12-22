@@ -55,10 +55,14 @@ export function SalesBreakdown({ salesData }: SalesBreakdownProps) {
     ) : null;
   };
 
-  const CustomLegend = ({ payload }: any) => {
+  const CustomLegend = ({ payload }: { payload?: Array<any> }) => {
+    if (!payload || !Array.isArray(payload) || payload.length === 0) {
+      return null;
+    }
+
     return (
       <div className="flex flex-col gap-2 text-sm">
-        {payload.map((entry: any, index: number) => (
+        {payload.map((entry, index) => (
           <div key={`legend-${index}`} className="flex items-center gap-2">
             <div
               className="h-3 w-3 rounded-sm"
