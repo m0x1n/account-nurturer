@@ -11,16 +11,17 @@ interface ScheduleDay {
 interface ScheduleProps {
   days: ScheduleDay[];
   onDayToggle: (index: number) => void;
+  readOnly?: boolean;
 }
 
-export function ScheduleSection({ days, onDayToggle }: ScheduleProps) {
+export function ScheduleSection({ days, onDayToggle, readOnly }: ScheduleProps) {
   if (!days || days.length === 0) return null;
 
   return (
     <Card className="p-6">
       <div className="space-y-4">
         <Label className="text-lg font-medium">When do you need a boost?</Label>
-        <div className="space-y-2 mt-2">
+        <div className={`space-y-2 mt-2 ${readOnly ? 'pointer-events-none' : ''}`}>
           {days.map((day, index) => (
             <div 
               key={day.date} 
@@ -30,6 +31,7 @@ export function ScheduleSection({ days, onDayToggle }: ScheduleProps) {
               <Switch
                 checked={day.enabled}
                 onCheckedChange={() => onDayToggle(index)}
+                disabled={readOnly}
               />
             </div>
           ))}

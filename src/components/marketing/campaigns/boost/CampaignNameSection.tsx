@@ -7,12 +7,14 @@ interface CampaignNameProps {
   discountType: string;
   discountValue: string;
   onNameChange: (name: string) => void;
+  readOnly?: boolean;
 }
 
 export function CampaignNameSection({
   discountType,
   discountValue,
   onNameChange,
+  readOnly,
 }: CampaignNameProps) {
   const [name, setName] = useState("");
 
@@ -41,6 +43,7 @@ export function CampaignNameSection({
         onChange={(e) => handleNameChange(e.target.value)}
         placeholder="Enter campaign name"
         className="w-full"
+        disabled={readOnly}
       />
     </div>
   );

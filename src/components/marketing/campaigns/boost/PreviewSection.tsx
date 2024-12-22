@@ -10,6 +10,7 @@ interface PreviewSectionProps {
   testEmail: string;
   setTestEmail: (email: string) => void;
   onTestEmail: () => void;
+  readOnly?: boolean;
 }
 
 export function PreviewSection({
@@ -21,6 +22,7 @@ export function PreviewSection({
   testEmail,
   setTestEmail,
   onTestEmail,
+  readOnly,
 }: PreviewSectionProps) {
   return (
     <div className="space-y-4">
@@ -34,10 +36,11 @@ export function PreviewSection({
         </div>
       )}
 
-      <div className="flex gap-4">
+      <div className={`flex gap-4 ${readOnly ? 'pointer-events-none' : ''}`}>
         <Button
           variant="outline"
           onClick={() => setShowPreview(!showPreview)}
+          disabled={readOnly}
         >
           {showPreview ? "Hide Preview" : "View Sample Email"}
         </Button>
@@ -47,8 +50,9 @@ export function PreviewSection({
             placeholder="Enter email for test"
             value={testEmail}
             onChange={(e) => setTestEmail(e.target.value)}
+            disabled={readOnly}
           />
-          <Button onClick={onTestEmail}>
+          <Button onClick={onTestEmail} disabled={readOnly}>
             Send
           </Button>
         </div>

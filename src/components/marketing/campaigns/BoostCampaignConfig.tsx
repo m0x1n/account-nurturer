@@ -47,65 +47,82 @@ export function BoostCampaignConfig({
     handleServiceToggle,
     handleTestEmail,
     handleSave,
+    isActive,
   } = useBoostCampaign(business, onClose, onSaveSuccess);
 
   if (!isOpen) return null;
 
   return (
     <div className="bg-background rounded-lg border p-6 space-y-8">
-      <div className="space-y-8">
-        <CampaignNameSection
-          discountType={discountType}
-          discountValue={discountValue}
-          onNameChange={setCampaignName}
-        />
+      <div className={`space-y-8 ${isActive ? 'opacity-70' : ''}`}>
+        <div className={isActive ? 'pointer-events-none' : ''}>
+          <CampaignNameSection
+            discountType={discountType}
+            discountValue={discountValue}
+            onNameChange={setCampaignName}
+            readOnly={isActive}
+          />
 
-        <TargetingSection
-          targetingOption={targetingOption}
-          daysThreshold={daysThreshold}
-          onTargetingChange={setTargetingOption}
-          onDaysChange={setDaysThreshold}
-        />
+          <TargetingSection
+            targetingOption={targetingOption}
+            daysThreshold={daysThreshold}
+            onTargetingChange={setTargetingOption}
+            onDaysChange={setDaysThreshold}
+            readOnly={isActive}
+          />
 
-        <ScheduleSection
-          days={scheduledDays}
-          onDayToggle={handleDayToggle}
-        />
+          <ScheduleSection
+            days={scheduledDays}
+            onDayToggle={handleDayToggle}
+            readOnly={isActive}
+          />
 
-        <OfferSection
-          discountType={discountType}
-          discountValue={discountValue}
-          onDiscountTypeChange={setDiscountType}
-          onDiscountValueChange={setDiscountValue}
-        />
+          <OfferSection
+            discountType={discountType}
+            discountValue={discountValue}
+            onDiscountTypeChange={setDiscountType}
+            onDiscountValueChange={setDiscountValue}
+            readOnly={isActive}
+          />
 
-        <ServicesSection
-          services={services}
-          selectedServices={selectedServices}
-          applyToAllServices={applyToAllServices}
-          onServiceToggle={handleServiceToggle}
-          onApplyToAllChange={setApplyToAllServices}
-        />
+          <ServicesSection
+            services={services}
+            selectedServices={selectedServices}
+            applyToAllServices={applyToAllServices}
+            onServiceToggle={handleServiceToggle}
+            onApplyToAllChange={setApplyToAllServices}
+            readOnly={isActive}
+          />
 
-        <PreviewSection
-          showPreview={showPreview}
-          setShowPreview={setShowPreview}
-          campaignName={campaignName}
-          discountValue={discountValue}
-          discountType={discountType}
-          testEmail={testEmail}
-          setTestEmail={setTestEmail}
-          onTestEmail={handleTestEmail}
-        />
+          <PreviewSection
+            showPreview={showPreview}
+            setShowPreview={setShowPreview}
+            campaignName={campaignName}
+            discountValue={discountValue}
+            discountType={discountType}
+            testEmail={testEmail}
+            setTestEmail={setTestEmail}
+            onTestEmail={handleTestEmail}
+            readOnly={isActive}
+          />
+        </div>
       </div>
 
       <div className="flex justify-end gap-4">
-        <Button variant="outline" onClick={onClose}>
-          Cancel
-        </Button>
-        <Button onClick={handleSave}>
-          Save Campaign
-        </Button>
+        {isActive ? (
+          <Button onClick={onClose}>
+            Close
+          </Button>
+        ) : (
+          <>
+            <Button variant="outline" onClick={onClose}>
+              Cancel
+            </Button>
+            <Button onClick={handleSave}>
+              Save Campaign
+            </Button>
+          </>
+        )}
       </div>
     </div>
   );
