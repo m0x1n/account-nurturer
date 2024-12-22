@@ -19,19 +19,38 @@ const PersonalDetailsStep = ({ formData, updateFormData, onNext, onBack }: Perso
 
   useEffect(() => {
     const fetchProfile = async () => {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (user) {
-        const { data } = await supabase
-          .from('profiles')
-          .select('first_name, last_name')
-          .eq('id', user.id)
-          .single();
-        
-        if (data) {
-          setFirstName(data.first_name || '');
-          setLastName(data.last_name || '');
-          updateFormData({ firstName: data.first_name || '', lastName: data.last_name || '' });
+      try {
+        const { data: { user } } = await supabase.auth.getUser();
+        if (user) {
+          // First try to get data from auth metadata
+          if (user.user_metadata?.first_name && user.user_metadata?.last_name) {
+            setFirstName(user.user_metadata.first_name);
+            setLastName(user.user_metadata.last_name);
+            updateFormData({ 
+              firstName: user.user_metadata.first_name, 
+              lastName: user.user_metadata.last_name 
+            });
+            return;
+          }
+
+          // If not in metadata, try profiles table
+          const { data } = await supabase
+            .from('profiles')
+            .select('first_name, last_name')
+            .eq('id', user.id)
+            .single();
+          
+          if (data) {
+            setFirstName(data.first_name || '');
+            setLastName(data.last_name || '');
+            updateFormData({ 
+              firstName: data.first_name || '', 
+              lastName: data.last_name || '' 
+            });
+          }
         }
+      } catch (error) {
+        console.error('Error fetching profile:', error);
       }
     };
     fetchProfile();
