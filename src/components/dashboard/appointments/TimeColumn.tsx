@@ -26,16 +26,14 @@ export function TimeColumn({ currentDate, currentTimeTop }: TimeColumnProps) {
         </div>
       ))}
       
-      {/* Current time indicator */}
+      {/* Current time indicator with bubble */}
       {format(currentDate, 'yyyy-MM-dd') === format(new Date(), 'yyyy-MM-dd') && (
         <div 
-          className="absolute left-0 right-0 z-20"
+          className="absolute left-0 right-0 z-20 flex items-center"
           style={{ top: `${currentTimeTop * 4}px` }}
         >
-          <div className="flex items-center">
-            <div className="bg-red-500 text-white text-xs px-2 py-1 rounded-full ml-auto mr-2">
-              {formatTimeLabel(new Date())}
-            </div>
+          <div className="bg-red-500 text-white text-xs px-2 py-1 rounded-full ml-auto mr-2">
+            {formatTimeLabel(new Date())}
           </div>
         </div>
       )}
