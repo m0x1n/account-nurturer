@@ -26,7 +26,7 @@ export default function SmartCampaigns() {
   const [campaigns, setCampaigns] = useState<Campaign[]>([
     {
       id: "boost",
-      name: "Boost Campaigns",
+      name: "Boost",
       description: "Increase bookings during specific periods with targeted promotions",
       icon: <Rocket className="h-6 w-6" />,
       isActive: false
