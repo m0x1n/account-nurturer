@@ -8,7 +8,6 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { formatCurrency } from "@/lib/utils";
 
 export function CampaignsTable() {
   const { data: campaigns, isLoading } = useQuery({
@@ -20,8 +19,7 @@ export function CampaignsTable() {
           *,
           campaign_metrics (
             users_targeted,
-            users_engaged,
-            revenue_lift
+            users_engaged
           )
         `);
 
@@ -41,9 +39,11 @@ export function CampaignsTable() {
           <TableRow>
             <TableHead>Name</TableHead>
             <TableHead>Type</TableHead>
-            <TableHead className="text-right">Users Targeted</TableHead>
-            <TableHead className="text-right">Users Engaged</TableHead>
-            <TableHead className="text-right">Revenue Lift</TableHead>
+            <TableHead>Date Sent</TableHead>
+            <TableHead className="text-right">Sent</TableHead>
+            <TableHead className="text-right">% Opened</TableHead>
+            <TableHead className="text-right">% Clicked</TableHead>
+            <TableHead className="text-right">% Unsubscribed</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
@@ -51,15 +51,13 @@ export function CampaignsTable() {
             <TableRow key={campaign.id}>
               <TableCell className="font-medium">{campaign.name}</TableCell>
               <TableCell>{campaign.campaign_type}</TableCell>
+              <TableCell>{new Date(campaign.created_at).toLocaleDateString()}</TableCell>
               <TableCell className="text-right">
                 {campaign.campaign_metrics?.[0]?.users_targeted || 0}
               </TableCell>
-              <TableCell className="text-right">
-                {campaign.campaign_metrics?.[0]?.users_engaged || 0}
-              </TableCell>
-              <TableCell className="text-right">
-                {formatCurrency(campaign.campaign_metrics?.[0]?.revenue_lift || 0)}
-              </TableCell>
+              <TableCell className="text-right">-</TableCell>
+              <TableCell className="text-right">-</TableCell>
+              <TableCell className="text-right">-</TableCell>
             </TableRow>
           ))}
         </TableBody>

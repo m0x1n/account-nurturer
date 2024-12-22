@@ -17,11 +17,6 @@ export default function Engage() {
       </div>
 
       <div className="mb-8">
-        <h2 className="text-lg font-semibold mb-4">Campaign Performance</h2>
-        <CampaignsTable />
-      </div>
-
-      <div className="mb-8">
         <h2 className="text-lg font-semibold mb-4">Choose Your Campaign Type</h2>
         <MarketingSection>
           <div onClick={() => navigate('smart')} className="cursor-pointer">
@@ -51,6 +46,11 @@ export default function Engage() {
             />
           </div>
         </MarketingSection>
+      </div>
+
+      <div className="mb-8">
+        <h2 className="text-lg font-semibold mb-4">Campaign Performance</h2>
+        <CampaignsTable />
       </div>
     </div>
   );
