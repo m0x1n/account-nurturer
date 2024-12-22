@@ -48,16 +48,7 @@ export function CampaignTableRow({ campaign, onArchive }: CampaignTableRowProps)
   };
 
   const getCampaignType = (type: string) => {
-    const smartCampaignTypes = [
-      'boost',
-      'last-minute',
-      'slow-days',
-      'limited-time',
-      'reminder',
-      'rescue'
-    ];
-    
-    return smartCampaignTypes.includes(type.toLowerCase()) ? 'Smart' : 'Manual';
+    return "Smart";
   };
 
   const getCampaignSubtype = (type: string) => {
