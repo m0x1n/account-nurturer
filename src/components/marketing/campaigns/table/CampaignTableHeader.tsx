@@ -15,6 +15,7 @@ export function CampaignTableHeader() {
         <TableHead className="text-right">% Opened</TableHead>
         <TableHead className="text-right">% Clicked</TableHead>
         <TableHead className="text-right">% Unsubscribed</TableHead>
+        <TableHead className="w-[50px]"></TableHead>
       </TableRow>
     </TableHeader>
   );

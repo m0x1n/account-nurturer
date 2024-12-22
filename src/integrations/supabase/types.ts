@@ -346,6 +346,7 @@ export type Database = {
       }
       marketing_campaigns: {
         Row: {
+          archived_at: string | null
           business_id: string | null
           campaign_type: string
           created_at: string
@@ -356,6 +357,7 @@ export type Database = {
           updated_at: string
         }
         Insert: {
+          archived_at?: string | null
           business_id?: string | null
           campaign_type: string
           created_at?: string
@@ -366,6 +368,7 @@ export type Database = {
           updated_at?: string
         }
         Update: {
+          archived_at?: string | null
           business_id?: string | null
           campaign_type?: string
           created_at?: string
