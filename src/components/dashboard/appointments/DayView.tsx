@@ -14,7 +14,7 @@ interface Appointment {
   business_id: string | null;
   client_id: string | null;
   service_id: string | null;
-  staff_id: string | null; // Added staff_id to the type
+  staff_id?: string | null; // Made staff_id optional to match database schema
   start_time: string;
   end_time: string;
   status: string | null;
