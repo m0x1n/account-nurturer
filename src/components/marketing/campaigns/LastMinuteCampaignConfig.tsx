@@ -53,30 +53,60 @@ export function LastMinuteCampaignConfig({
     try {
       const now = new Date().toISOString();
       
-      const { error } = await supabase
+      // First, check if there's an existing active last-minute campaign
+      const { data: existingCampaigns } = await supabase
         .from('marketing_campaigns')
-        .insert({
-          campaign_type: 'smart',
-          campaign_subtype: 'last-minute',
-          name: 'Last Minute Campaign',
-          is_active: values.isEnabled,
-          settings: {
-            sendEmail: values.sendEmail,
-            sendSMS: values.sendSMS,
-            enableDiscounts: values.enableDiscounts,
-            discountType: values.discountType,
-            discountValue: values.discountValue,
-          },
-          custom_subject: values.customSubject ? values.subjectText : null,
-          custom_message: values.customMessage ? values.messageText : null,
-          // Set start_date when campaign is enabled
-          start_date: values.isEnabled ? now : null,
-          // Don't set end_date when enabling, only when disabling
-          end_date: !values.isEnabled ? now : null,
-          // created_at will be set automatically by the database
-        });
+        .select('id, is_active')
+        .eq('campaign_subtype', 'last-minute')
+        .is('archived_at', null)
+        .single();
 
-      if (error) throw error;
+      if (existingCampaigns) {
+        // Update existing campaign
+        const { error } = await supabase
+          .from('marketing_campaigns')
+          .update({
+            is_active: values.isEnabled,
+            settings: {
+              sendEmail: values.sendEmail,
+              sendSMS: values.sendSMS,
+              enableDiscounts: values.enableDiscounts,
+              discountType: values.discountType,
+              discountValue: values.discountValue,
+            },
+            custom_subject: values.customSubject ? values.subjectText : null,
+            custom_message: values.customMessage ? values.messageText : null,
+            // Update start_date only when enabling
+            ...(values.isEnabled && { start_date: now }),
+            // Update end_date only when disabling
+            ...(!values.isEnabled && { end_date: now }),
+          })
+          .eq('id', existingCampaigns.id);
+
+        if (error) throw error;
+      } else {
+        // Create new campaign
+        const { error } = await supabase
+          .from('marketing_campaigns')
+          .insert({
+            campaign_type: 'smart',
+            campaign_subtype: 'last-minute',
+            name: 'Last Minute Campaign',
+            is_active: values.isEnabled,
+            settings: {
+              sendEmail: values.sendEmail,
+              sendSMS: values.sendSMS,
+              enableDiscounts: values.enableDiscounts,
+              discountType: values.discountType,
+              discountValue: values.discountValue,
+            },
+            custom_subject: values.customSubject ? values.subjectText : null,
+            custom_message: values.customMessage ? values.messageText : null,
+            start_date: values.isEnabled ? now : null,
+          });
+
+        if (error) throw error;
+      }
       
       onSaveSuccess(values.isEnabled);
       toast({
