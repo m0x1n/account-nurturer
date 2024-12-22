@@ -60,57 +60,55 @@ export function BoostCampaignConfig({
       isActive && "opacity-90"
     )}>
       <div className="space-y-8">
-        <div className={cn(isActive && "pointer-events-none")}>
-          <CampaignNameSection
-            discountType={discountType}
-            discountValue={discountValue}
-            onNameChange={setCampaignName}
-            readOnly={isActive}
-          />
+        <CampaignNameSection
+          discountType={discountType}
+          discountValue={discountValue}
+          onNameChange={setCampaignName}
+          readOnly={isActive}
+        />
 
-          <TargetingSection
-            targetingOption={targetingOption}
-            daysThreshold={daysThreshold}
-            onTargetingChange={setTargetingOption}
-            onDaysChange={setDaysThreshold}
-            readOnly={isActive}
-          />
+        <TargetingSection
+          targetingOption={targetingOption}
+          daysThreshold={daysThreshold}
+          onTargetingChange={setTargetingOption}
+          onDaysChange={setDaysThreshold}
+          readOnly={isActive}
+        />
 
-          <ScheduleSection
-            days={scheduledDays}
-            onDayToggle={handleDayToggle}
-            readOnly={isActive}
-          />
+        <ScheduleSection
+          days={scheduledDays}
+          onDayToggle={handleDayToggle}
+          readOnly={isActive}
+        />
 
-          <OfferSection
-            discountType={discountType}
-            discountValue={discountValue}
-            onDiscountTypeChange={setDiscountType}
-            onDiscountValueChange={setDiscountValue}
-            readOnly={isActive}
-          />
+        <OfferSection
+          discountType={discountType}
+          discountValue={discountValue}
+          onDiscountTypeChange={setDiscountType}
+          onDiscountValueChange={setDiscountValue}
+          readOnly={isActive}
+        />
 
-          <ServicesSection
-            services={services}
-            selectedServices={selectedServices}
-            applyToAllServices={applyToAllServices}
-            onServiceToggle={handleServiceToggle}
-            onApplyToAllChange={setApplyToAllServices}
-            readOnly={isActive}
-          />
+        <ServicesSection
+          services={services}
+          selectedServices={selectedServices}
+          applyToAllServices={applyToAllServices}
+          onServiceToggle={handleServiceToggle}
+          onApplyToAllChange={setApplyToAllServices}
+          readOnly={isActive}
+        />
 
-          <PreviewSection
-            showPreview={showPreview}
-            setShowPreview={setShowPreview}
-            campaignName={campaignName}
-            discountValue={discountValue}
-            discountType={discountType}
-            testEmail={testEmail}
-            setTestEmail={setTestEmail}
-            onTestEmail={handleTestEmail}
-            readOnly={isActive}
-          />
-        </div>
+        <PreviewSection
+          showPreview={showPreview}
+          setShowPreview={setShowPreview}
+          campaignName={campaignName}
+          discountValue={discountValue}
+          discountType={discountType}
+          testEmail={testEmail}
+          setTestEmail={setTestEmail}
+          onTestEmail={handleTestEmail}
+          readOnly={isActive}
+        />
       </div>
 
       <div className="flex justify-end gap-4">
