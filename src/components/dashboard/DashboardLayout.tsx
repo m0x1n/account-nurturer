@@ -1,15 +1,10 @@
-import { useNavigate, Routes, Route, Navigate } from "react-router-dom";
-import { supabase } from "@/integrations/supabase/client";
-import { useToast } from "@/hooks/use-toast";
-import { SidebarProvider } from "@/components/ui/sidebar";
+import { Navigate, Route, Routes, useNavigate } from "react-router-dom";
 import { DashboardSidebar } from "./DashboardSidebar";
 import { DashboardContent } from "./DashboardContent";
-import { AppointmentsContent } from "./AppointmentsContent";
 import Staff from "@/pages/dashboard/Staff";
 import Clients from "@/pages/dashboard/Clients";
-import SetupChecklist from "@/components/setup/SetupChecklist";
+import { SetupChecklist } from "@/components/setup/SetupChecklist";
 import PaymentSettings from "@/pages/dashboard/PaymentSettings";
-import ImportClients from "@/pages/dashboard/ImportClients";
 import BusinessHours from "@/pages/dashboard/BusinessHours";
 import BookingLink from "@/pages/dashboard/BookingLink";
 import Settings from "@/pages/dashboard/Settings";
@@ -18,78 +13,36 @@ import Insights from "@/pages/dashboard/Insights";
 import Marketing from "@/pages/dashboard/Marketing";
 import AddOns from "@/pages/dashboard/AddOns";
 import QuickLinks from "@/pages/dashboard/QuickLinks";
+import ServicesAndProducts from "@/pages/dashboard/ServicesAndProducts";
 import { useEffect, useState } from "react";
 
 const DashboardLayout = () => {
-  const navigate = useNavigate();
-  const { toast } = useToast();
   const [isLoading, setIsLoading] = useState(true);
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const navigate = useNavigate();
 
   useEffect(() => {
-    const checkAuth = async () => {
-      try {
-        const { data: { session } } = await supabase.auth.getSession();
-        if (!session) {
-          navigate('/login');
-          return;
-        }
-        setIsAuthenticated(true);
-      } catch (error) {
-        console.error('Auth error:', error);
-        navigate('/login');
-      } finally {
-        setIsLoading(false);
-      }
-    };
+    // Simulate a loading state
+    const timer = setTimeout(() => {
+      setIsLoading(false);
+    }, 1000);
 
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
-      if (event === 'SIGNED_OUT') {
-        navigate('/login');
-      } else if (event === 'SIGNED_IN' && session) {
-        setIsAuthenticated(true);
-      }
-    });
-
-    checkAuth();
-
-    return () => subscription.unsubscribe();
-  }, [navigate]);
-
-  const handleLogout = async () => {
-    try {
-      await supabase.auth.signOut();
-      toast({
-        title: "Logged out successfully",
-      });
-      navigate("/");
-    } catch (error) {
-      toast({
-        title: "Error logging out",
-        variant: "destructive",
-      });
-    }
-  };
+    return () => clearTimeout(timer);
+  }, []);
 
   if (isLoading) {
-    return <div className="flex items-center justify-center min-h-screen">Loading...</div>;
-  }
-
-  if (!isAuthenticated) {
-    return null;
+    return <div>Loading...</div>;
   }
 
   return (
-    <SidebarProvider>
-      <div className="min-h-screen flex w-full bg-background">
-        <DashboardSidebar onLogout={handleLogout} />
+    <div className="flex h-screen overflow-hidden">
+      <DashboardSidebar />
+      <div className="flex-1 overflow-y-auto">
         <Routes>
-          <Route index element={<DashboardContent />} />
-          <Route path="dashboard" element={<DashboardContent />} />
-          <Route path="appointments" element={<AppointmentsContent />} />
+          <Route path="/" element={<DashboardContent />} />
           <Route path="setup-checklist" element={<SetupChecklist />} />
           <Route path="staff" element={<Staff />} />
           <Route path="clients" element={<Clients />} />
+          <Route path="services-and-products" element={<ServicesAndProducts />} />
           <Route path="pos" element={<POS />} />
           <Route path="insights" element={<Insights />} />
           <Route path="marketing" element={<Marketing />} />
@@ -103,7 +56,7 @@ const DashboardLayout = () => {
           <Route path="*" element={<Navigate to="/dashboard" replace />} />
         </Routes>
       </div>
-    </SidebarProvider>
+    </div>
   );
 };
 
