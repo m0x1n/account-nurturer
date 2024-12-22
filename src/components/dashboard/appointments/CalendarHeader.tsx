@@ -23,7 +23,7 @@ export function CalendarHeader({
   onDateChange,
   onViewChange,
   onStaffChange,
-  staffMembers,
+  staffMembers = [], // Provide default empty array
 }: CalendarHeaderProps) {
   const isToday = format(currentDate, 'yyyy-MM-dd') === format(new Date(), 'yyyy-MM-dd');
 
