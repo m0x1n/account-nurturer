@@ -1,5 +1,5 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { PieChart, Pie, Cell, Legend, ResponsiveContainer, Tooltip } from "recharts";
+import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip } from "recharts";
 
 interface SalesBreakdownProps {
   salesData: Array<{
@@ -29,37 +29,7 @@ export function SalesBreakdown({ salesData }: SalesBreakdownProps) {
     { name: "Other", value: 9 },
   ];
 
-  const renderCustomizedLabel = ({
-    cx,
-    cy,
-    midAngle,
-    innerRadius,
-    outerRadius,
-    percent,
-  }: any) => {
-    const radius = innerRadius + (outerRadius - innerRadius) * 0.5;
-    const x = cx + radius * Math.cos(-midAngle * Math.PI / 180);
-    const y = cy + radius * Math.sin(-midAngle * Math.PI / 180);
-
-    return percent > 0.05 ? (
-      <text
-        x={x}
-        y={y}
-        fill="white"
-        textAnchor="middle"
-        dominantBaseline="central"
-        className="text-xs font-medium"
-      >
-        {`${(percent * 100).toFixed(0)}%`}
-      </text>
-    ) : null;
-  };
-
-  const CustomLegend = ({ payload }: { payload?: Array<any> }) => {
-    if (!payload || !Array.isArray(payload) || payload.length === 0) {
-      return null;
-    }
-
+  const CustomLegend = () => {
     return (
       <div className="space-y-2">
         {pieData.map((item, index) => (
@@ -102,7 +72,7 @@ export function SalesBreakdown({ salesData }: SalesBreakdownProps) {
                     cx="50%"
                     cy="50%"
                     labelLine={false}
-                    label={renderCustomizedLabel}
+                    label={false}
                     outerRadius={45}
                     innerRadius={35}
                     fill="#8884d8"
@@ -129,7 +99,9 @@ export function SalesBreakdown({ salesData }: SalesBreakdownProps) {
                 </PieChart>
               </ResponsiveContainer>
             </div>
-            <CustomLegend />
+            <div className="flex-1">
+              <CustomLegend />
+            </div>
           </div>
         </div>
       </CardContent>
