@@ -13,6 +13,11 @@ import ImportClients from "@/pages/dashboard/ImportClients";
 import BusinessHours from "@/pages/dashboard/BusinessHours";
 import BookingLink from "@/pages/dashboard/BookingLink";
 import Settings from "@/pages/dashboard/Settings";
+import POS from "@/pages/dashboard/POS";
+import Insights from "@/pages/dashboard/Insights";
+import Marketing from "@/pages/dashboard/Marketing";
+import AddOns from "@/pages/dashboard/AddOns";
+import QuickLinks from "@/pages/dashboard/QuickLinks";
 import { useEffect, useState } from "react";
 
 const DashboardLayout = () => {
@@ -85,12 +90,16 @@ const DashboardLayout = () => {
           <Route path="setup-checklist" element={<SetupChecklist />} />
           <Route path="staff" element={<Staff />} />
           <Route path="clients" element={<Clients />} />
+          <Route path="pos" element={<POS />} />
+          <Route path="insights" element={<Insights />} />
+          <Route path="marketing" element={<Marketing />} />
+          <Route path="add-ons" element={<AddOns />} />
+          <Route path="quick-links" element={<QuickLinks />} />
           <Route path="settings" element={<Settings />} />
           <Route path="settings/payment-settings" element={<PaymentSettings />} />
           <Route path="settings/business-hours" element={<BusinessHours />} />
           <Route path="settings/booking-link" element={<BookingLink />} />
           <Route path="settings/import-clients" element={<ImportClients />} />
-          <Route path="services" element={<Navigate to="/dashboard/services" />} />
           <Route path="*" element={<Navigate to="/dashboard" replace />} />
         </Routes>
       </div>
