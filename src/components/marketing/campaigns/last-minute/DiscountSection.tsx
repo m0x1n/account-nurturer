@@ -31,7 +31,7 @@ export function DiscountSection({ form }: DiscountSectionProps) {
               </FormControl>
             </div>
             <p className="text-sm text-muted-foreground">
-              Allow Marketing Suite to offer a discount (recommended)
+              Allow us to offer intelligent discount (recommended)
             </p>
           </FormItem>
         )}
