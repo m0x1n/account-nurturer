@@ -5,6 +5,7 @@ import { useToast } from "@/components/ui/use-toast";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
+import { Clock } from "lucide-react";
 
 const DAYS_OF_WEEK = [
   "Sunday",
@@ -36,14 +37,15 @@ export default function BusinessHours() {
     },
   });
 
-  const { data: businessHours } = useQuery({
+  const { data: businessHours, isLoading } = useQuery({
     queryKey: ["business-hours"],
     queryFn: async () => {
       if (!businessData?.id) return [];
       const { data } = await supabase
         .from("business_hours")
         .select("*")
-        .eq("business_id", businessData.id);
+        .eq("business_id", businessData.id)
+        .order('day_of_week');
       return data || [];
     },
     enabled: !!businessData?.id,
@@ -66,7 +68,7 @@ export default function BusinessHours() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["business-hours"] });
       toast({
-        title: "Business hours updated",
+        title: "Business hours updated successfully",
       });
     },
     onError: (error) => {
@@ -86,63 +88,80 @@ export default function BusinessHours() {
     };
   };
 
+  if (isLoading) {
+    return <div className="p-6">Loading...</div>;
+  }
+
   return (
-    <div className="p-6">
-      <h1 className="text-2xl font-bold mb-6">Business Hours</h1>
-      <div className="space-y-6">
-        {DAYS_OF_WEEK.map((day, index) => {
-          const hours = getHoursForDay(index);
-          return (
-            <div key={day} className="flex items-center gap-6">
-              <div className="w-32">
-                <Label>{day}</Label>
-              </div>
-              <div className="flex items-center gap-2">
-                <Switch
-                  checked={hours.is_open}
-                  onCheckedChange={(checked) =>
-                    updateHoursMutation.mutate({
-                      dayOfWeek: index,
-                      isOpen: checked,
-                      openTime: hours.open_time,
-                      closeTime: hours.close_time,
-                    })
-                  }
-                />
-                <Label>Open</Label>
-              </div>
-              {hours.is_open && (
-                <>
-                  <Input
-                    type="time"
-                    value={hours.open_time}
-                    onChange={(e) =>
+    <div className="p-6 max-w-4xl mx-auto">
+      <div className="flex items-center gap-2 mb-6">
+        <Clock className="h-6 w-6" />
+        <h1 className="text-2xl font-bold">Business Hours</h1>
+      </div>
+      
+      <div className="bg-white rounded-lg shadow p-6">
+        <div className="space-y-6">
+          {DAYS_OF_WEEK.map((day, index) => {
+            const hours = getHoursForDay(index);
+            return (
+              <div key={day} className="flex items-center gap-6 p-4 bg-gray-50 rounded-lg">
+                <div className="w-32">
+                  <Label className="font-medium">{day}</Label>
+                </div>
+                <div className="flex items-center gap-2">
+                  <Switch
+                    checked={hours.is_open}
+                    onCheckedChange={(checked) =>
                       updateHoursMutation.mutate({
                         dayOfWeek: index,
-                        isOpen: hours.is_open,
-                        openTime: e.target.value,
+                        isOpen: checked,
+                        openTime: hours.open_time,
                         closeTime: hours.close_time,
                       })
                     }
                   />
-                  <span>to</span>
-                  <Input
-                    type="time"
-                    value={hours.close_time}
-                    onChange={(e) =>
-                      updateHoursMutation.mutate({
-                        dayOfWeek: index,
-                        isOpen: hours.is_open,
-                        openTime: hours.open_time,
-                        closeTime: e.target.value,
-                      })
-                    }
-                  />
-                </>
-              )}
-            </div>
-          );
-        })}
+                  <Label>Open</Label>
+                </div>
+                {hours.is_open && (
+                  <div className="flex items-center gap-4 flex-1">
+                    <div className="flex items-center gap-2">
+                      <Label>From</Label>
+                      <Input
+                        type="time"
+                        value={hours.open_time}
+                        onChange={(e) =>
+                          updateHoursMutation.mutate({
+                            dayOfWeek: index,
+                            isOpen: hours.is_open,
+                            openTime: e.target.value,
+                            closeTime: hours.close_time,
+                          })
+                        }
+                        className="w-32"
+                      />
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <Label>To</Label>
+                      <Input
+                        type="time"
+                        value={hours.close_time}
+                        onChange={(e) =>
+                          updateHoursMutation.mutate({
+                            dayOfWeek: index,
+                            isOpen: hours.is_open,
+                            openTime: hours.open_time,
+                            closeTime: e.target.value,
+                          })
+                        }
+                        className="w-32"
+                      />
+                    </div>
+                  </div>
+                )}
+              </div>
+            );
+          })}
+        </div>
       </div>
     </div>
   );
