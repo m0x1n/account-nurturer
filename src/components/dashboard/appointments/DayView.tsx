@@ -1,5 +1,5 @@
 import React, { Fragment, useEffect, useState } from "react";
-import { format } from "date-fns";
+import { format, addMinutes } from "date-fns";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
@@ -30,10 +30,16 @@ interface Appointment {
 }
 
 export function DayView({ currentDate, selectedStaffIds = [] }: DayViewProps) {
-  const hours = Array.from({ length: 24 }, (_, i) => i);
+  const timeSlots = Array.from({ length: 24 }, (_, i) => {
+    const hour = i;
+    return {
+      start: new Date(currentDate).setHours(hour, 0, 0, 0),
+      end: new Date(currentDate).setHours(hour + 1, 0, 0, 0),
+    };
+  });
+
   const [currentTimeTop, setCurrentTimeTop] = useState<number>(0);
 
-  // Update current time position every minute
   useEffect(() => {
     const updateCurrentTime = () => {
       const now = new Date();
@@ -43,8 +49,7 @@ export function DayView({ currentDate, selectedStaffIds = [] }: DayViewProps) {
     };
 
     updateCurrentTime();
-    const interval = setInterval(updateCurrentTime, 60000); // Update every minute
-
+    const interval = setInterval(updateCurrentTime, 60000);
     return () => clearInterval(interval);
   }, []);
 
@@ -56,9 +61,7 @@ export function DayView({ currentDate, selectedStaffIds = [] }: DayViewProps) {
         .select('id')
         .limit(1);
 
-      if (!businesses || businesses.length === 0) {
-        return [];
-      }
+      if (!businesses?.length) return [];
 
       const { data, error } = await supabase
         .from('staff_members')
@@ -78,9 +81,7 @@ export function DayView({ currentDate, selectedStaffIds = [] }: DayViewProps) {
         .select('id')
         .limit(1);
 
-      if (!businesses || businesses.length === 0) {
-        return [];
-      }
+      if (!businesses?.length) return [];
 
       const { data, error } = await supabase
         .from('appointments')
@@ -102,11 +103,11 @@ export function DayView({ currentDate, selectedStaffIds = [] }: DayViewProps) {
 
   return (
     <div className="mt-4 overflow-x-auto">
-      <div className="grid grid-cols-[80px_repeat(auto-fill,minmax(200px,1fr))] gap-0 relative min-w-[600px]">
-        {/* Header row */}
-        <div className="sticky top-0 left-0 z-30 bg-background border-b p-4">
-          <span className="text-sm text-muted-foreground">Time</span>
-        </div>
+      <div className="grid grid-cols-[100px_repeat(auto-fill,minmax(200px,1fr))] gap-0 relative min-w-[600px]">
+        {/* Time column header */}
+        <div className="sticky top-0 left-0 z-30 bg-background h-16 border-b" />
+        
+        {/* Staff headers */}
         {filteredStaff.map(staff => (
           <div key={staff.id} className="sticky top-0 z-20 bg-background border-b p-4 text-center">
             <div className="flex flex-col items-center gap-2">
@@ -120,28 +121,28 @@ export function DayView({ currentDate, selectedStaffIds = [] }: DayViewProps) {
         ))}
         
         {/* Time slots */}
-        {hours.map(hour => (
-          <Fragment key={hour}>
-            <div className="sticky left-0 bg-background z-10 border-r pr-2 py-3">
-              <div className="text-sm text-muted-foreground text-right">
-                {format(new Date().setHours(hour, 0), 'h:mm a')}
+        {timeSlots.map(({ start }, index) => (
+          <Fragment key={start}>
+            <div className="sticky left-0 bg-background z-10 border-r h-16 flex items-center">
+              <div className="text-sm text-muted-foreground px-4 -mt-4">
+                {format(start, 'h:mm a')}
               </div>
             </div>
             {filteredStaff.map(staff => {
               const hourAppointments = appointments.filter(apt => {
                 const aptDate = new Date(apt.start_time);
-                return aptDate.getHours() === hour &&
+                return aptDate.getHours() === new Date(start).getHours() &&
                   format(aptDate, 'yyyy-MM-dd') === format(currentDate, 'yyyy-MM-dd') &&
                   apt.staff_id === staff.id;
               });
 
               return (
-                <div key={`${hour}-${staff.id}`} className="min-h-[60px] border-b border-r relative">
+                <div key={`${start}-${staff.id}`} className="h-16 border-b border-r relative">
                   {hourAppointments.map(apt => {
                     const startTime = new Date(apt.start_time);
                     const endTime = new Date(apt.end_time);
                     const durationInMinutes = (endTime.getTime() - startTime.getTime()) / (1000 * 60);
-                    const heightInPixels = (durationInMinutes / 60) * 60; // 60px per hour
+                    const heightInPixels = (durationInMinutes / 60) * 64; // 64px per hour (h-16)
 
                     return (
                       <div
@@ -149,17 +150,17 @@ export function DayView({ currentDate, selectedStaffIds = [] }: DayViewProps) {
                         className={cn(
                           "absolute left-0 right-0 mx-1 p-2 rounded-md text-sm",
                           "bg-primary/10 hover:bg-primary/20 transition-colors",
-                          "overflow-hidden text-left cursor-pointer"
+                          "overflow-hidden text-left cursor-pointer shadow-sm"
                         )}
                         style={{
                           height: `${heightInPixels}px`,
-                          top: `${(startTime.getMinutes() / 60) * 100}%`,
+                          top: `${(startTime.getMinutes() / 60) * 64}px`, // 64px per hour (h-16)
                         }}
                       >
-                        <div className="font-medium">
+                        <div className="font-medium truncate">
                           {apt.client?.first_name} {apt.client?.last_name}
                         </div>
-                        <div className="text-xs text-muted-foreground">
+                        <div className="text-xs text-muted-foreground truncate">
                           {apt.service?.name}
                         </div>
                       </div>
