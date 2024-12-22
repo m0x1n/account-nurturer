@@ -26,8 +26,6 @@ export function CalendarHeader({
   staffMembers = [],
 }: CalendarHeaderProps) {
   const isToday = format(currentDate, 'yyyy-MM-dd') === format(new Date(), 'yyyy-MM-dd');
-  const safeStaffMembers = staffMembers || [];
-  const safeSelectedStaffIds = selectedStaffIds || [];
 
   const handlePrevious = () => {
     const newDate = new Date(currentDate);
@@ -50,7 +48,7 @@ export function CalendarHeader({
   };
 
   const handleStaffSelect = (staffId: string) => {
-    if (!safeStaffMembers.length) return;
+    if (!staffMembers.length) return;
 
     if (view === 'week') {
       // In week view, only allow single selection
@@ -58,24 +56,17 @@ export function CalendarHeader({
     } else {
       // In day view, handle multi-select
       if (staffId === 'all') {
-        if (safeSelectedStaffIds.length === safeStaffMembers.length) {
-          // If all are selected, deselect all
-          onStaffChange([]);
-        } else {
-          // Select all staff members
-          onStaffChange(safeStaffMembers.map(staff => staff.id));
-        }
+        onStaffChange(selectedStaffIds.length === staffMembers.length ? [] : staffMembers.map(staff => staff.id));
       } else {
-        // Toggle individual staff selection
-        const newSelection = safeSelectedStaffIds.includes(staffId)
-          ? safeSelectedStaffIds.filter(id => id !== staffId)
-          : [...safeSelectedStaffIds, staffId];
+        const newSelection = selectedStaffIds.includes(staffId)
+          ? selectedStaffIds.filter(id => id !== staffId)
+          : [...selectedStaffIds, staffId];
         onStaffChange(newSelection);
       }
     }
   };
 
-  const allSelected = safeStaffMembers.length > 0 && safeSelectedStaffIds.length === safeStaffMembers.length;
+  const allSelected = staffMembers.length > 0 && selectedStaffIds.length === staffMembers.length;
 
   return (
     <div className="flex items-center justify-between mb-4">
@@ -114,17 +105,17 @@ export function CalendarHeader({
             Week
           </Button>
         </div>
-        {safeStaffMembers.length > 0 && (
+        {staffMembers.length > 0 && (
           view === 'week' ? (
             <Select
-              value={safeSelectedStaffIds[0] || ''}
+              value={selectedStaffIds[0] || ''}
               onValueChange={(value) => onStaffChange([value])}
             >
               <SelectTrigger className="w-[200px]">
                 <SelectValue placeholder="Select staff member" />
               </SelectTrigger>
               <SelectContent>
-                {safeStaffMembers.map((staff) => (
+                {staffMembers.map((staff) => (
                   <SelectItem key={staff.id} value={staff.id}>
                     {staff.first_name} {staff.last_name}
                   </SelectItem>
@@ -136,9 +127,9 @@ export function CalendarHeader({
               <PopoverTrigger asChild>
                 <Button variant="outline" role="combobox" className="w-[200px] justify-between">
                   <span>
-                    {safeSelectedStaffIds.length === 0
+                    {selectedStaffIds.length === 0
                       ? "Select staff members"
-                      : `${safeSelectedStaffIds.length} selected`}
+                      : `${selectedStaffIds.length} selected`}
                   </span>
                   <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
                 </Button>
@@ -161,7 +152,7 @@ export function CalendarHeader({
                         <span>Select All</span>
                       </div>
                     </CommandItem>
-                    {safeStaffMembers.map((staff) => (
+                    {staffMembers.map((staff) => (
                       <CommandItem
                         key={staff.id}
                         onSelect={() => handleStaffSelect(staff.id)}
@@ -170,9 +161,9 @@ export function CalendarHeader({
                         <div className="flex items-center gap-2">
                           <div className={cn(
                             "flex h-4 w-4 items-center justify-center rounded-sm border border-primary",
-                            safeSelectedStaffIds.includes(staff.id) ? "bg-primary text-primary-foreground" : "opacity-50"
+                            selectedStaffIds.includes(staff.id) ? "bg-primary text-primary-foreground" : "opacity-50"
                           )}>
-                            {safeSelectedStaffIds.includes(staff.id) && <Check className="h-3 w-3" />}
+                            {selectedStaffIds.includes(staff.id) && <Check className="h-3 w-3" />}
                           </div>
                           <span>{staff.first_name} {staff.last_name}</span>
                         </div>

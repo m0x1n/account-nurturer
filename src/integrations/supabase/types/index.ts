@@ -1,85 +1,9 @@
-export type Json =
-  | string
-  | number
-  | boolean
-  | null
-  | { [key: string]: Json | undefined }
-  | Json[]
+import { AppointmentTypes } from './appointments';
 
 export type Database = {
   public: {
     Tables: {
-      appointments: {
-        Row: {
-          business_id: string | null
-          client_id: string | null
-          created_at: string
-          end_time: string
-          id: string
-          notes: string | null
-          service_id: string | null
-          staff_id: string | null
-          start_time: string
-          status: string | null
-          updated_at: string
-        }
-        Insert: {
-          business_id?: string | null
-          client_id?: string | null
-          created_at?: string
-          end_time: string
-          id?: string
-          notes?: string | null
-          service_id?: string | null
-          staff_id?: string | null
-          start_time: string
-          status?: string | null
-          updated_at?: string
-        }
-        Update: {
-          business_id?: string | null
-          client_id?: string | null
-          created_at?: string
-          end_time?: string
-          id?: string
-          notes?: string | null
-          service_id?: string | null
-          staff_id?: string | null
-          start_time?: string
-          status?: string | null
-          updated_at?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: "appointments_business_id_fkey"
-            columns: ["business_id"]
-            isOneToOne: false
-            referencedRelation: "businesses"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "appointments_client_id_fkey"
-            columns: ["client_id"]
-            isOneToOne: false
-            referencedRelation: "clients"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "appointments_service_id_fkey"
-            columns: ["service_id"]
-            isOneToOne: false
-            referencedRelation: "services"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "appointments_staff_id_fkey"
-            columns: ["staff_id"]
-            isOneToOne: false
-            referencedRelation: "staff_members"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
+      appointments: AppointmentTypes
       bank_accounts: {
         Row: {
           account_number: string
@@ -115,7 +39,7 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "businesses"
             referencedColumns: ["id"]
-          },
+          }
         ]
       }
       booking_links: {
@@ -150,7 +74,7 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "businesses"
             referencedColumns: ["id"]
-          },
+          }
         ]
       }
       business_hours: {
@@ -191,7 +115,7 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "businesses"
             referencedColumns: ["id"]
-          },
+          }
         ]
       }
       businesses: {
@@ -235,7 +159,7 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "profiles"
             referencedColumns: ["id"]
-          },
+          }
         ]
       }
       clients: {
@@ -254,7 +178,7 @@ export type Database = {
           created_at?: string
           email?: string | null
           first_name: string
-          id?: string
+          id: string
           last_name: string
           phone?: string | null
           updated_at?: string
@@ -276,7 +200,7 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "businesses"
             referencedColumns: ["id"]
-          },
+          }
         ]
       }
       profiles: {
@@ -295,19 +219,19 @@ export type Database = {
           completed_onboarding?: boolean | null
           created_at?: string
           email_verified?: boolean | null
-          first_name?: string | null
+          first_name: string | null
           id: string
           last_name?: string | null
           phone?: string | null
           phone_verified?: boolean | null
-          updated_at?: string
+          updated_at: string
         }
         Update: {
           completed_onboarding?: boolean | null
           created_at?: string
           email_verified?: boolean | null
           first_name?: string | null
-          id?: string
+          id: string
           last_name?: string | null
           phone?: string | null
           phone_verified?: boolean | null
@@ -362,7 +286,7 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "businesses"
             referencedColumns: ["id"]
-          },
+          }
         ]
       }
       staff_members: {
@@ -385,7 +309,7 @@ export type Database = {
           created_at?: string
           email?: string | null
           first_name: string
-          id?: string
+          id: string
           last_name: string
           phone?: string | null
           profile_image_url?: string | null
@@ -398,7 +322,7 @@ export type Database = {
           created_at?: string
           email?: string | null
           first_name?: string
-          id?: string
+          id: string
           last_name?: string
           phone?: string | null
           profile_image_url?: string | null
@@ -412,7 +336,7 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "businesses"
             referencedColumns: ["id"]
-          },
+          }
         ]
       }
     }
@@ -436,8 +360,6 @@ export type Database = {
   }
 }
 
-type PublicSchema = Database[Extract<keyof Database, "public">]
-
 export type Tables<
   PublicTableNameOrOptions extends
     | keyof (PublicSchema["Tables"] & PublicSchema["Views"])
@@ -457,11 +379,13 @@ export type Tables<
         PublicSchema["Views"])
     ? (PublicSchema["Tables"] &
         PublicSchema["Views"])[PublicTableNameOrOptions] extends {
-        Row: infer R
-      }
+      Row: infer R
+    }
       ? R
       : never
     : never
+
+type PublicSchema = Database[Extract<keyof Database, "public">]
 
 export type TablesInsert<
   PublicTableNameOrOptions extends
