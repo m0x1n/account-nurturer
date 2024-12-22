@@ -11,13 +11,23 @@ const Index = () => {
         <p className="text-xl text-gray-600 max-w-md mx-auto">
           Start your journey with us and set up your business in minutes.
         </p>
-        <Button
-          size="lg"
-          onClick={() => navigate("/onboarding")}
-          className="px-8 py-6 text-lg"
-        >
-          Get Started
-        </Button>
+        <div className="flex flex-col sm:flex-row gap-4 justify-center">
+          <Button
+            size="lg"
+            onClick={() => navigate("/onboarding")}
+            className="px-8 py-6 text-lg"
+          >
+            Get Started
+          </Button>
+          <Button
+            size="lg"
+            variant="outline"
+            onClick={() => navigate("/login")}
+            className="px-8 py-6 text-lg"
+          >
+            Sign In
+          </Button>
+        </div>
       </div>
     </div>
   );
