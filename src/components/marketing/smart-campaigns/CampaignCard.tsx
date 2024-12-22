@@ -61,8 +61,10 @@ export function CampaignCard({
                     <TooltipTrigger asChild>
                       <Info className="h-4 w-4 text-muted-foreground cursor-help" />
                     </TooltipTrigger>
-                    <TooltipContent className="max-w-[400px] p-4">
-                      <p className="text-sm leading-relaxed">
+                    <TooltipContent 
+                      className="max-w-[400px] p-4 bg-white border shadow-lg rounded-lg"
+                    >
+                      <p className="text-sm text-gray-700 leading-relaxed">
                         {lastMinuteInfo}
                       </p>
                     </TooltipContent>
