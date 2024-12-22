@@ -19,11 +19,11 @@ interface CalendarHeaderProps {
 export function CalendarHeader({
   currentDate,
   view,
-  selectedStaffIds = [],
+  selectedStaffIds = [], // Provide default empty array
   onDateChange,
   onViewChange,
   onStaffChange,
-  staffMembers = [],
+  staffMembers = [], // Provide default empty array
 }: CalendarHeaderProps) {
   const isToday = format(currentDate, 'yyyy-MM-dd') === format(new Date(), 'yyyy-MM-dd');
 
@@ -48,21 +48,19 @@ export function CalendarHeader({
   };
 
   const handleStaffSelect = (staffId: string) => {
-    if (view === 'week') {
-      // In week view, only allow single selection
-      onStaffChange([staffId]);
-    } else {
-      // In day view, handle multi-select
-      if (staffId === 'all') {
-        if (selectedStaffIds.length === staffMembers.length) {
-          // If all are selected, deselect all
-          onStaffChange([]);
-        } else {
-          // Select all staff members
-          onStaffChange(staffMembers.map(staff => staff.id));
-        }
+    if (staffId === 'all') {
+      // If "Select All" is clicked
+      if (selectedStaffIds.length === staffMembers.length) {
+        // If all are selected, deselect all
+        onStaffChange([]);
       } else {
-        // Toggle individual staff selection
+        // Select all staff members
+        onStaffChange(staffMembers.map(staff => staff.id));
+      }
+    } else {
+      if (view === 'week') {
+        onStaffChange([staffId]);
+      } else {
         const newSelection = selectedStaffIds.includes(staffId)
           ? selectedStaffIds.filter(id => id !== staffId)
           : [...selectedStaffIds, staffId];
