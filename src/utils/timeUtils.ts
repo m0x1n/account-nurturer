@@ -5,9 +5,16 @@ export const calculateCurrentTimePosition = () => {
   const hours = now.getHours();
   const minutes = now.getMinutes();
   
-  // Each hour slot is 64px tall (h-16 in Tailwind)
-  // Convert current time to percentage of total day height
-  return ((hours + minutes / 60) / 24) * 100;
+  // Calculate percentage
+  const percentage = ((hours + minutes / 60) / 24) * 100;
+  
+  // Debug logs
+  console.log('Current local time:', format(now, 'h:mm a'));
+  console.log('Hours:', hours, 'Minutes:', minutes);
+  console.log('Calculated percentage:', percentage);
+  console.log('This should position the line at approximately', Math.floor(percentage / 100 * 24), 'hours');
+  
+  return percentage;
 };
 
 export const formatTimeLabel = (date: Date) => {
