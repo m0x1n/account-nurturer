@@ -101,12 +101,12 @@ export default function SetupChecklist() {
     enabled: !!businessData?.id,
   });
 
-  const checklistItems = [
+  const checklistItems: ChecklistItem[] = [
     {
       id: "business-hours",
       title: "Set Your Business Hours",
       description: "Define your working days and hours",
-      route: "/dashboard/business-hours",
+      route: "/dashboard/settings/business-hours",
       completed: businessHours && businessHours.length > 0,
     },
     {
@@ -135,13 +135,13 @@ export default function SetupChecklist() {
       title: "Import Client Records",
       description: "Import your existing client records via CSV",
       route: "/dashboard/clients/import",
-      completed: false, // Will be implemented when the import feature is added
+      completed: false,
     },
     {
       id: "booking-link",
       title: "Share Booking Link",
       description: "Get your booking link to share with clients",
-      route: "/dashboard/booking-link",
+      route: "/dashboard/settings/booking-link",
       completed: !!bookingLink,
     },
   ];
