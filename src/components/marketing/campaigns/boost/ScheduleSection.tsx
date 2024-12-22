@@ -16,14 +16,13 @@ export function ScheduleSection({ days, onDayToggle }: ScheduleProps) {
   return (
     <div className="space-y-4">
       <Label className="text-sm font-medium">When do you need a boost?</Label>
-      <div className="space-y-2">
+      <div className="space-y-2 mt-2">
         {days.map((day, index) => (
           <div 
-            // Use date as key since it's unique for each day
             key={day.date} 
-            className="flex items-center justify-between"
+            className="flex items-center justify-between py-2 border-b border-gray-100 last:border-0"
           >
-            <span className="text-sm">{day.formatted}</span>
+            <span className="text-sm text-gray-700">{day.formatted}</span>
             <Switch
               checked={day.enabled}
               onCheckedChange={() => onDayToggle(index)}
@@ -31,7 +30,7 @@ export function ScheduleSection({ days, onDayToggle }: ScheduleProps) {
           </div>
         ))}
       </div>
-      <p className="text-sm text-muted-foreground">
+      <p className="text-sm text-muted-foreground mt-2">
         Boost will end automatically on the last day above.
       </p>
     </div>
