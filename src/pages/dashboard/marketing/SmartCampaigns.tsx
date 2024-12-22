@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { 
   Zap,
   Rocket,
@@ -12,6 +12,9 @@ import {
 } from "lucide-react";
 import { Switch } from "@/components/ui/switch";
 import { BoostCampaignConfig } from "@/components/marketing/campaigns/BoostCampaignConfig";
+import { supabase } from "@/integrations/supabase/client";
+import { useToast } from "@/hooks/use-toast";
+import { isAfter } from "date-fns";
 
 interface Campaign {
   id: string;
@@ -24,6 +27,7 @@ interface Campaign {
 }
 
 export default function SmartCampaigns() {
+  const { toast } = useToast();
   const [campaigns, setCampaigns] = useState<Campaign[]>([
     {
       id: "boost",
@@ -77,14 +81,60 @@ export default function SmartCampaigns() {
 
   const [expandedId, setExpandedId] = useState<string | null>(null);
 
-  const handleToggle = (id: string) => {
-    setCampaigns(prevCampaigns =>
-      prevCampaigns.map(campaign =>
-        campaign.id === id && !campaign.isDisabled
-          ? { ...campaign, isActive: !campaign.isActive }
-          : campaign
-      )
-    );
+  // Check for active boost campaign on mount
+  useEffect(() => {
+    checkActiveBoostCampaign();
+  }, []);
+
+  const checkActiveBoostCampaign = async () => {
+    try {
+      const { data: activeBoost } = await supabase
+        .from('marketing_campaigns')
+        .select('*, settings')
+        .eq('campaign_type', 'boost')
+        .eq('is_active', true)
+        .is('archived_at', null)
+        .single();
+
+      if (activeBoost) {
+        const settings = activeBoost.settings as any;
+        const scheduledDays = settings?.schedule || [];
+        const lastDay = scheduledDays[scheduledDays.length - 1]?.date;
+        
+        // Check if the campaign is still valid (last day hasn't passed)
+        const isStillValid = lastDay && isAfter(new Date(lastDay), new Date());
+
+        setCampaigns(prevCampaigns =>
+          prevCampaigns.map(campaign =>
+            campaign.id === "boost"
+              ? { 
+                  ...campaign, 
+                  isActive: isStillValid,
+                  isDisabled: isStillValid 
+                }
+              : campaign
+          )
+        );
+      }
+    } catch (error) {
+      console.error('Error checking active boost campaign:', error);
+    }
+  };
+
+  const handleToggle = async (id: string) => {
+    if (id === "boost") {
+      // For boost campaign, we'll let the BoostCampaignConfig handle the toggle
+      // through its onSaveSuccess callback
+      setExpandedId(id);
+    } else {
+      setCampaigns(prevCampaigns =>
+        prevCampaigns.map(campaign =>
+          campaign.id === id && !campaign.isDisabled
+            ? { ...campaign, isActive: !campaign.isActive }
+            : campaign
+        )
+      );
+    }
   };
 
   const handleExpand = (id: string) => {
@@ -99,6 +149,17 @@ export default function SmartCampaigns() {
           : campaign
       )
     );
+    
+    // Close the configuration panel
+    setExpandedId(null);
+
+    // Show success message
+    toast({
+      title: isActive ? "Boost Campaign Activated" : "Boost Campaign Saved",
+      description: isActive 
+        ? "Your boost campaign is now running" 
+        : "Your boost campaign has been saved",
+    });
   };
 
   return (
