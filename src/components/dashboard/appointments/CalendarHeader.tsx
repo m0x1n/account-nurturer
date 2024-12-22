@@ -26,6 +26,8 @@ export function CalendarHeader({
   staffMembers = [],
 }: CalendarHeaderProps) {
   const isToday = format(currentDate, 'yyyy-MM-dd') === format(new Date(), 'yyyy-MM-dd');
+  const safeStaffMembers = staffMembers || [];
+  const safeSelectedStaffIds = selectedStaffIds || [];
 
   const handlePrevious = () => {
     const newDate = new Date(currentDate);
@@ -54,24 +56,27 @@ export function CalendarHeader({
     } else {
       // In day view, handle multi-select
       if (staffId === 'all') {
-        if (selectedStaffIds.length === staffMembers.length) {
+        if (safeSelectedStaffIds.length === safeStaffMembers.length) {
           // If all are selected, deselect all
           onStaffChange([]);
         } else {
           // Select all staff members
-          onStaffChange(staffMembers.map(staff => staff.id));
+          onStaffChange(safeStaffMembers.map(staff => staff.id));
         }
       } else {
         // Toggle individual staff selection
-        const newSelection = selectedStaffIds.includes(staffId)
-          ? selectedStaffIds.filter(id => id !== staffId)
-          : [...selectedStaffIds, staffId];
+        const newSelection = safeSelectedStaffIds.includes(staffId)
+          ? safeSelectedStaffIds.filter(id => id !== staffId)
+          : [...safeSelectedStaffIds, staffId];
         onStaffChange(newSelection);
       }
     }
   };
 
-  const allSelected = staffMembers.length > 0 && selectedStaffIds.length === staffMembers.length;
+  const allSelected = safeStaffMembers.length > 0 && safeSelectedStaffIds.length === safeStaffMembers.length;
+
+  console.log('Staff Members:', safeStaffMembers);
+  console.log('Selected Staff IDs:', safeSelectedStaffIds);
 
   return (
     <div className="flex items-center justify-between mb-4">
@@ -112,14 +117,14 @@ export function CalendarHeader({
         </div>
         {view === 'week' ? (
           <Select
-            value={selectedStaffIds[0] || ''}
+            value={safeSelectedStaffIds[0] || ''}
             onValueChange={(value) => onStaffChange([value])}
           >
             <SelectTrigger className="w-[200px]">
               <SelectValue placeholder="Select staff member" />
             </SelectTrigger>
             <SelectContent>
-              {staffMembers.map((staff) => (
+              {safeStaffMembers.map((staff) => (
                 <SelectItem key={staff.id} value={staff.id}>
                   {staff.first_name} {staff.last_name}
                 </SelectItem>
@@ -131,9 +136,9 @@ export function CalendarHeader({
             <PopoverTrigger asChild>
               <Button variant="outline" role="combobox" className="w-[200px] justify-between">
                 <span>
-                  {selectedStaffIds.length === 0
+                  {safeSelectedStaffIds.length === 0
                     ? "Select staff members"
-                    : `${selectedStaffIds.length} selected`}
+                    : `${safeSelectedStaffIds.length} selected`}
                 </span>
                 <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
               </Button>
@@ -156,7 +161,7 @@ export function CalendarHeader({
                       <span>Select All</span>
                     </div>
                   </CommandItem>
-                  {staffMembers.map((staff) => (
+                  {safeStaffMembers.map((staff) => (
                     <CommandItem
                       key={staff.id}
                       onSelect={() => handleStaffSelect(staff.id)}
@@ -165,9 +170,9 @@ export function CalendarHeader({
                       <div className="flex items-center gap-2">
                         <div className={cn(
                           "flex h-4 w-4 items-center justify-center rounded-sm border border-primary",
-                          selectedStaffIds.includes(staff.id) ? "bg-primary text-primary-foreground" : "opacity-50"
+                          safeSelectedStaffIds.includes(staff.id) ? "bg-primary text-primary-foreground" : "opacity-50"
                         )}>
-                          {selectedStaffIds.includes(staff.id) && <Check className="h-3 w-3" />}
+                          {safeSelectedStaffIds.includes(staff.id) && <Check className="h-3 w-3" />}
                         </div>
                         <span>{staff.first_name} {staff.last_name}</span>
                       </div>
