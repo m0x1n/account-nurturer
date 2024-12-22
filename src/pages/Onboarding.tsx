@@ -26,7 +26,7 @@ const Onboarding = () => {
     const checkSession = async () => {
       const { data: { session } } = await supabase.auth.getSession();
       if (!session) {
-        navigate('/login');
+        navigate('/');
         return;
       }
       // Pre-fill email if available
@@ -66,10 +66,10 @@ const Onboarding = () => {
     if (step < totalSteps) {
       setStep((prev) => prev + 1);
     } else {
-      // Handle completion
+      // Handle completion - redirect to dashboard
       toast({
-        title: "Onboarding Complete!",
-        description: "Welcome to the platform. Let's get started!",
+        title: "Welcome!",
+        description: "Your account has been set up. Let's get started!",
       });
       navigate("/dashboard");
     }

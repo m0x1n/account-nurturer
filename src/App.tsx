@@ -19,6 +19,7 @@ const App = () => (
           <Route path="/" element={<Index />} />
           <Route path="/login" element={<Login />} />
           <Route path="/onboarding" element={<Onboarding />} />
+          <Route path="/dashboard/*" element={<div>Dashboard coming soon...</div>} />
         </Routes>
       </BrowserRouter>
     </QueryClientProvider>

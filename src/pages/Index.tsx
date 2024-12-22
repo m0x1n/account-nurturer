@@ -4,6 +4,14 @@ import { Button } from "@/components/ui/button";
 const Index = () => {
   const navigate = useNavigate();
 
+  const handleGetStarted = () => {
+    navigate("/onboarding");
+  };
+
+  const handleSignIn = () => {
+    navigate("/login");
+  };
+
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-b from-gray-50 to-gray-100">
       <div className="text-center space-y-8 p-8">
@@ -14,7 +22,7 @@ const Index = () => {
         <div className="flex flex-col sm:flex-row gap-4 justify-center">
           <Button
             size="lg"
-            onClick={() => navigate("/onboarding")}
+            onClick={handleGetStarted}
             className="px-8 py-6 text-lg"
           >
             Get Started
@@ -22,7 +30,7 @@ const Index = () => {
           <Button
             size="lg"
             variant="outline"
-            onClick={() => navigate("/login")}
+            onClick={handleSignIn}
             className="px-8 py-6 text-lg"
           >
             Sign In
