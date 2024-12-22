@@ -135,12 +135,13 @@ export function CalendarHeader({
                   : `${selectedStaffIds.length} selected`}
               </Button>
             </PopoverTrigger>
-            <PopoverContent className="w-[200px] p-0">
+            <PopoverContent className="w-[200px] p-0" align="end">
               <Command>
-                <CommandEmpty>No staff found.</CommandEmpty>
                 <CommandGroup>
                   <CommandItem
+                    value="all"
                     onSelect={() => handleStaffSelect('all')}
+                    className="cursor-pointer"
                   >
                     <Check
                       className={cn(
@@ -153,7 +154,9 @@ export function CalendarHeader({
                   {staffMembers.map((staff) => (
                     <CommandItem
                       key={staff.id}
+                      value={staff.id}
                       onSelect={() => handleStaffSelect(staff.id)}
+                      className="cursor-pointer"
                     >
                       <Check
                         className={cn(
