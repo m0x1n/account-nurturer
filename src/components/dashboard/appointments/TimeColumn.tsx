@@ -30,7 +30,7 @@ export function TimeColumn({ currentDate, currentTimeTop }: TimeColumnProps) {
       {format(currentDate, 'yyyy-MM-dd') === format(new Date(), 'yyyy-MM-dd') && (
         <div 
           className="absolute left-0 right-0 z-20 flex items-center"
-          style={{ top: `${currentTimeTop}px` }}
+          style={{ top: `${currentTimeTop}px`, transform: 'translateY(-50%)' }}
         >
           <div className="bg-red-500 text-white text-xs px-2 py-1 rounded-full ml-auto mr-2">
             {formatTimeLabel(new Date())}

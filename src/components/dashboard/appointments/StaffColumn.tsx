@@ -32,7 +32,7 @@ export function StaffColumn({ staff, appointments, currentDate, currentTimeTop }
       {format(currentDate, 'yyyy-MM-dd') === format(new Date(), 'yyyy-MM-dd') && (
         <div 
           className="absolute left-0 right-0 z-10"
-          style={{ top: `${currentTimeTop}px` }}
+          style={{ top: `${currentTimeTop}px`, transform: 'translateY(-50%)' }}
         >
           <div className="w-full h-px bg-red-500" />
         </div>
