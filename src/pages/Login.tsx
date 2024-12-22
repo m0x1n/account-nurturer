@@ -7,6 +7,7 @@ import { useToast } from "@/hooks/use-toast";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { handleAuthStateChange } from "@/utils/authUtils";
 
 const Login = () => {
   const navigate = useNavigate();
@@ -21,34 +22,8 @@ const Login = () => {
     sessionStorage.clear();
     
     const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
-      if (event === 'SIGNED_IN' && session) {
-        // Check if user has completed onboarding
-        const { data: profile } = await supabase
-          .from('profiles')
-          .select('completed_onboarding')
-          .eq('id', session.user.id)
-          .single();
-
-        if (profile?.completed_onboarding) {
-          navigate("/dashboard");
-        } else {
-          navigate("/onboarding");
-        }
-      }
-      if (event === 'USER_UPDATED' && session) {
-        // Same logic for user updates
-        const { data: profile } = await supabase
-          .from('profiles')
-          .select('completed_onboarding')
-          .eq('id', session.user.id)
-          .single();
-
-        if (profile?.completed_onboarding) {
-          navigate("/dashboard");
-        } else {
-          navigate("/onboarding");
-        }
-      }
+      await handleAuthStateChange(event, session, supabase, navigate);
+      
       if (event === 'SIGNED_OUT') {
         toast({
           title: "Signed out",
