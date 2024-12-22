@@ -35,16 +35,13 @@ const Onboarding = () => {
       try {
         const { data: { session } } = await supabase.auth.getSession();
         
-        if (!session) {
-          navigate("/login");
-          return;
+        // Only set the email if there's a session
+        if (session?.user?.email) {
+          setFormData(prev => ({
+            ...prev,
+            email: session.user.email,
+          }));
         }
-
-        // Set the email from the session
-        setFormData(prev => ({
-          ...prev,
-          email: session.user.email || "",
-        }));
         
         setIsLoading(false);
       } catch (error) {
@@ -54,7 +51,7 @@ const Onboarding = () => {
           description: "Failed to check authentication status",
           variant: "destructive",
         });
-        navigate("/login");
+        setIsLoading(false);
       }
     };
 
@@ -62,8 +59,11 @@ const Onboarding = () => {
 
     // Set up auth state change listener
     const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
-      if (event === 'SIGNED_OUT') {
-        navigate("/login");
+      if (session?.user?.email) {
+        setFormData(prev => ({
+          ...prev,
+          email: session.user.email || "",
+        }));
       }
     });
 
