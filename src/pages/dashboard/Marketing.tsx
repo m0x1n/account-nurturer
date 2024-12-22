@@ -1,9 +1,6 @@
-import { Mail, MessageSquare, Star, Gift, Smartphone, HeadphonesIcon, MousePointerClick, Share2, Globe, BarChart3, Megaphone, Target } from "lucide-react";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { BarChart3, Gift, Megaphone, Share2, Target } from "lucide-react";
 import { MarketingCard } from "@/components/marketing/MarketingCard";
 import { MarketingSection } from "@/components/marketing/MarketingSection";
-import { EmailMarketing } from "@/components/marketing/EmailMarketing";
-import { SMSMarketing } from "@/components/marketing/SMSMarketing";
 
 export default function Marketing() {
   return (
@@ -23,46 +20,43 @@ export default function Marketing() {
             icon={Target}
             title="Engage"
             description="Connect with your customers through personalized campaigns"
+            features={[
+              "Create targeted email campaigns",
+              "Send personalized SMS messages",
+              "Schedule automated follow-ups"
+            ]}
           />
           <MarketingCard
             icon={Gift}
             title="Promote"
             description="Create and manage special offers and promotions"
+            features={[
+              "Design special offers and discounts",
+              "Create loyalty programs",
+              "Track promotion performance"
+            ]}
           />
           <MarketingCard
             icon={BarChart3}
             title="Analyze"
             description="Track the performance of your marketing efforts"
+            features={[
+              "Monitor campaign metrics",
+              "Track customer engagement",
+              "Measure ROI on promotions"
+            ]}
           />
           <MarketingCard
             icon={Share2}
             title="Share"
             description="Spread the word about your business on social media"
+            features={[
+              "Share updates on social media",
+              "Create engaging content",
+              "Build your online presence"
+            ]}
           />
         </MarketingSection>
-      </div>
-
-      {/* Campaign Management Section */}
-      <div className="mt-8">
-        <h2 className="text-lg font-semibold mb-4">Campaign Management</h2>
-        <Tabs defaultValue="email" className="space-y-6">
-          <TabsList className="grid w-full grid-cols-2 h-auto gap-4 bg-transparent">
-            <TabsTrigger value="email" className="data-[state=active]:bg-primary data-[state=active]:text-white">
-              Email Marketing
-            </TabsTrigger>
-            <TabsTrigger value="sms" className="data-[state=active]:bg-primary data-[state=active]:text-white">
-              SMS Marketing
-            </TabsTrigger>
-          </TabsList>
-
-          <TabsContent value="email">
-            <EmailMarketing />
-          </TabsContent>
-
-          <TabsContent value="sms">
-            <SMSMarketing />
-          </TabsContent>
-        </Tabs>
       </div>
     </div>
   );
