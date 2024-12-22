@@ -1,6 +1,7 @@
 import { Navigate, Route, Routes } from "react-router-dom";
 import { DashboardSidebar } from "./DashboardSidebar";
 import { DashboardContent } from "./DashboardContent";
+import { AppointmentsContent } from "./AppointmentsContent";
 import Staff from "@/pages/dashboard/Staff";
 import Clients from "@/pages/dashboard/Clients";
 import SetupChecklist from "@/components/setup/SetupChecklist";
@@ -50,7 +51,7 @@ const DashboardLayout = () => {
             <Route path="staff" element={<Staff />} />
             <Route path="clients" element={<Clients />} />
             <Route path="services" element={<ServicesAndProducts />} />
-            <Route path="appointments" element={<DashboardContent />} />
+            <Route path="appointments" element={<AppointmentsContent />} />
             <Route path="pos" element={<POS />} />
             <Route path="insights" element={<Insights />} />
             <Route path="marketing" element={<Marketing />} />
