@@ -18,7 +18,7 @@ export function OfferSection({
     <div className="space-y-4">
       <Label className="text-sm font-medium">Offer</Label>
       <div className="flex gap-2">
-        {["percent", "amount", "custom", "package"].map((type) => (
+        {["percent", "amount"].map((type) => (
           <button
             key={type}
             onClick={() => onDiscountTypeChange(type)}
@@ -28,10 +28,7 @@ export function OfferSection({
                 : "bg-secondary"
             }`}
           >
-            {type === "percent" ? "Percent Off" : 
-             type === "amount" ? "Money Off" : 
-             type === "package" ? "Package/Membership" : 
-             "Custom"}
+            {type === "percent" ? "Percent Off" : "Money Off"}
           </button>
         ))}
       </div>
