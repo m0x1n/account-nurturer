@@ -6,7 +6,7 @@ import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 
 interface PhoneStepProps {
-  formData: { phone: string };
+  formData: { phone: string; email: string };
   updateFormData: (data: { phone: string }) => void;
   onNext: () => void;
   onBack: () => void;
@@ -48,26 +48,49 @@ const PhoneStep = ({ formData, updateFormData, onNext, onBack }: PhoneStepProps)
       return;
     }
 
-    // Update phone in auth if different
-    const { data: { user } } = await supabase.auth.getUser();
-    if (user?.phone !== phone) {
-      const { error } = await supabase.auth.updateUser({ phone });
-      if (error) {
+    try {
+      // First, sign up the user with email if they don't have a session
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) {
+        const { error: signUpError } = await supabase.auth.signUp({
+          email: formData.email,
+          password: crypto.randomUUID(), // Generate a random password
+        });
+
+        if (signUpError) {
+          toast({
+            title: "Error",
+            description: signUpError.message,
+            variant: "destructive",
+          });
+          return;
+        }
+      }
+
+      // Now update the phone number
+      const { error: updateError } = await supabase.auth.updateUser({ phone });
+      if (updateError) {
         toast({
           title: "Error",
-          description: error.message,
+          description: updateError.message,
           variant: "destructive",
         });
         return;
       }
-    }
 
-    // Simulate sending OTP
-    toast({
-      title: "OTP Sent",
-      description: "Please check your phone for the verification code",
-    });
-    setShowOtp(true);
+      // Simulate sending OTP
+      toast({
+        title: "OTP Sent",
+        description: "Please check your phone for the verification code",
+      });
+      setShowOtp(true);
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to send verification code",
+        variant: "destructive",
+      });
+    }
   };
 
   const handleVerifyOtp = async (e: React.FormEvent) => {
@@ -81,26 +104,34 @@ const PhoneStep = ({ formData, updateFormData, onNext, onBack }: PhoneStepProps)
       return;
     }
 
-    // In a real app, verify the OTP with Supabase
-    // For now, we'll simulate verification
-    const { data: { user } } = await supabase.auth.getUser();
-    if (user) {
-      const { error } = await supabase
-        .from('profiles')
-        .update({ phone, phone_verified: true })
-        .eq('id', user.id);
+    try {
+      // In a real app, verify the OTP with Supabase
+      // For now, we'll simulate verification
+      const { data: { user } } = await supabase.auth.getUser();
+      if (user) {
+        const { error } = await supabase
+          .from('profiles')
+          .update({ phone, phone_verified: true })
+          .eq('id', user.id);
 
-      if (error) {
-        toast({
-          title: "Error",
-          description: "Failed to verify phone number",
-          variant: "destructive",
-        });
-        return;
+        if (error) {
+          toast({
+            title: "Error",
+            description: "Failed to verify phone number",
+            variant: "destructive",
+          });
+          return;
+        }
+
+        updateFormData({ phone });
+        onNext();
       }
-
-      updateFormData({ phone });
-      onNext();
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to verify phone number",
+        variant: "destructive",
+      });
     }
   };
 
