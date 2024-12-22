@@ -5,16 +5,19 @@ export const calculateCurrentTimePosition = () => {
   const hours = now.getHours();
   const minutes = now.getMinutes();
   
-  // Calculate percentage
-  const percentage = ((hours + minutes / 60) / 24) * 100;
+  // Each hour block is 64px (h-16 = 4rem = 64px)
+  // Calculate pixels from midnight
+  const totalMinutesSinceMidnight = hours * 60 + minutes;
+  const pixelsPerMinute = 64 / 60; // 64px per hour divided by 60 minutes
+  const pixelPosition = totalMinutesSinceMidnight * pixelsPerMinute;
   
   // Debug logs
   console.log('Current local time:', format(now, 'h:mm a'));
   console.log('Hours:', hours, 'Minutes:', minutes);
-  console.log('Calculated percentage:', percentage);
-  console.log('This should position the line at approximately', Math.floor(percentage / 100 * 24), 'hours');
+  console.log('Pixels from midnight:', pixelPosition);
+  console.log('This should position the line at approximately', Math.floor(pixelPosition / 64), 'hours');
   
-  return percentage;
+  return pixelPosition;
 };
 
 export const formatTimeLabel = (date: Date) => {
