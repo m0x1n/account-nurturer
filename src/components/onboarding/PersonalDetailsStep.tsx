@@ -67,8 +67,17 @@ const PersonalDetailsStep = ({ formData, updateFormData, onNext, onBack }: Perso
       return;
     }
 
-    const { data: { user } } = await supabase.auth.getUser();
-    if (user) {
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) {
+        toast({
+          title: "Error",
+          description: "No user found",
+          variant: "destructive",
+        });
+        return;
+      }
+
       // Update the user's metadata in auth.users
       const { error: metadataError } = await supabase.auth.updateUser({
         data: { first_name: firstName, last_name: lastName }
@@ -103,7 +112,26 @@ const PersonalDetailsStep = ({ formData, updateFormData, onNext, onBack }: Perso
 
       updateFormData({ firstName, lastName });
       onNext();
+    } catch (error) {
+      console.error('Error updating profile:', error);
+      toast({
+        title: "Error",
+        description: "Failed to update profile",
+        variant: "destructive",
+      });
     }
+  };
+
+  const handleFirstNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value;
+    setFirstName(value);
+    updateFormData({ firstName: value, lastName });
+  };
+
+  const handleLastNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value;
+    setLastName(value);
+    updateFormData({ firstName, lastName: value });
   };
 
   return (
@@ -118,7 +146,7 @@ const PersonalDetailsStep = ({ formData, updateFormData, onNext, onBack }: Perso
           <Input
             id="firstName"
             value={firstName}
-            onChange={(e) => setFirstName(e.target.value)}
+            onChange={handleFirstNameChange}
             placeholder="John"
             className="w-full"
           />
@@ -128,7 +156,7 @@ const PersonalDetailsStep = ({ formData, updateFormData, onNext, onBack }: Perso
           <Input
             id="lastName"
             value={lastName}
-            onChange={(e) => setLastName(e.target.value)}
+            onChange={handleLastNameChange}
             placeholder="Doe"
             className="w-full"
           />
