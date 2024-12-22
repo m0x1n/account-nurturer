@@ -1,6 +1,7 @@
 import { Target, Zap, PenTool } from "lucide-react";
 import { MarketingCard } from "@/components/marketing/MarketingCard";
 import { MarketingSection } from "@/components/marketing/MarketingSection";
+import { CampaignsTable } from "@/components/marketing/campaigns/CampaignsTable";
 import { useNavigate } from "react-router-dom";
 
 export default function Engage() {
@@ -13,6 +14,11 @@ export default function Engage() {
         <h1 className="text-2xl font-serif font-bold bg-clip-text text-transparent bg-gradient-to-r from-primary to-primary-dark">
           Engage
         </h1>
+      </div>
+
+      <div className="mb-8">
+        <h2 className="text-lg font-semibold mb-4">Campaign Performance</h2>
+        <CampaignsTable />
       </div>
 
       <div className="mb-8">

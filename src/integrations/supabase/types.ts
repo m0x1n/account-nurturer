@@ -247,6 +247,44 @@ export type Database = {
           },
         ]
       }
+      campaign_metrics: {
+        Row: {
+          campaign_id: string | null
+          created_at: string
+          id: string
+          revenue_lift: number | null
+          updated_at: string
+          users_engaged: number | null
+          users_targeted: number | null
+        }
+        Insert: {
+          campaign_id?: string | null
+          created_at?: string
+          id?: string
+          revenue_lift?: number | null
+          updated_at?: string
+          users_engaged?: number | null
+          users_targeted?: number | null
+        }
+        Update: {
+          campaign_id?: string | null
+          created_at?: string
+          id?: string
+          revenue_lift?: number | null
+          updated_at?: string
+          users_engaged?: number | null
+          users_targeted?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "campaign_metrics_campaign_id_fkey"
+            columns: ["campaign_id"]
+            isOneToOne: false
+            referencedRelation: "marketing_campaigns"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       clients: {
         Row: {
           business_id: string | null
