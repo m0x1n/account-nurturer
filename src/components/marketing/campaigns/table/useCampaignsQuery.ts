@@ -1,6 +1,14 @@
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
-import { Campaign } from "../types/campaignTypes";
+import { Campaign, CampaignSubtype } from "../types/campaignTypes";
+
+// Helper function to ensure campaign subtype is valid
+const validateCampaignSubtype = (subtype: string | null): CampaignSubtype => {
+  const validSubtypes: CampaignSubtype[] = ['boost', 'last-minute', 'slow-days', 'limited-time', 'reminder', 'rescue', 'manual'];
+  return (subtype && validSubtypes.includes(subtype as CampaignSubtype)) 
+    ? (subtype as CampaignSubtype) 
+    : 'manual';
+};
 
 export function useCampaignsQuery() {
   const queryClient = useQueryClient();
@@ -29,10 +37,11 @@ export function useCampaignsQuery() {
 
         if (error) throw error;
         
-        // Parse the settings JSON for each campaign
+        // Parse the settings JSON and validate campaign subtype for each campaign
         return campaigns.map((campaign): Campaign => ({
           ...campaign,
-          settings: campaign.settings as unknown as Campaign['settings']
+          campaign_subtype: validateCampaignSubtype(campaign.campaign_subtype),
+          settings: campaign.settings as Campaign['settings']
         }));
       },
     }),
