@@ -14,7 +14,7 @@ interface ChecklistItem {
   completed: boolean;
 }
 
-export default function SetupChecklist() {
+const SetupChecklist = () => {
   const navigate = useNavigate();
   const [progress, setProgress] = useState(0);
 
@@ -209,4 +209,6 @@ export default function SetupChecklist() {
       </div>
     </div>
   );
-}
+};
+
+export default SetupChecklist;
