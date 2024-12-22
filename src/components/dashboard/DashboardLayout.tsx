@@ -49,7 +49,8 @@ const DashboardLayout = () => {
             <Route path="setup-checklist" element={<SetupChecklist />} />
             <Route path="staff" element={<Staff />} />
             <Route path="clients" element={<Clients />} />
-            <Route path="services-and-products" element={<ServicesAndProducts />} />
+            <Route path="services" element={<ServicesAndProducts />} />
+            <Route path="appointments" element={<DashboardContent />} />
             <Route path="pos" element={<POS />} />
             <Route path="insights" element={<Insights />} />
             <Route path="marketing" element={<Marketing />} />
