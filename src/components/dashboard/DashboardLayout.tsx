@@ -5,6 +5,8 @@ import { SidebarProvider } from "@/components/ui/sidebar";
 import { DashboardSidebar } from "./DashboardSidebar";
 import { DashboardContent } from "./DashboardContent";
 import { AppointmentsContent } from "./AppointmentsContent";
+import Staff from "@/pages/dashboard/Staff";
+import Clients from "@/pages/dashboard/Clients";
 
 const DashboardLayout = () => {
   const navigate = useNavigate();
@@ -34,6 +36,8 @@ const DashboardLayout = () => {
           <Route path="dashboard" element={<DashboardContent />} />
           <Route path="appointments" element={<AppointmentsContent />} />
           <Route path="setup-checklist" element={<div>Setup Checklist Coming Soon...</div>} />
+          <Route path="staff" element={<Staff />} />
+          <Route path="clients" element={<Clients />} />
           <Route path="*" element={<Navigate to="/dashboard" replace />} />
         </Routes>
       </div>

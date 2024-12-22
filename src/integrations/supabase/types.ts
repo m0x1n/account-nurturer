@@ -355,6 +355,56 @@ export type Database = {
           },
         ]
       }
+      staff_members: {
+        Row: {
+          bio: string | null
+          business_id: string | null
+          created_at: string
+          email: string | null
+          first_name: string
+          id: string
+          last_name: string
+          phone: string | null
+          profile_image_url: string | null
+          status: string | null
+          updated_at: string
+        }
+        Insert: {
+          bio?: string | null
+          business_id?: string | null
+          created_at?: string
+          email?: string | null
+          first_name: string
+          id?: string
+          last_name: string
+          phone?: string | null
+          profile_image_url?: string | null
+          status?: string | null
+          updated_at?: string
+        }
+        Update: {
+          bio?: string | null
+          business_id?: string | null
+          created_at?: string
+          email?: string | null
+          first_name?: string
+          id?: string
+          last_name?: string
+          phone?: string | null
+          profile_image_url?: string | null
+          status?: string | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "staff_members_business_id_fkey"
+            columns: ["business_id"]
+            isOneToOne: false
+            referencedRelation: "businesses"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Views: {
       [_ in never]: never
