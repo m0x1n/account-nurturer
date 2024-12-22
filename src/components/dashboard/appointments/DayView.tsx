@@ -102,7 +102,7 @@ export function DayView({ currentDate, selectedStaffIds = [] }: DayViewProps) {
   return (
     <div className="mt-4">
       <div className="grid grid-cols-[80px_repeat(auto-fill,minmax(200px,1fr))] gap-4 relative">
-        <div className="font-semibold">Time</div>
+        <div className="font-semibold sticky left-0 z-20 bg-background">Time</div>
         {filteredStaff.map(staff => (
           <div key={staff.id} className="font-semibold text-center flex flex-col items-center gap-2">
             <Avatar className="h-12 w-12">
