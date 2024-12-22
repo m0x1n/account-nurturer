@@ -4,12 +4,8 @@ import { addDays, format, isAfter } from "date-fns";
 export const useScheduling = () => {
   const [scheduledDays, setScheduledDays] = useState(() => {
     const days = [];
-    const today = new Date();
-    // Ensure we create dates at the start of the day to avoid time-based issues
-    today.setHours(0, 0, 0, 0);
-    
     for (let i = 0; i < 7; i++) {
-      const date = addDays(today, i);
+      const date = addDays(new Date(), i);
       days.push({
         date: date.toISOString(),
         enabled: false,
