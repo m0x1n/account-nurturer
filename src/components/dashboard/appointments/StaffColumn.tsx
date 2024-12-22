@@ -24,6 +24,7 @@ export function StaffColumn({ staff, appointments, currentDate, currentTimeTop, 
     return {
       top: `${(minutesFromMidnight / (24 * 60)) * 100}%`,
       height: `${(duration / (24 * 60)) * 100}%`,
+      width: '100%', // Ensure the card takes full width of its container
     };
   };
 
@@ -106,11 +107,11 @@ export function StaffColumn({ staff, appointments, currentDate, currentTimeTop, 
             className={cn(
               "absolute left-1 right-1 rounded-md p-2",
               "bg-primary/10 hover:bg-primary/20 transition-colors",
-              "cursor-pointer text-sm"
+              "cursor-pointer text-sm overflow-hidden"
             )}
             style={style}
           >
-            <div className="font-medium">
+            <div className="font-medium truncate">
               {appointment.client?.first_name} {appointment.client?.last_name}
             </div>
             <div className="text-xs text-muted-foreground">

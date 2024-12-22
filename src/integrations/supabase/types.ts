@@ -420,6 +420,10 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      assign_unassigned_appointments: {
+        Args: Record<PropertyKey, never>
+        Returns: undefined
+      }
       check_email_exists: {
         Args: {
           email_to_check: string
