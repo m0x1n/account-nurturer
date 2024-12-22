@@ -3,6 +3,7 @@ import { Switch } from "@/components/ui/switch";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
+import { BoostCampaignConfig } from "@/components/marketing/campaigns/BoostCampaignConfig";
 
 interface CampaignToggle {
   id: string;
@@ -13,6 +14,7 @@ interface CampaignToggle {
 
 const EmailMarketing = () => {
   const { toast } = useToast();
+  const [configureBoost, setConfigureBoost] = useState(false);
   const [campaigns, setCampaigns] = useState<CampaignToggle[]>([
     {
       id: "boost",
@@ -57,11 +59,15 @@ const EmailMarketing = () => {
       const campaign = campaigns.find((c) => c.id === id);
       if (!campaign) return;
 
+      if (id === "boost" && !campaign.isActive) {
+        setConfigureBoost(true);
+        return;
+      }
+
       const updatedCampaigns = campaigns.map((c) =>
         c.id === id ? { ...c, isActive: !c.isActive } : c
       );
 
-      // Update the campaign status in Supabase
       const { error } = await supabase
         .from("marketing_campaigns")
         .upsert({
@@ -91,7 +97,11 @@ const EmailMarketing = () => {
   };
 
   const handleConfigure = (id: string) => {
-    // Configuration logic will be implemented later
+    if (id === "boost") {
+      setConfigureBoost(true);
+      return;
+    }
+    
     toast({
       title: "Coming Soon",
       description: "Campaign configuration will be available soon",
@@ -133,6 +143,11 @@ const EmailMarketing = () => {
           </div>
         ))}
       </div>
+
+      <BoostCampaignConfig
+        isOpen={configureBoost}
+        onClose={() => setConfigureBoost(false)}
+      />
     </div>
   );
 };
