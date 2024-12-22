@@ -1,3 +1,4 @@
+import React, { Fragment } from "react";
 import { format } from "date-fns";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
@@ -29,7 +30,7 @@ export function DayView({ date, appointments, staffMembers, selectedStaffIds }: 
         ))}
         
         {hours.map(hour => (
-          <React.Fragment key={hour}>
+          <Fragment key={hour}>
             <div className="text-sm text-muted-foreground">
               {format(new Date().setHours(hour, 0), 'h:mm a')}
             </div>
@@ -37,7 +38,8 @@ export function DayView({ date, appointments, staffMembers, selectedStaffIds }: 
               const hourAppointments = appointments.filter(apt => {
                 const aptDate = new Date(apt.start_time);
                 return aptDate.getHours() === hour &&
-                  format(aptDate, 'yyyy-MM-dd') === format(date, 'yyyy-MM-dd');
+                  format(aptDate, 'yyyy-MM-dd') === format(date, 'yyyy-MM-dd') &&
+                  apt.staff_id === staff.id;
               });
 
               return (
@@ -53,7 +55,7 @@ export function DayView({ date, appointments, staffMembers, selectedStaffIds }: 
                 </div>
               );
             })}
-          </React.Fragment>
+          </Fragment>
         ))}
       </div>
     </div>
