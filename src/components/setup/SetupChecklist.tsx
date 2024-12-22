@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
@@ -101,7 +101,7 @@ export default function SetupChecklist() {
     enabled: !!businessData?.id,
   });
 
-  const checklistItems: ChecklistItem[] = [
+  const checklistItems = [
     {
       id: "business-hours",
       title: "Set Your Business Hours",
@@ -146,7 +146,6 @@ export default function SetupChecklist() {
     },
   ];
 
-  // Calculate progress whenever checklistItems or their completion status changes
   useEffect(() => {
     const completedItems = checklistItems.filter(item => item.completed).length;
     const totalProgress = (completedItems / checklistItems.length) * 100;
