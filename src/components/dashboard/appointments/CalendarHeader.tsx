@@ -9,11 +9,11 @@ import { cn } from "@/lib/utils";
 interface CalendarHeaderProps {
   currentDate: Date;
   view: "day" | "week";
-  selectedStaffIds: string[];
+  selectedStaffIds?: string[];
   onDateChange: (date: Date) => void;
   onViewChange: (view: "day" | "week") => void;
   onStaffChange: (staffIds: string[]) => void;
-  staffMembers: Array<{ id: string; first_name: string; last_name: string; }>;
+  staffMembers?: Array<{ id: string; first_name: string; last_name: string; }>;
 }
 
 export function CalendarHeader({
@@ -97,7 +97,7 @@ export function CalendarHeader({
         </div>
         {view === 'week' ? (
           <Select
-            value={selectedStaffIds[0]}
+            value={selectedStaffIds[0] || ''}
             onValueChange={(value) => onStaffChange([value])}
           >
             <SelectTrigger className="w-[200px]">
@@ -124,7 +124,7 @@ export function CalendarHeader({
               <Command>
                 <CommandEmpty>No staff found.</CommandEmpty>
                 <CommandGroup>
-                  {(staffMembers || []).map((staff) => (
+                  {staffMembers.map((staff) => (
                     <CommandItem
                       key={staff.id}
                       onSelect={() => handleStaffSelect(staff.id)}
