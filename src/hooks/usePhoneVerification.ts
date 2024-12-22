@@ -21,6 +21,24 @@ export const usePhoneVerification = (email: string, onSuccess: () => void) => {
     }
   }, [cooldownSeconds]);
 
+  useEffect(() => {
+    const checkPhoneVerification = async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (user?.phone) {
+        const { data } = await supabase
+          .from('profiles')
+          .select('phone_verified')
+          .eq('id', user.id)
+          .single();
+        
+        if (data?.phone_verified) {
+          setIsVerified(true);
+        }
+      }
+    };
+    checkPhoneVerification();
+  }, []);
+
   const handleSendOtp = async (e: React.FormEvent) => {
     e.preventDefault();
     if (isProcessing || cooldownSeconds > 0) return;
@@ -46,16 +64,31 @@ export const usePhoneVerification = (email: string, onSuccess: () => void) => {
       setShowOtp(true);
     } catch (error: any) {
       console.error('Error in phone verification:', error);
-      let errorMessage = error.message;
-      let cooldown = 0;
       
-      if (error.message.includes('rate_limit')) {
-        const match = error.message.match(/after (\d+) seconds/);
-        if (match && match[1]) {
-          cooldown = parseInt(match[1]);
-        } else {
-          cooldown = 30; // Default cooldown if we can't parse the seconds
+      // Parse the error message for rate limit information
+      let cooldown = 0;
+      let errorMessage = error.message;
+      
+      try {
+        if (error.message.includes('rate_limit')) {
+          // Try to parse the JSON body if it exists
+          const bodyJson = JSON.parse(error.body || '{}');
+          const message = bodyJson.message || error.message;
+          
+          // Extract seconds from the message
+          const match = message.match(/after (\d+) seconds/);
+          if (match && match[1]) {
+            cooldown = parseInt(match[1]);
+          } else {
+            cooldown = 60; // Default cooldown if we can't parse the seconds
+          }
+          
+          errorMessage = `Please wait ${cooldown} seconds before trying again`;
+          setCooldownSeconds(cooldown);
         }
+      } catch (parseError) {
+        console.error('Error parsing rate limit message:', parseError);
+        cooldown = 60; // Fallback cooldown
         errorMessage = `Please wait ${cooldown} seconds before trying again`;
         setCooldownSeconds(cooldown);
       }
