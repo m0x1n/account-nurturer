@@ -1,6 +1,5 @@
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
-import { cn } from "@/lib/utils";
 
 interface Service {
   id: string;
@@ -13,7 +12,6 @@ interface ServicesProps {
   applyToAllServices: boolean;
   onServiceToggle: (serviceId: string) => void;
   onApplyToAllChange: (value: boolean) => void;
-  readOnly?: boolean;
 }
 
 export function ServicesSection({
@@ -22,33 +20,24 @@ export function ServicesSection({
   applyToAllServices,
   onServiceToggle,
   onApplyToAllChange,
-  readOnly,
 }: ServicesProps) {
   return (
-    <div className={cn("space-y-4", readOnly && "opacity-75")}>
+    <div className="space-y-4">
       <Label className="text-sm font-medium">Discounted Services</Label>
       <div className="flex gap-2">
         <button
-          type="button"
-          onClick={() => !readOnly && onApplyToAllChange(true)}
-          className={cn(
-            "px-3 py-1.5 rounded text-sm",
-            applyToAllServices ? "bg-primary text-white" : "bg-secondary",
-            readOnly && "pointer-events-none opacity-75"
-          )}
-          disabled={readOnly}
+          onClick={() => onApplyToAllChange(true)}
+          className={`px-3 py-1.5 rounded text-sm ${
+            applyToAllServices ? "bg-primary text-white" : "bg-secondary"
+          }`}
         >
           All Services
         </button>
         <button
-          type="button"
-          onClick={() => !readOnly && onApplyToAllChange(false)}
-          className={cn(
-            "px-3 py-1.5 rounded text-sm",
-            !applyToAllServices ? "bg-primary text-white" : "bg-secondary",
-            readOnly && "pointer-events-none opacity-75"
-          )}
-          disabled={readOnly}
+          onClick={() => onApplyToAllChange(false)}
+          className={`px-3 py-1.5 rounded text-sm ${
+            !applyToAllServices ? "bg-primary text-white" : "bg-secondary"
+          }`}
         >
           Specific Services
         </button>
@@ -59,8 +48,7 @@ export function ServicesSection({
             <div key={service.id} className="flex items-center gap-2">
               <Switch
                 checked={selectedServices.includes(service.id)}
-                onCheckedChange={() => !readOnly && onServiceToggle(service.id)}
-                disabled={readOnly}
+                onCheckedChange={() => onServiceToggle(service.id)}
               />
               <Label>{service.name}</Label>
             </div>
