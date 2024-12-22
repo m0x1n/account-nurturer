@@ -13,6 +13,7 @@ const Onboarding = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
   const [step, setStep] = useState(1);
+  const [isLoading, setIsLoading] = useState(true);
   const totalSteps = 5;
   const [completedSteps, setCompletedSteps] = useState({
     email: false,
@@ -34,12 +35,28 @@ const Onboarding = () => {
   }, []);
 
   const checkSession = async () => {
-    const { data: { session } } = await supabase.auth.getSession();
-    if (session?.user) {
+    try {
+      const { data: { session }, error } = await supabase.auth.getSession();
+      
+      if (error) {
+        console.error("Session error:", error);
+        navigate("/login");
+        return;
+      }
+
+      if (!session) {
+        navigate("/login");
+        return;
+      }
+
       setFormData((prev) => ({
         ...prev,
         email: session.user.email || "",
       }));
+      setIsLoading(false);
+    } catch (error) {
+      console.error("Session check error:", error);
+      navigate("/login");
     }
   };
 
@@ -61,7 +78,6 @@ const Onboarding = () => {
   const handleNext = () => {
     if (step < totalSteps) {
       setStep((prev) => prev + 1);
-      // Update completed steps based on current step
       setCompletedSteps(prev => {
         switch(step) {
           case 1:
@@ -136,6 +152,14 @@ const Onboarding = () => {
         return null;
     }
   };
+
+  if (isLoading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-b from-gray-50 to-gray-100">
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-gray-900"></div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-b from-gray-50 to-gray-100 p-4">
