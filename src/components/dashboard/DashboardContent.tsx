@@ -81,21 +81,25 @@ export function DashboardContent() {
         <div className="flex items-center justify-between mb-8">
           <div className="flex items-center gap-4">
             <h1 className="text-3xl font-bold">Insights snapshot</h1>
-            <div className="flex items-center space-x-2">
+            <div className="flex items-center space-x-3 px-3 py-2 rounded-md bg-secondary/50">
               <Switch
                 id="insights-mode"
                 checked={showInsights}
                 onCheckedChange={setShowInsights}
+                className="data-[state=checked]:bg-primary"
               />
-              <Label htmlFor="insights-mode" className="flex items-center gap-2">
+              <Label 
+                htmlFor="insights-mode" 
+                className="flex items-center gap-2 text-sm font-medium cursor-pointer select-none"
+              >
                 {showInsights ? (
                   <>
-                    <Eye className="h-4 w-4" />
+                    <Eye className="h-4 w-4 text-primary" />
                     <span>Show Insights</span>
                   </>
                 ) : (
                   <>
-                    <EyeOff className="h-4 w-4" />
+                    <EyeOff className="h-4 w-4 text-muted-foreground" />
                     <span>Hide Insights</span>
                   </>
                 )}
