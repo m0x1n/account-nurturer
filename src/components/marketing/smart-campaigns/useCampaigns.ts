@@ -40,19 +40,14 @@ export function useCampaigns(initialCampaigns: Campaign[]) {
               ac => ac.campaign_type.toLowerCase() === campaign.id
             );
 
-            if (activeCampaign) {
-              const settings = activeCampaign.settings as any;
-              const scheduledDays = settings?.schedule || [];
-              const lastDay = scheduledDays[scheduledDays.length - 1]?.date;
-              const isStillValid = lastDay ? isAfter(new Date(lastDay), new Date()) : true;
+            // A campaign is active if it exists in activeCampaigns and has 'active' status
+            const isActive = !!activeCampaign && activeCampaign.status === 'active';
 
-              return {
-                ...campaign,
-                isActive: isStillValid,
-                isDisabled: isStillValid
-              };
-            }
-            return campaign;
+            return {
+              ...campaign,
+              isActive,
+              isDisabled: isActive // Disable configuration if campaign is active
+            };
           })
         );
       }
