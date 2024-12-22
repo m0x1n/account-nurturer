@@ -1,12 +1,10 @@
 import { useState } from "react";
-import { addDays, format, isAfter } from "date-fns";
+import { addDays, format, isAfter, startOfDay } from "date-fns";
 
 export const useScheduling = () => {
   const [scheduledDays, setScheduledDays] = useState(() => {
     const days = [];
-    const today = new Date();
-    // Ensure we create dates at the start of the day to avoid time-based issues
-    today.setHours(0, 0, 0, 0);
+    const today = startOfDay(new Date());
     
     for (let i = 0; i < 7; i++) {
       const date = addDays(today, i);

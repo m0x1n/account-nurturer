@@ -56,7 +56,17 @@ export const useBoostCampaign = (
         setSelectedServices(settings.services === "all" ? [] : (settings.services as string[]));
         
         if (settings.schedule) {
-          setScheduledDays(settings.schedule);
+          const today = new Date();
+          today.setHours(0, 0, 0, 0);
+          
+          const updatedSchedule = scheduledDays.map(day => {
+            const matchingDay = settings.schedule?.find(
+              scheduleDay => scheduleDay.date.split('T')[0] === day.date.split('T')[0]
+            );
+            return matchingDay ? { ...day, enabled: matchingDay.enabled } : day;
+          });
+          
+          setScheduledDays(updatedSchedule);
         }
       }
     };
