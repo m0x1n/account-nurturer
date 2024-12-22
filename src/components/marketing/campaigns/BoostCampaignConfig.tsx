@@ -83,7 +83,7 @@ export function BoostCampaignConfig({ isOpen, onClose, onSaveSuccess }: BoostCam
           business_id: business.id,
           campaign_type: "email",
           name: campaignName,
-          is_active: isBoostStillValid(), // Set active based on dates
+          is_active: isBoostStillValid(),
           settings: {
             targeting: {
               type: targetingOption,
@@ -106,7 +106,7 @@ export function BoostCampaignConfig({ isOpen, onClose, onSaveSuccess }: BoostCam
 
       if (campaignError) throw campaignError;
 
-      // Create initial metrics for the campaign
+      // Create initial metrics for the campaign - removing generated columns
       const { error: metricsError } = await supabase
         .from("campaign_metrics")
         .insert({
@@ -115,10 +115,7 @@ export function BoostCampaignConfig({ isOpen, onClose, onSaveSuccess }: BoostCam
           users_engaged: 0,
           users_opened: 0,
           users_clicked: 0,
-          users_unsubscribed: 0,
-          percent_opened: 0,
-          percent_clicked: 0,
-          percent_unsubscribed: 0
+          users_unsubscribed: 0
         });
 
       if (metricsError) throw metricsError;
