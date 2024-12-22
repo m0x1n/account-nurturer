@@ -30,11 +30,12 @@ const PersonalDetailsStep = ({ formData, updateFormData, onNext, onBack }: Perso
         if (data) {
           setFirstName(data.first_name || '');
           setLastName(data.last_name || '');
+          updateFormData({ firstName: data.first_name || '', lastName: data.last_name || '' });
         }
       }
     };
     fetchProfile();
-  }, []);
+  }, [updateFormData]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -49,12 +50,30 @@ const PersonalDetailsStep = ({ formData, updateFormData, onNext, onBack }: Perso
 
     const { data: { user } } = await supabase.auth.getUser();
     if (user) {
-      const { error } = await supabase
+      // Update the user's metadata in auth.users
+      const { error: metadataError } = await supabase.auth.updateUser({
+        data: { first_name: firstName, last_name: lastName }
+      });
+
+      if (metadataError) {
+        toast({
+          title: "Error",
+          description: "Failed to update user metadata",
+          variant: "destructive",
+        });
+        return;
+      }
+
+      // Update the profiles table
+      const { error: profileError } = await supabase
         .from('profiles')
-        .update({ first_name: firstName, last_name: lastName })
+        .update({ 
+          first_name: firstName, 
+          last_name: lastName,
+        })
         .eq('id', user.id);
 
-      if (error) {
+      if (profileError) {
         toast({
           title: "Error",
           description: "Failed to update profile",
