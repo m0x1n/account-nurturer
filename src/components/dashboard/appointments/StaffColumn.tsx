@@ -27,11 +27,19 @@ export function StaffColumn({ staff, appointments, currentDate, currentTimeTop, 
     };
   };
 
-  // Filter appointments for this staff member AND unassigned appointments if this is the first staff column
+  // Filter appointments for this staff member AND unassigned appointments if this is the first staff member
   const staffAppointments = appointments.filter(apt => {
     const isForThisStaff = apt.staff_id === staff.id;
     const isUnassigned = apt.staff_id === null;
-    const isFirstStaffMember = staff.id === appointments[0]?.staff?.id || (!appointments[0]?.staff?.id && staff.id === staffData?.[0]?.id);
+    const isFirstStaffMember = staff.id === appointments[0]?.staff?.id || 
+      (!appointments[0]?.staff?.id && staff.id === appointments[0]?.id);
+    
+    console.log(`Checking appointment for staff ${staff.id}:`, {
+      appointment: apt,
+      isForThisStaff,
+      isUnassigned,
+      isFirstStaffMember
+    });
     
     return isForThisStaff || (isUnassigned && isFirstStaffMember);
   });
@@ -72,10 +80,19 @@ export function StaffColumn({ staff, appointments, currentDate, currentTimeTop, 
         
         // Only show appointments for the current day
         if (format(startDate, 'yyyy-MM-dd') !== format(currentDate, 'yyyy-MM-dd')) {
+          console.log('Appointment not shown due to date mismatch:', {
+            appointmentDate: format(startDate, 'yyyy-MM-dd'),
+            currentDate: format(currentDate, 'yyyy-MM-dd')
+          });
           return null;
         }
 
         const style = getAppointmentStyle(appointment.start_time, appointment.end_time);
+        console.log('Appointment style calculated:', {
+          appointment,
+          style,
+          startDate: format(startDate, 'yyyy-MM-dd HH:mm:ss')
+        });
         
         return (
           <div
