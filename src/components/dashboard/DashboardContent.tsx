@@ -1,30 +1,164 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { SidebarTrigger } from "@/components/ui/sidebar";
-import { Bar } from "recharts";
-import { ChartContainer, ChartTooltip } from "@/components/ui/chart";
+import { Bar, PieChart, Pie, Cell } from "recharts";
+import { ChartContainer, ChartTooltip, ChartLegend } from "@/components/ui/chart";
 import { NotificationsPanel } from "./NotificationsPanel";
 import { Bell } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useState } from "react";
 
-const chartData = [
-  { name: "Mon", clients: 4 },
-  { name: "Tue", clients: 7 },
-  { name: "Wed", clients: 5 },
-  { name: "Thu", clients: 6 },
-  { name: "Fri", clients: 8 },
-  { name: "Sat", clients: 3 },
-  { name: "Sun", clients: 2 },
+const salesData = [
+  { name: "Mon", sales: 15000 },
+  { name: "Tue", sales: 25000 },
+  { name: "Wed", sales: 18000 },
+  { name: "Thu", sales: 22000 },
+  { name: "Fri", sales: 28000 },
+  { name: "Sat", sales: 12000 },
+  { name: "Sun", sales: 13201 },
+];
+
+const clientsData = [
+  { name: "New", value: 16, percentage: "18%" },
+  { name: "Existing", value: 77, percentage: "82%" },
+];
+
+const capacityData = [
+  { name: "Used", value: 24 },
+  { name: "Available", value: 76 },
 ];
 
 const chartConfig = {
-  clients: {
+  sales: {
     color: "#0ea5e9",
+  },
+  clients: {
+    color: "#10b981",
+  },
+  capacity: {
+    color: "#6366f1",
+  },
+  new: {
+    color: "#f97316",
+  },
+  existing: {
+    color: "#10b981",
+  },
+  used: {
+    color: "#6366f1",
+  },
+  available: {
+    color: "#e2e8f0",
   },
 };
 
+const COLORS = ['#f97316', '#10b981'];
+
 export function DashboardContent() {
   const [showNotifications, setShowNotifications] = useState(false);
+  const [selectedMetric, setSelectedMetric] = useState<'sales' | 'clients' | 'capacity'>('sales');
+
+  const renderBreakdown = () => {
+    switch (selectedMetric) {
+      case 'sales':
+        return (
+          <Card>
+            <CardHeader>
+              <CardTitle>Sales Breakdown</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <ChartContainer config={chartConfig} className="h-[300px]">
+                <Bar data={salesData}>
+                  <ChartTooltip />
+                  <Bar
+                    dataKey="sales"
+                    fill="var(--color-sales)"
+                    radius={[4, 4, 0, 0]}
+                  />
+                </Bar>
+              </ChartContainer>
+            </CardContent>
+          </Card>
+        );
+      case 'clients':
+        return (
+          <Card>
+            <CardHeader>
+              <CardTitle>Clients Served Breakdown</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="flex items-center justify-between">
+                <ChartContainer config={chartConfig} className="h-[200px] w-[200px]">
+                  <PieChart>
+                    <Pie
+                      data={clientsData}
+                      dataKey="value"
+                      nameKey="name"
+                      cx="50%"
+                      cy="50%"
+                      innerRadius={60}
+                      outerRadius={80}
+                    >
+                      {clientsData.map((entry, index) => (
+                        <Cell key={`cell-${index}`} fill={COLORS[index]} />
+                      ))}
+                    </Pie>
+                    <ChartTooltip />
+                  </PieChart>
+                </ChartContainer>
+                <div className="space-y-4">
+                  {clientsData.map((item, index) => (
+                    <div key={item.name} className="flex items-center gap-2">
+                      <div className="h-3 w-3 rounded-sm" style={{ backgroundColor: COLORS[index] }} />
+                      <span className="text-sm font-medium">{item.name}</span>
+                      <span className="text-sm text-muted-foreground">
+                        {item.value} | {item.percentage}
+                      </span>
+                    </div>
+                  ))}
+                  <div className="pt-2 border-t">
+                    <div className="flex items-center gap-2">
+                      <span className="text-sm font-medium">Total Clients</span>
+                      <span className="text-sm text-muted-foreground">93 | 100%</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        );
+      case 'capacity':
+        return (
+          <Card>
+            <CardHeader>
+              <CardTitle>Capacity Breakdown</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <ChartContainer config={chartConfig} className="h-[300px]">
+                <PieChart>
+                  <Pie
+                    data={capacityData}
+                    dataKey="value"
+                    nameKey="name"
+                    cx="50%"
+                    cy="50%"
+                    innerRadius={60}
+                    outerRadius={80}
+                  >
+                    {capacityData.map((entry, index) => (
+                      <Cell 
+                        key={`cell-${index}`} 
+                        fill={entry.name === 'Used' ? 'var(--color-used)' : 'var(--color-available)'} 
+                      />
+                    ))}
+                  </Pie>
+                  <ChartTooltip />
+                </PieChart>
+              </ChartContainer>
+            </CardContent>
+          </Card>
+        );
+    }
+  };
 
   return (
     <main className="flex-1 overflow-y-auto">
@@ -44,7 +178,10 @@ export function DashboardContent() {
         </div>
 
         <div className="grid gap-6 md:grid-cols-3">
-          <Card>
+          <Card 
+            className={`cursor-pointer transition-all ${selectedMetric === 'sales' ? 'ring-2 ring-primary' : ''}`}
+            onClick={() => setSelectedMetric('sales')}
+          >
             <CardHeader>
               <CardTitle className="text-sm font-medium text-muted-foreground">
                 SALES
@@ -55,7 +192,10 @@ export function DashboardContent() {
               <p className="text-xs text-green-500">+3% since last month</p>
             </CardContent>
           </Card>
-          <Card>
+          <Card 
+            className={`cursor-pointer transition-all ${selectedMetric === 'clients' ? 'ring-2 ring-primary' : ''}`}
+            onClick={() => setSelectedMetric('clients')}
+          >
             <CardHeader>
               <CardTitle className="text-sm font-medium text-muted-foreground">
                 CLIENTS SERVED
@@ -66,7 +206,10 @@ export function DashboardContent() {
               <p className="text-xs text-green-500">+3% since last month</p>
             </CardContent>
           </Card>
-          <Card>
+          <Card 
+            className={`cursor-pointer transition-all ${selectedMetric === 'capacity' ? 'ring-2 ring-primary' : ''}`}
+            onClick={() => setSelectedMetric('capacity')}
+          >
             <CardHeader>
               <CardTitle className="text-sm font-medium text-muted-foreground">
                 CAPACITY
@@ -80,23 +223,7 @@ export function DashboardContent() {
         </div>
 
         <div className="mt-8">
-          <Card>
-            <CardHeader>
-              <CardTitle>Clients Served Breakdown</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <ChartContainer config={chartConfig} className="h-[300px]">
-                <Bar data={chartData}>
-                  <ChartTooltip />
-                  <Bar
-                    dataKey="clients"
-                    fill="var(--color-clients)"
-                    radius={[4, 4, 0, 0]}
-                  />
-                </Bar>
-              </ChartContainer>
-            </CardContent>
-          </Card>
+          {renderBreakdown()}
         </div>
 
         <div className="mt-8 grid gap-6 md:grid-cols-2">
