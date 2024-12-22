@@ -21,7 +21,11 @@ export function DayView({ currentDate, selectedStaffIds = [] }: DayViewProps) {
     const updateCurrentTime = () => {
       const now = new Date();
       const minutesSinceMidnight = now.getHours() * 60 + now.getMinutes();
-      const percentage = (minutesSinceMidnight / (24 * 60)) * 100;
+      // Calculate pixels from top based on 64px per hour (h-16 = 64px)
+      const pixelsPerMinute = 64 / 60; // 64 pixels per hour divided by 60 minutes
+      const pixelsFromTop = minutesSinceMidnight * pixelsPerMinute;
+      const totalHeight = 24 * 64; // 24 hours * 64px per hour
+      const percentage = (pixelsFromTop / totalHeight) * 100;
       setCurrentTimeTop(percentage);
     };
 
@@ -150,7 +154,7 @@ export function DayView({ currentDate, selectedStaffIds = [] }: DayViewProps) {
           {format(currentDate, 'yyyy-MM-dd') === format(new Date(), 'yyyy-MM-dd') && (
             <div 
               className="absolute left-0 right-0 z-20"
-              style={{ top: `${currentTimeTop}%` }}
+              style={{ top: `calc(${currentTimeTop}% - 12px)` }} // Adjust for bubble height
             >
               <div className="flex items-center">
                 <div className="bg-red-500 text-white text-xs px-2 py-1 rounded-full ml-auto mr-2">
