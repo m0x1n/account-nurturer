@@ -20,6 +20,7 @@ export const useEmailStep = ({
   setCompletedSteps 
 }: UseEmailStepProps) => {
   const [email, setEmail] = useState(formData.email);
+  const [showSignIn, setShowSignIn] = useState(false);
   const { toast } = useToast();
   const navigate = useNavigate();
 
@@ -96,13 +97,13 @@ export const useEmailStep = ({
             .maybeSingle();
 
           if (profile?.completed_onboarding) {
-            toast({
-              title: "Account Exists",
-              description: "This email is already associated with an account. Please sign in.",
-            });
-            navigate("/login");
+            setShowSignIn(true);
             return;
           }
+        } else {
+          // If no user is logged in but email exists, show sign in option
+          setShowSignIn(true);
+          return;
         }
       }
 
@@ -150,6 +151,7 @@ export const useEmailStep = ({
   return {
     email,
     setEmail,
-    handleSubmit
+    handleSubmit,
+    showSignIn
   };
 };

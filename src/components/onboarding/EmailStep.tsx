@@ -10,7 +10,7 @@ interface EmailStepProps {
 }
 
 const EmailStep = (props: EmailStepProps) => {
-  const { email, setEmail, handleSubmit } = useEmailStep({
+  const { email, setEmail, handleSubmit, showSignIn } = useEmailStep({
     formData: props.formData,
     updateFormData: props.updateFormData,
     onNext: props.onNext,
@@ -23,6 +23,7 @@ const EmailStep = (props: EmailStepProps) => {
       email={email}
       onEmailChange={setEmail}
       onSubmit={handleSubmit}
+      showSignIn={showSignIn}
     />
   );
 };

@@ -1,14 +1,18 @@
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { useNavigate } from "react-router-dom";
 
 interface EmailFormProps {
   email: string;
   onEmailChange: (email: string) => void;
   onSubmit: (e: React.FormEvent) => void;
+  showSignIn?: boolean;
 }
 
-const EmailForm = ({ email, onEmailChange, onSubmit }: EmailFormProps) => {
+const EmailForm = ({ email, onEmailChange, onSubmit, showSignIn }: EmailFormProps) => {
+  const navigate = useNavigate();
+  
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     onSubmit(e);
@@ -32,9 +36,22 @@ const EmailForm = ({ email, onEmailChange, onSubmit }: EmailFormProps) => {
           required
         />
       </div>
-      <Button type="submit" className="w-full">
-        Continue
-      </Button>
+      {showSignIn ? (
+        <div className="space-y-4">
+          <p className="text-sm text-gray-600">This email is associated with an existing account.</p>
+          <Button 
+            type="button" 
+            onClick={() => navigate("/login")} 
+            className="w-full"
+          >
+            Sign In Instead
+          </Button>
+        </div>
+      ) : (
+        <Button type="submit" className="w-full">
+          Continue
+        </Button>
+      )}
     </form>
   );
 };
