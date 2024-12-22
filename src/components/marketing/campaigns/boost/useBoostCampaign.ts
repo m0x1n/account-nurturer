@@ -146,11 +146,39 @@ export const useBoostCampaign = (
     }
   };
 
+  const checkExistingBoostCampaign = async () => {
+    const { data: existingCampaigns, error } = await supabase
+      .from("marketing_campaigns")
+      .select("*")
+      .eq("business_id", business?.id)
+      .eq("campaign_subtype", "boost")
+      .eq("is_active", true)
+      .is("archived_at", null);
+
+    if (error) {
+      console.error("Error checking existing campaigns:", error);
+      return true; // Return true to prevent save on error
+    }
+
+    return existingCampaigns && existingCampaigns.length > 0;
+  };
+
   const handleSave = async () => {
     if (!business?.id) {
       toast({
         title: "Error",
         description: "Business data not available",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    // Check for existing active boost campaign
+    const hasActiveBoostCampaign = await checkExistingBoostCampaign();
+    if (hasActiveBoostCampaign) {
+      toast({
+        title: "Error",
+        description: "An active Boost campaign already exists. Please archive it before creating a new one.",
         variant: "destructive",
       });
       return;
