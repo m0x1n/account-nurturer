@@ -1,4 +1,5 @@
 import { format, addDays } from "date-fns";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
 interface WeekViewProps {
   startDate: Date;
@@ -20,6 +21,14 @@ export function WeekView({ startDate, appointments, staffMember }: WeekViewProps
 
   return (
     <div className="mt-4">
+      <div className="flex items-center gap-2 mb-4">
+        <Avatar className="h-12 w-12">
+          <AvatarImage src={staffMember.profile_image_url || "https://images.unsplash.com/photo-1581092795360-fd1ca04f0952"} />
+          <AvatarFallback>{staffMember.first_name[0]}{staffMember.last_name[0]}</AvatarFallback>
+        </Avatar>
+        <span className="font-semibold">{staffMember.first_name} {staffMember.last_name}'s Schedule</span>
+      </div>
+
       <div className="grid grid-cols-[100px_repeat(7,1fr)] gap-4">
         <div className="font-semibold">Time</div>
         {days.map(day => (

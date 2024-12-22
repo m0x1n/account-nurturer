@@ -1,4 +1,5 @@
 import { format } from "date-fns";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
 interface DayViewProps {
   date: Date;
@@ -18,8 +19,12 @@ export function DayView({ date, appointments, staffMembers, selectedStaffIds }: 
       <div className="grid grid-cols-[100px_repeat(auto-fill,minmax(200px,1fr))] gap-4">
         <div className="font-semibold">Time</div>
         {filteredStaff.map(staff => (
-          <div key={staff.id} className="font-semibold text-center">
-            {staff.first_name} {staff.last_name}
+          <div key={staff.id} className="font-semibold text-center flex flex-col items-center gap-2">
+            <Avatar className="h-12 w-12">
+              <AvatarImage src={staff.profile_image_url || "https://images.unsplash.com/photo-1581092795360-fd1ca04f0952"} />
+              <AvatarFallback>{staff.first_name[0]}{staff.last_name[0]}</AvatarFallback>
+            </Avatar>
+            <span>{staff.first_name} {staff.last_name}</span>
           </div>
         ))}
         
