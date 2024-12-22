@@ -1,15 +1,61 @@
 import { format, addDays } from "date-fns";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { useQuery } from "@tanstack/react-query";
+import { supabase } from "@/integrations/supabase/client";
 
 interface WeekViewProps {
-  startDate: Date;
-  appointments: any[];
-  staffMember: any;
+  currentDate: Date;
+  selectedStaffId: string;
 }
 
-export function WeekView({ startDate, appointments, staffMember }: WeekViewProps) {
-  const days = Array.from({ length: 7 }, (_, i) => addDays(startDate, i));
+export function WeekView({ currentDate, selectedStaffId }: WeekViewProps) {
+  const days = Array.from({ length: 7 }, (_, i) => addDays(currentDate, i));
   const hours = Array.from({ length: 24 }, (_, i) => i);
+
+  const { data: staffMember } = useQuery({
+    queryKey: ['staff-member', selectedStaffId],
+    queryFn: async () => {
+      if (!selectedStaffId) return null;
+
+      const { data, error } = await supabase
+        .from('staff_members')
+        .select('*')
+        .eq('id', selectedStaffId)
+        .single();
+
+      if (error) throw error;
+      return data;
+    }
+  });
+
+  const { data: appointments = [] } = useQuery({
+    queryKey: ['appointments', currentDate, selectedStaffId],
+    queryFn: async () => {
+      if (!selectedStaffId) return [];
+
+      const { data: businesses } = await supabase
+        .from('businesses')
+        .select('id')
+        .limit(1);
+
+      if (!businesses || businesses.length === 0) {
+        return [];
+      }
+
+      const { data, error } = await supabase
+        .from('appointments')
+        .select(`
+          *,
+          client:clients(first_name, last_name),
+          service:services(name)
+        `)
+        .eq('business_id', businesses[0].id)
+        .eq('staff_id', selectedStaffId);
+
+      if (error) throw error;
+      return data || [];
+    }
+  });
 
   if (!staffMember) {
     return (
@@ -23,7 +69,7 @@ export function WeekView({ startDate, appointments, staffMember }: WeekViewProps
     <div className="mt-4">
       <div className="flex items-center gap-2 mb-4">
         <Avatar className="h-12 w-12">
-          <AvatarImage src={staffMember.profile_image_url || "https://images.unsplash.com/photo-1581092795360-fd1ca04f0952"} />
+          <AvatarImage src={staffMember.profile_image_url} />
           <AvatarFallback>{staffMember.first_name[0]}{staffMember.last_name[0]}</AvatarFallback>
         </Avatar>
         <span className="font-semibold">{staffMember.first_name} {staffMember.last_name}'s Schedule</span>

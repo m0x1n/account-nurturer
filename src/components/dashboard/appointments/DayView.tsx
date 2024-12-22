@@ -1,16 +1,65 @@
 import React, { Fragment } from "react";
 import { format } from "date-fns";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { useQuery } from "@tanstack/react-query";
+import { supabase } from "@/integrations/supabase/client";
 
 interface DayViewProps {
-  date: Date;
-  appointments: any[];
-  staffMembers: any[];
+  currentDate: Date;
   selectedStaffIds: string[];
 }
 
-export function DayView({ date, appointments, staffMembers, selectedStaffIds }: DayViewProps) {
+export function DayView({ currentDate, selectedStaffIds }: DayViewProps) {
   const hours = Array.from({ length: 24 }, (_, i) => i);
+
+  const { data: staffMembers = [] } = useQuery({
+    queryKey: ['staff-members'],
+    queryFn: async () => {
+      const { data: businesses } = await supabase
+        .from('businesses')
+        .select('id')
+        .limit(1);
+
+      if (!businesses || businesses.length === 0) {
+        return [];
+      }
+
+      const { data, error } = await supabase
+        .from('staff_members')
+        .select('*')
+        .eq('business_id', businesses[0].id);
+
+      if (error) throw error;
+      return data || [];
+    }
+  });
+
+  const { data: appointments = [] } = useQuery({
+    queryKey: ['appointments', currentDate, selectedStaffIds],
+    queryFn: async () => {
+      const { data: businesses } = await supabase
+        .from('businesses')
+        .select('id')
+        .limit(1);
+
+      if (!businesses || businesses.length === 0) {
+        return [];
+      }
+
+      const { data, error } = await supabase
+        .from('appointments')
+        .select(`
+          *,
+          client:clients(first_name, last_name),
+          service:services(name)
+        `)
+        .eq('business_id', businesses[0].id);
+
+      if (error) throw error;
+      return data || [];
+    }
+  });
+
   const filteredStaff = selectedStaffIds.length > 0
     ? staffMembers.filter(staff => selectedStaffIds.includes(staff.id))
     : staffMembers;
@@ -38,7 +87,7 @@ export function DayView({ date, appointments, staffMembers, selectedStaffIds }: 
               const hourAppointments = appointments.filter(apt => {
                 const aptDate = new Date(apt.start_time);
                 return aptDate.getHours() === hour &&
-                  format(aptDate, 'yyyy-MM-dd') === format(date, 'yyyy-MM-dd') &&
+                  format(aptDate, 'yyyy-MM-dd') === format(currentDate, 'yyyy-MM-dd') &&
                   apt.staff_id === staff.id;
               });
 
