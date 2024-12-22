@@ -60,7 +60,7 @@ export function CampaignCard({
               {(id === 'last-minute' || id === 'boost') && (
                 <TooltipProvider>
                   <Tooltip>
-                    <TooltipTrigger asChild>
+                    <TooltipTrigger asChild onClick={(e) => e.stopPropagation()}>
                       <Info className="h-4 w-4 text-muted-foreground cursor-help" />
                     </TooltipTrigger>
                     <TooltipContent 
