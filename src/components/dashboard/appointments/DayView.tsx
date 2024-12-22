@@ -1,4 +1,4 @@
-import React, { Fragment } from "react";
+import React, { Fragment, useEffect, useState } from "react";
 import { format } from "date-fns";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { useQuery } from "@tanstack/react-query";
@@ -30,6 +30,22 @@ interface Appointment {
 
 export function DayView({ currentDate, selectedStaffIds = [] }: DayViewProps) {
   const hours = Array.from({ length: 24 }, (_, i) => i);
+  const [currentTimeTop, setCurrentTimeTop] = useState<number>(0);
+
+  // Update current time position every minute
+  useEffect(() => {
+    const updateCurrentTime = () => {
+      const now = new Date();
+      const minutes = now.getHours() * 60 + now.getMinutes();
+      const percentage = (minutes / (24 * 60)) * 100;
+      setCurrentTimeTop(percentage);
+    };
+
+    updateCurrentTime();
+    const interval = setInterval(updateCurrentTime, 60000); // Update every minute
+
+    return () => clearInterval(interval);
+  }, []);
 
   const { data: staffMembers = [] } = useQuery({
     queryKey: ['staff-members'],
@@ -85,7 +101,7 @@ export function DayView({ currentDate, selectedStaffIds = [] }: DayViewProps) {
 
   return (
     <div className="mt-4">
-      <div className="grid grid-cols-[100px_repeat(auto-fill,minmax(200px,1fr))] gap-4">
+      <div className="grid grid-cols-[80px_repeat(auto-fill,minmax(200px,1fr))] gap-4 relative">
         <div className="font-semibold">Time</div>
         {filteredStaff.map(staff => (
           <div key={staff.id} className="font-semibold text-center flex flex-col items-center gap-2">
@@ -99,7 +115,7 @@ export function DayView({ currentDate, selectedStaffIds = [] }: DayViewProps) {
         
         {hours.map(hour => (
           <Fragment key={hour}>
-            <div className="text-sm text-muted-foreground">
+            <div className="text-sm text-muted-foreground sticky left-0 bg-background z-10">
               {format(new Date().setHours(hour, 0), 'h:mm a')}
             </div>
             {filteredStaff.map(staff => {
@@ -111,7 +127,7 @@ export function DayView({ currentDate, selectedStaffIds = [] }: DayViewProps) {
               });
 
               return (
-                <div key={`${hour}-${staff.id}`} className="min-h-[40px] border-t">
+                <div key={`${hour}-${staff.id}`} className="min-h-[60px] border-t relative">
                   {hourAppointments.map(apt => (
                     <div
                       key={apt.id}
@@ -125,6 +141,17 @@ export function DayView({ currentDate, selectedStaffIds = [] }: DayViewProps) {
             })}
           </Fragment>
         ))}
+
+        {/* Current time indicator */}
+        {format(currentDate, 'yyyy-MM-dd') === format(new Date(), 'yyyy-MM-dd') && (
+          <div 
+            className="absolute left-0 right-0 flex items-center z-20"
+            style={{ top: `${currentTimeTop}%` }}
+          >
+            <div className="w-2 h-2 rounded-full bg-red-500 -ml-1"></div>
+            <div className="flex-1 h-px bg-red-500"></div>
+          </div>
+        )}
       </div>
     </div>
   );
