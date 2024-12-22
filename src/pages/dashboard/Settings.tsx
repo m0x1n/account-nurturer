@@ -1,6 +1,6 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Clock, CreditCard, Link } from "lucide-react";
+import { Clock, CreditCard, Link, Upload } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 
 const Settings = () => {
@@ -58,6 +58,23 @@ const Settings = () => {
             </p>
             <Button variant="link" className="mt-2 p-0">
               View Link →
+            </Button>
+          </CardContent>
+        </Card>
+
+        <Card className="cursor-pointer" onClick={() => navigate("/dashboard/settings/import-clients")}>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <Upload className="h-5 w-5" />
+              Import Clients
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <p className="text-sm text-muted-foreground">
+              Import your existing client records via CSV
+            </p>
+            <Button variant="link" className="mt-2 p-0">
+              Import Now →
             </Button>
           </CardContent>
         </Card>
