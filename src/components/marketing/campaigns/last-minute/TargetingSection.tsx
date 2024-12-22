@@ -12,6 +12,27 @@ export function TargetingSection({ form }: TargetingSectionProps) {
     <div className="space-y-4">
       <FormField
         control={form.control}
+        name="isEnabled"
+        render={({ field }) => (
+          <FormItem className="flex flex-col space-y-2">
+            <div className="flex items-center justify-between">
+              <FormLabel>Enable Campaign</FormLabel>
+              <FormControl>
+                <Switch
+                  checked={field.value}
+                  onCheckedChange={field.onChange}
+                />
+              </FormControl>
+            </div>
+            <p className="text-sm text-muted-foreground">
+              When enabled, we'll automatically promote your available slots to fill last-minute openings
+            </p>
+          </FormItem>
+        )}
+      />
+
+      <FormField
+        control={form.control}
         name="sendEmail"
         render={({ field }) => (
           <FormItem className="flex items-center justify-between space-y-0">
