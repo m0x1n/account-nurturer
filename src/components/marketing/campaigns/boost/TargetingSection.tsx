@@ -1,11 +1,13 @@
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
+import { cn } from "@/lib/utils";
 
 interface TargetingProps {
   targetingOption: string;
   daysThreshold: string;
   onTargetingChange: (value: string) => void;
   onDaysChange: (value: string) => void;
+  readOnly?: boolean;
 }
 
 export function TargetingSection({
@@ -13,28 +15,35 @@ export function TargetingSection({
   daysThreshold,
   onTargetingChange,
   onDaysChange,
+  readOnly,
 }: TargetingProps) {
   return (
-    <div className="space-y-4">
+    <div className={cn("space-y-4", readOnly && "opacity-75")}>
       <Label className="text-sm font-medium">Who can be targeted?</Label>
       <div className="flex gap-2">
         <button
-          onClick={() => onTargetingChange("inactive")}
-          className={`px-3 py-1.5 rounded text-sm ${
+          onClick={() => !readOnly && onTargetingChange("inactive")}
+          className={cn(
+            "px-3 py-1.5 rounded text-sm",
             targetingOption === "inactive"
               ? "bg-primary text-white"
-              : "bg-secondary"
-          }`}
+              : "bg-secondary",
+            readOnly && "cursor-default opacity-75"
+          )}
+          disabled={readOnly}
         >
           No recent visit
         </button>
         <button
-          onClick={() => onTargetingChange("all")}
-          className={`px-3 py-1.5 rounded text-sm ${
+          onClick={() => !readOnly && onTargetingChange("all")}
+          className={cn(
+            "px-3 py-1.5 rounded text-sm",
             targetingOption === "all"
               ? "bg-primary text-white"
-              : "bg-secondary"
-          }`}
+              : "bg-secondary",
+            readOnly && "cursor-default opacity-75"
+          )}
+          disabled={readOnly}
         >
           All Contacts
         </button>
@@ -47,6 +56,8 @@ export function TargetingSection({
             onChange={(e) => onDaysChange(e.target.value)}
             className="w-20"
             min="1"
+            readOnly={readOnly}
+            disabled={readOnly}
           />
           <span className="text-sm text-muted-foreground">Days since last visit</span>
         </div>

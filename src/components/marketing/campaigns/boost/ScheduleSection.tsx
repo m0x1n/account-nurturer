@@ -1,6 +1,7 @@
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
 import { Card } from "@/components/ui/card";
+import { cn } from "@/lib/utils";
 
 interface ScheduleDay {
   date: string;
@@ -11,13 +12,14 @@ interface ScheduleDay {
 interface ScheduleProps {
   days: ScheduleDay[];
   onDayToggle: (index: number) => void;
+  readOnly?: boolean;
 }
 
-export function ScheduleSection({ days, onDayToggle }: ScheduleProps) {
+export function ScheduleSection({ days, onDayToggle, readOnly }: ScheduleProps) {
   if (!days || days.length === 0) return null;
 
   return (
-    <Card className="p-6">
+    <Card className={cn("p-6", readOnly && "opacity-75")}>
       <div className="space-y-4">
         <Label className="text-lg font-medium">When do you need a boost?</Label>
         <div className="space-y-2 mt-2">
@@ -29,7 +31,8 @@ export function ScheduleSection({ days, onDayToggle }: ScheduleProps) {
               <span className="text-sm text-gray-700">{day.formatted}</span>
               <Switch
                 checked={day.enabled}
-                onCheckedChange={() => onDayToggle(index)}
+                onCheckedChange={() => !readOnly && onDayToggle(index)}
+                disabled={readOnly}
               />
             </div>
           ))}
