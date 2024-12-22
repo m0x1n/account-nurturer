@@ -12,10 +12,11 @@ import { OfferSection } from "./boost/OfferSection";
 import { ServicesSection } from "./boost/ServicesSection";
 
 interface BoostCampaignConfigProps {
+  isOpen: boolean;
   onClose: () => void;
 }
 
-export function BoostCampaignConfig({ onClose }: BoostCampaignConfigProps) {
+export function BoostCampaignConfig({ isOpen, onClose }: BoostCampaignConfigProps) {
   const { toast } = useToast();
   const { data: business } = useBusinessData();
   const { data: services } = useBusinessServices(business?.id);
@@ -149,6 +150,8 @@ export function BoostCampaignConfig({ onClose }: BoostCampaignConfigProps) {
       });
     }
   };
+
+  if (!isOpen) return null;
 
   return (
     <div className="bg-background rounded-lg border p-6 space-y-8">
