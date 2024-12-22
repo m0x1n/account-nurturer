@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
+import { isAfter } from "date-fns";
 
 interface CampaignTableRowProps {
   campaign: {
@@ -12,6 +13,12 @@ interface CampaignTableRowProps {
     campaign_type: string;
     status: string;
     created_at: string;
+    settings?: {
+      schedule?: Array<{
+        date: string;
+        enabled: boolean;
+      }>;
+    };
     campaign_metrics?: Array<{
       users_targeted: number;
       percent_opened: number;
@@ -47,7 +54,7 @@ export function CampaignTableRow({ campaign, onArchive }: CampaignTableRowProps)
     onArchive();
   };
 
-  const getCampaignType = (type: string) => {
+  const getCampaignType = () => {
     return "Smart";
   };
 
@@ -64,12 +71,24 @@ export function CampaignTableRow({ campaign, onArchive }: CampaignTableRowProps)
     return subtypeMap[type.toLowerCase()] || type;
   };
 
+  const isBoostCampaignActive = () => {
+    if (campaign.campaign_type !== 'boost' || !campaign.settings?.schedule) {
+      return false;
+    }
+
+    const lastDay = campaign.settings.schedule
+      .filter(day => day.enabled)
+      .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())[0];
+
+    return lastDay && isAfter(new Date(lastDay.date), new Date());
+  };
+
   return (
     <TableRow key={campaign.id}>
       <TableCell className="font-medium">
         <div className="flex items-center gap-2">
           {campaign.name}
-          {campaign.status === 'active' && (
+          {isBoostCampaignActive() && (
             <Badge variant="default" className="bg-primary">
               ACTIVE
             </Badge>
@@ -78,7 +97,7 @@ export function CampaignTableRow({ campaign, onArchive }: CampaignTableRowProps)
       </TableCell>
       <TableCell>
         <div className="flex flex-col">
-          <span>{getCampaignType(campaign.campaign_type)}</span>
+          <span>{getCampaignType()}</span>
           <span className="text-sm text-muted-foreground">
             {getCampaignSubtype(campaign.campaign_type)}
           </span>
