@@ -1,5 +1,5 @@
 import React, { Fragment, useEffect, useState } from "react";
-import { format, addMinutes } from "date-fns";
+import { format } from "date-fns";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
@@ -105,17 +105,22 @@ export function DayView({ currentDate, selectedStaffIds = [] }: DayViewProps) {
     <div className="mt-4 overflow-x-auto">
       <div className="grid grid-cols-[100px_repeat(auto-fill,minmax(200px,1fr))] gap-0 relative min-w-[600px]">
         {/* Time column header */}
-        <div className="sticky top-0 left-0 z-30 bg-background h-16 border-b" />
+        <div className="sticky top-0 left-0 z-30 bg-background h-20 border-b flex items-center justify-center">
+          <span className="text-sm font-medium text-muted-foreground">Time</span>
+        </div>
         
-        {/* Staff headers */}
+        {/* Staff headers with schedule time */}
         {filteredStaff.map(staff => (
-          <div key={staff.id} className="sticky top-0 z-20 bg-background border-b p-4 text-center">
+          <div key={staff.id} className="sticky top-0 z-20 bg-background border-b p-4">
             <div className="flex flex-col items-center gap-2">
               <Avatar className="h-8 w-8">
                 <AvatarImage src={staff.profile_image_url} />
                 <AvatarFallback>{staff.first_name[0]}{staff.last_name[0]}</AvatarFallback>
               </Avatar>
-              <span className="text-sm font-medium">{staff.first_name} {staff.last_name}</span>
+              <div className="text-center">
+                <div className="text-sm font-medium">{staff.first_name} {staff.last_name}</div>
+                <div className="text-xs text-muted-foreground">8:00 AM - 04:00 PM</div>
+              </div>
             </div>
           </div>
         ))}
@@ -124,7 +129,7 @@ export function DayView({ currentDate, selectedStaffIds = [] }: DayViewProps) {
         {timeSlots.map(({ start }, index) => (
           <Fragment key={start}>
             <div className="sticky left-0 bg-background z-10 border-r h-16 flex items-center">
-              <div className="text-sm text-muted-foreground px-4 -mt-4">
+              <div className="text-sm text-muted-foreground px-4">
                 {format(start, 'h:mm a')}
               </div>
             </div>
@@ -142,7 +147,7 @@ export function DayView({ currentDate, selectedStaffIds = [] }: DayViewProps) {
                     const startTime = new Date(apt.start_time);
                     const endTime = new Date(apt.end_time);
                     const durationInMinutes = (endTime.getTime() - startTime.getTime()) / (1000 * 60);
-                    const heightInPixels = (durationInMinutes / 60) * 64; // 64px per hour (h-16)
+                    const heightInPixels = (durationInMinutes / 60) * 64;
 
                     return (
                       <div
@@ -154,7 +159,7 @@ export function DayView({ currentDate, selectedStaffIds = [] }: DayViewProps) {
                         )}
                         style={{
                           height: `${heightInPixels}px`,
-                          top: `${(startTime.getMinutes() / 60) * 64}px`, // 64px per hour (h-16)
+                          top: `${(startTime.getMinutes() / 60) * 64}px`,
                         }}
                       >
                         <div className="font-medium truncate">
