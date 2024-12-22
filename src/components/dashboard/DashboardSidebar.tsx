@@ -1,4 +1,4 @@
-import { Home, ShoppingBag, Calendar, Users, Users2, ShoppingCart, BarChart2, Mail, Settings, Plus, Link, LogOut, LayoutDashboard, CheckSquare, CreditCard, Clock } from "lucide-react";
+import { Home, ShoppingBag, Calendar, Users, Users2, ShoppingCart, BarChart2, Mail, Settings, Plus, Link, LogOut, LayoutDashboard, CheckSquare, CreditCard, Clock, ChevronDown } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   Sidebar,
