@@ -36,10 +36,11 @@ const Onboarding = () => {
 
   const checkSession = async () => {
     try {
-      const { data: { session }, error } = await supabase.auth.getSession();
+      const { data: { session }, error: sessionError } = await supabase.auth.getSession();
       
-      if (error) {
-        console.error("Session error:", error);
+      if (sessionError) {
+        console.error("Session error:", sessionError);
+        await supabase.auth.signOut();
         navigate("/login");
         return;
       }
@@ -49,13 +50,25 @@ const Onboarding = () => {
         return;
       }
 
+      // Check if the user still exists
+      const { data: { user }, error: userError } = await supabase.auth.getUser();
+      
+      if (userError || !user) {
+        console.error("User error:", userError);
+        // Sign out if the token is invalid or user doesn't exist
+        await supabase.auth.signOut();
+        navigate("/login");
+        return;
+      }
+
       setFormData((prev) => ({
         ...prev,
-        email: session.user.email || "",
+        email: user.email || "",
       }));
       setIsLoading(false);
     } catch (error) {
       console.error("Session check error:", error);
+      await supabase.auth.signOut();
       navigate("/login");
     }
   };
