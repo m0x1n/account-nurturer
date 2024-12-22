@@ -113,7 +113,7 @@ export function BoostCampaignConfig({
 
       <div className="flex justify-end gap-4">
         {isActive ? (
-          <Button onClick={onClose}>
+          <Button variant="secondary" onClick={onClose}>
             Close
           </Button>
         ) : (

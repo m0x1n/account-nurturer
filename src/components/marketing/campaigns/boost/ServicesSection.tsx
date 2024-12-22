@@ -29,22 +29,24 @@ export function ServicesSection({
       <Label className="text-sm font-medium">Discounted Services</Label>
       <div className="flex gap-2">
         <button
+          type="button"
           onClick={() => !readOnly && onApplyToAllChange(true)}
           className={cn(
             "px-3 py-1.5 rounded text-sm",
             applyToAllServices ? "bg-primary text-white" : "bg-secondary",
-            readOnly && "cursor-default opacity-75"
+            readOnly && "pointer-events-none opacity-75"
           )}
           disabled={readOnly}
         >
           All Services
         </button>
         <button
+          type="button"
           onClick={() => !readOnly && onApplyToAllChange(false)}
           className={cn(
             "px-3 py-1.5 rounded text-sm",
             !applyToAllServices ? "bg-primary text-white" : "bg-secondary",
-            readOnly && "cursor-default opacity-75"
+            readOnly && "pointer-events-none opacity-75"
           )}
           disabled={readOnly}
         >

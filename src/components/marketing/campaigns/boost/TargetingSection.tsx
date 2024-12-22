@@ -22,26 +22,28 @@ export function TargetingSection({
       <Label className="text-sm font-medium">Who can be targeted?</Label>
       <div className="flex gap-2">
         <button
+          type="button"
           onClick={() => !readOnly && onTargetingChange("inactive")}
           className={cn(
             "px-3 py-1.5 rounded text-sm",
             targetingOption === "inactive"
               ? "bg-primary text-white"
               : "bg-secondary",
-            readOnly && "cursor-default opacity-75"
+            readOnly && "pointer-events-none opacity-75"
           )}
           disabled={readOnly}
         >
           No recent visit
         </button>
         <button
+          type="button"
           onClick={() => !readOnly && onTargetingChange("all")}
           className={cn(
             "px-3 py-1.5 rounded text-sm",
             targetingOption === "all"
               ? "bg-primary text-white"
               : "bg-secondary",
-            readOnly && "cursor-default opacity-75"
+            readOnly && "pointer-events-none opacity-75"
           )}
           disabled={readOnly}
         >
@@ -53,8 +55,8 @@ export function TargetingSection({
           <Input
             type="number"
             value={daysThreshold}
-            onChange={(e) => onDaysChange(e.target.value)}
-            className="w-20"
+            onChange={(e) => !readOnly && onDaysChange(e.target.value)}
+            className={cn("w-20", readOnly && "opacity-75")}
             min="1"
             readOnly={readOnly}
             disabled={readOnly}
