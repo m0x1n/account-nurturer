@@ -48,15 +48,28 @@ export function CalendarHeader({
   };
 
   const handleStaffSelect = (staffId: string) => {
-    if (view === 'week') {
-      onStaffChange([staffId]);
+    if (staffId === 'all') {
+      // If "Select All" is clicked
+      if (selectedStaffIds.length === staffMembers.length) {
+        // If all are selected, deselect all
+        onStaffChange([]);
+      } else {
+        // Select all staff members
+        onStaffChange(staffMembers.map(staff => staff.id));
+      }
     } else {
-      const newSelection = selectedStaffIds.includes(staffId)
-        ? selectedStaffIds.filter(id => id !== staffId)
-        : [...selectedStaffIds, staffId];
-      onStaffChange(newSelection);
+      if (view === 'week') {
+        onStaffChange([staffId]);
+      } else {
+        const newSelection = selectedStaffIds.includes(staffId)
+          ? selectedStaffIds.filter(id => id !== staffId)
+          : [...selectedStaffIds, staffId];
+        onStaffChange(newSelection);
+      }
     }
   };
+
+  const allSelected = staffMembers.length > 0 && selectedStaffIds.length === staffMembers.length;
 
   return (
     <div className="flex items-center justify-between mb-4">
@@ -124,6 +137,17 @@ export function CalendarHeader({
               <Command>
                 <CommandEmpty>No staff found.</CommandEmpty>
                 <CommandGroup>
+                  <CommandItem
+                    onSelect={() => handleStaffSelect('all')}
+                  >
+                    <Check
+                      className={cn(
+                        "mr-2 h-4 w-4",
+                        allSelected ? "opacity-100" : "opacity-0"
+                      )}
+                    />
+                    Select All
+                  </CommandItem>
                   {staffMembers.map((staff) => (
                     <CommandItem
                       key={staff.id}
