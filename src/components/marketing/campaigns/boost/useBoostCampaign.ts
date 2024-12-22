@@ -165,6 +165,7 @@ export const useBoostCampaign = (
         .upsert({
           business_id: business.id,
           campaign_type: "email",
+          campaign_subtype: "boost", // Explicitly set the subtype
           name: campaignName,
           is_active: isBoostStillValid(),
           settings: {

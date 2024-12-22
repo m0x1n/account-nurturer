@@ -23,11 +23,13 @@ export interface CampaignSettings {
   services?: string[] | "all";
 }
 
+export type CampaignSubtype = 'boost' | 'last-minute' | 'slow-days' | 'limited-time' | 'reminder' | 'rescue' | 'manual';
+
 export interface Campaign {
   id: string;
   name: string;
   campaign_type: string;
-  campaign_subtype: string;
+  campaign_subtype: CampaignSubtype;
   status: string;
   created_at: string;
   settings: CampaignSettings;

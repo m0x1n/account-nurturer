@@ -1,12 +1,12 @@
 import { isAfter } from "date-fns";
-import { Campaign } from "../types/campaignTypes";
+import { Campaign, CampaignSubtype } from "../types/campaignTypes";
 
 export const getCampaignType = () => {
   return "Smart";
 };
 
-export const getCampaignSubtype = (type: string) => {
-  const subtypeMap: { [key: string]: string } = {
+export const getCampaignSubtype = (type: CampaignSubtype | string): string => {
+  const subtypeMap: Record<CampaignSubtype, string> = {
     'boost': 'Boost',
     'last-minute': 'Fill Last Minute Openings',
     'slow-days': 'Fill Slow Days',
@@ -15,7 +15,7 @@ export const getCampaignSubtype = (type: string) => {
     'rescue': 'Rescue Lost Customers',
     'manual': 'Manual Campaign'
   };
-  return subtypeMap[type.toLowerCase()] || type;
+  return subtypeMap[type as CampaignSubtype] || type;
 };
 
 export const isBoostCampaignActive = (campaign: Campaign): boolean => {
