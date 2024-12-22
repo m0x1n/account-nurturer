@@ -20,66 +20,68 @@ interface ClientsBreakdownProps {
 }
 
 export function ClientsBreakdown({ clientsData, averageClientSpend }: ClientsBreakdownProps) {
+  const totalClients = clientsData.reduce((acc, curr) => acc + curr.value, 0);
+
   return (
     <Card>
       <CardHeader>
         <CardTitle>Clients Served Breakdown</CardTitle>
       </CardHeader>
       <CardContent>
-        <div className="flex items-center justify-between">
-          <ChartContainer config={{}} className="h-[200px] w-[200px]">
-            <PieChart>
-              <Pie
-                data={clientsData}
-                dataKey="value"
-                nameKey="name"
-                cx="50%"
-                cy="50%"
-                innerRadius={60}
-                outerRadius={80}
-              >
-                {clientsData.map((entry, index) => (
-                  <Cell key={`cell-${index}`} fill={COLORS[index]} />
+        <div className="flex flex-col space-y-6">
+          <div className="flex items-start justify-between">
+            <div className="flex items-center space-x-8">
+              <ChartContainer config={{}} className="h-[120px] w-[120px]">
+                <PieChart>
+                  <Pie
+                    data={clientsData}
+                    dataKey="value"
+                    nameKey="name"
+                    cx="50%"
+                    cy="50%"
+                    innerRadius={35}
+                    outerRadius={45}
+                  >
+                    {clientsData.map((entry, index) => (
+                      <Cell key={`cell-${index}`} fill={COLORS[index]} />
+                    ))}
+                  </Pie>
+                  <ChartTooltip />
+                </PieChart>
+              </ChartContainer>
+              <div className="space-y-2">
+                {clientsData.map((item, index) => (
+                  <div key={item.name} className="flex items-center gap-2">
+                    <div className="h-2.5 w-2.5 rounded-full" style={{ backgroundColor: COLORS[index] }} />
+                    <span className="text-sm text-muted-foreground">{item.name}</span>
+                    <span className="text-sm font-medium">
+                      {item.value} | {item.percentage}
+                    </span>
+                  </div>
                 ))}
-              </Pie>
-              <ChartTooltip />
-            </PieChart>
-          </ChartContainer>
-          <div className="space-y-4">
-            {clientsData.map((item, index) => (
-              <div key={item.name} className="flex items-center gap-2">
-                <div className="h-3 w-3 rounded-sm" style={{ backgroundColor: COLORS[index] }} />
-                <span className="text-sm font-medium">{item.name}</span>
-                <span className="text-sm text-muted-foreground">
-                  {item.value} | {item.percentage}
-                </span>
-              </div>
-            ))}
-            <div className="pt-2 border-t">
-              <div className="flex items-center gap-2">
-                <span className="text-sm font-medium">Total Clients</span>
-                <span className="text-sm text-muted-foreground">93 | 100%</span>
+                <div className="pt-1">
+                  <div className="flex items-center gap-2">
+                    <span className="text-sm text-muted-foreground">Total Sales</span>
+                    <span className="text-sm font-medium">{totalClients} | 100%</span>
+                  </div>
+                </div>
               </div>
             </div>
-            <div className="pt-4 border-t">
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-2">
-                  <span className="text-sm font-medium">{averageClientSpend.label}</span>
-                  <TooltipProvider>
-                    <Tooltip>
-                      <TooltipTrigger asChild>
-                        <Button variant="ghost" size="icon" className="h-4 w-4 p-0">
-                          <HelpCircle className="h-4 w-4" />
-                        </Button>
-                      </TooltipTrigger>
-                      <TooltipContent>
-                        <p>Average amount spent per client</p>
-                      </TooltipContent>
-                    </Tooltip>
-                  </TooltipProvider>
-                </div>
-                <span className="text-sm font-bold">{averageClientSpend.amount}</span>
-              </div>
+            <div className="flex items-center gap-2">
+              <span className="text-sm text-muted-foreground">{averageClientSpend.label}</span>
+              <TooltipProvider>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <Button variant="ghost" size="icon" className="h-4 w-4 p-0">
+                      <HelpCircle className="h-4 w-4" />
+                    </Button>
+                  </TooltipTrigger>
+                  <TooltipContent>
+                    <p>Average amount spent per client</p>
+                  </TooltipContent>
+                </Tooltip>
+              </TooltipProvider>
+              <span className="text-lg font-bold">{averageClientSpend.amount}</span>
             </div>
           </div>
         </div>
