@@ -45,10 +45,16 @@ export function CampaignTableRow({ campaign, onArchive }: CampaignTableRowProps)
     onArchive();
   };
 
+  const getCampaignType = (type: string) => {
+    // Smart campaign types
+    const smartTypes = ['boost', 'last-minute', 'slow-days', 'limited-time', 'reminder', 'rescue'];
+    return smartTypes.includes(type.toLowerCase()) ? 'Smart' : 'Manual';
+  };
+
   return (
     <TableRow key={campaign.id}>
       <TableCell className="font-medium">{campaign.name}</TableCell>
-      <TableCell>{campaign.campaign_type}</TableCell>
+      <TableCell>{getCampaignType(campaign.campaign_type)}</TableCell>
       <TableCell>{new Date(campaign.created_at).toLocaleDateString()}</TableCell>
       <TableCell className="text-right">
         {campaign.campaign_metrics?.[0]?.users_targeted || 0}
