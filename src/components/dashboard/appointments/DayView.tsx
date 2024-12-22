@@ -1,11 +1,12 @@
 import React, { useEffect, useState } from "react";
-import { format, addMinutes, startOfDay, differenceInMinutes } from "date-fns";
+import { format, startOfDay } from "date-fns";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { cn } from "@/lib/utils";
-import { ChevronLeft, ChevronRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { ChevronLeft, ChevronRight } from "lucide-react";
+import { StaffHeader } from "./StaffHeader";
+import { StaffColumn } from "./StaffColumn";
 
 interface DayViewProps {
   currentDate: Date;
@@ -17,7 +18,7 @@ export function DayView({ currentDate, selectedStaffIds = [] }: DayViewProps) {
   const [scrollPosition, setScrollPosition] = useState(0);
   const hours = Array.from({ length: 24 }, (_, i) => i);
   const dayStart = startOfDay(currentDate);
-  const staffColumnWidth = 200; // Width of each staff column
+  const staffColumnWidth = 200;
 
   // Update current time indicator position
   useEffect(() => {
@@ -54,6 +55,27 @@ export function DayView({ currentDate, selectedStaffIds = [] }: DayViewProps) {
     }
   });
 
+  // Fetch working hours for the current date
+  const { data: workingHours = [] } = useQuery({
+    queryKey: ['working-hours', format(currentDate, 'yyyy-MM-dd')],
+    queryFn: async () => {
+      const { data: businesses } = await supabase
+        .from('businesses')
+        .select('id')
+        .limit(1);
+
+      if (!businesses || businesses.length === 0) return [];
+
+      const { data } = await supabase
+        .from('business_hours')
+        .select('*')
+        .eq('business_id', businesses[0].id)
+        .eq('day_of_week', currentDate.getDay());
+
+      return data || [];
+    }
+  });
+
   const { data: appointments = [] } = useQuery({
     queryKey: ['appointments', format(currentDate, 'yyyy-MM-dd'), selectedStaffIds],
     queryFn: async () => {
@@ -74,7 +96,7 @@ export function DayView({ currentDate, selectedStaffIds = [] }: DayViewProps) {
         `)
         .eq('business_id', businesses[0].id)
         .gte('start_time', format(currentDate, 'yyyy-MM-dd'))
-        .lt('start_time', format(addMinutes(currentDate, 1440), 'yyyy-MM-dd'));
+        .lt('start_time', format(new Date(currentDate.getTime() + 86400000), 'yyyy-MM-dd'));
 
       if (selectedStaffIds.length > 0) {
         query = query.in('staff_id', selectedStaffIds);
@@ -85,18 +107,6 @@ export function DayView({ currentDate, selectedStaffIds = [] }: DayViewProps) {
       return data || [];
     }
   });
-
-  const getAppointmentStyle = (startTime: string, endTime: string) => {
-    const start = new Date(startTime);
-    const end = new Date(endTime);
-    const minutesFromMidnight = differenceInMinutes(start, dayStart);
-    const duration = differenceInMinutes(end, start);
-    
-    return {
-      top: `${(minutesFromMidnight / (24 * 60)) * 100}%`,
-      height: `${(duration / (24 * 60)) * 100}%`,
-    };
-  };
 
   const handleScrollLeft = () => {
     setScrollPosition(Math.max(0, scrollPosition - staffColumnWidth));
@@ -127,12 +137,11 @@ export function DayView({ currentDate, selectedStaffIds = [] }: DayViewProps) {
             style={{ transform: `translateX(-${scrollPosition}px)` }}
           >
             {staffData.map((staff) => (
-              <div
+              <StaffHeader
                 key={staff.id}
-                className="w-[200px] p-4 border-r flex-shrink-0 text-center font-medium"
-              >
-                {staff.first_name} {staff.last_name}
-              </div>
+                staff={staff}
+                workingHours={workingHours.find(wh => wh.is_open)}
+              />
             ))}
           </div>
         </div>
@@ -170,55 +179,14 @@ export function DayView({ currentDate, selectedStaffIds = [] }: DayViewProps) {
             style={{ transform: `translateX(-${scrollPosition}px)` }}
           >
             {staffData.map((staff) => (
-              <div key={staff.id} className="w-[200px] flex-shrink-0 relative border-r">
-                {/* Hour grid lines */}
-                {hours.map((hour) => (
-                  <div
-                    key={hour}
-                    className="h-16 border-b border-gray-100"
-                  />
-                ))}
-
-                {/* Current time indicator */}
-                {format(currentDate, 'yyyy-MM-dd') === format(new Date(), 'yyyy-MM-dd') && (
-                  <div 
-                    className="absolute left-0 right-0 flex items-center z-20 pointer-events-none"
-                    style={{ top: `${currentTimeTop}%` }}
-                  >
-                    <div className="w-2 h-2 rounded-full bg-red-500 -ml-1"></div>
-                    <div className="flex-1 h-px bg-red-500"></div>
-                  </div>
-                )}
-
-                {/* Appointments for this staff member */}
-                {appointments
-                  .filter(apt => apt.staff_id === staff.id)
-                  .map((appointment) => {
-                    const style = getAppointmentStyle(appointment.start_time, appointment.end_time);
-                    
-                    return (
-                      <div
-                        key={appointment.id}
-                        className={cn(
-                          "absolute left-1 right-1 rounded-md p-2",
-                          "bg-primary/10 hover:bg-primary/20 transition-colors",
-                          "cursor-pointer text-sm"
-                        )}
-                        style={style}
-                      >
-                        <div className="font-medium">
-                          {appointment.client?.first_name} {appointment.client?.last_name}
-                        </div>
-                        <div className="text-xs text-muted-foreground">
-                          {format(new Date(appointment.start_time), 'h:mm a')} - {format(new Date(appointment.end_time), 'h:mm a')}
-                        </div>
-                        <div className="text-xs text-muted-foreground truncate">
-                          {appointment.service?.name}
-                        </div>
-                      </div>
-                    );
-                  })}
-              </div>
+              <StaffColumn
+                key={staff.id}
+                staff={staff}
+                appointments={appointments}
+                currentDate={currentDate}
+                currentTimeTop={currentTimeTop}
+                dayStart={dayStart}
+              />
             ))}
           </div>
         </ScrollArea>
