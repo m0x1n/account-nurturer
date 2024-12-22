@@ -36,7 +36,7 @@ const EmailStep = ({ formData, updateFormData, onNext }: EmailStepProps) => {
 
     const { data: { user } } = await supabase.auth.getUser();
     if (user) {
-      // Check if the email is different from the current one
+      // If the email hasn't changed, just proceed
       if (user.email === email) {
         updateFormData({ email });
         onNext();
@@ -46,22 +46,14 @@ const EmailStep = ({ formData, updateFormData, onNext }: EmailStepProps) => {
       try {
         const { error } = await supabase.auth.updateUser({ email });
         if (error) {
-          let errorMessage = error.message;
-          let isEmailExists = false;
-
-          // Check if error is an email_exists error
-          if (typeof error === 'object') {
-            if ('code' in error && error.code === 'email_exists') {
-              isEmailExists = true;
-            } else if (error.message?.includes('email_exists')) {
-              isEmailExists = true;
-            }
-          }
+          // Check if it's an email_exists error from the error object
+          const isEmailExists = error.message?.includes('email_exists') || 
+                              (error as any)?.code === 'email_exists';
 
           if (isEmailExists) {
             toast({
-              title: "Error",
-              description: "This email is already registered. Please use a different email or contact support if you think this is a mistake.",
+              title: "Email Already Registered",
+              description: "This email is already in use. Please use a different email address or contact support if you think this is a mistake.",
               variant: "destructive",
             });
             return;
@@ -69,7 +61,7 @@ const EmailStep = ({ formData, updateFormData, onNext }: EmailStepProps) => {
 
           toast({
             title: "Error",
-            description: errorMessage,
+            description: error.message,
             variant: "destructive",
           });
           return;
@@ -77,45 +69,40 @@ const EmailStep = ({ formData, updateFormData, onNext }: EmailStepProps) => {
 
         toast({
           title: "Verification Email Sent",
-          description: "Please check your inbox to verify your email address. You can continue with the setup while waiting.",
+          description: "Please check your inbox to verify your new email address. You can continue with the setup while waiting.",
         });
+        updateFormData({ email });
+        onNext();
       } catch (error: any) {
-        let errorMessage = error.message;
-        let isEmailExists = false;
-
-        // Try to parse the error body if it's a JSON string
+        // Handle JSON error response
         try {
-          if (typeof error.body === 'string') {
-            const parsedError = JSON.parse(error.body);
-            if (parsedError.code === 'email_exists') {
-              isEmailExists = true;
-            }
-            errorMessage = parsedError.message || error.message;
-          }
-        } catch (e) {
-          // If parsing fails, use the original error message
-        }
+          const errorBody = typeof error.body === 'string' ? JSON.parse(error.body) : error;
+          const isEmailExists = errorBody.code === 'email_exists';
 
-        if (isEmailExists) {
+          if (isEmailExists) {
+            toast({
+              title: "Email Already Registered",
+              description: "This email is already in use. Please use a different email address or contact support if you think this is a mistake.",
+              variant: "destructive",
+            });
+            return;
+          }
+
           toast({
             title: "Error",
-            description: "This email is already registered. Please use a different email or contact support if you think this is a mistake.",
+            description: errorBody.message || error.message,
             variant: "destructive",
           });
-          return;
+        } catch {
+          // If JSON parsing fails, show the original error
+          toast({
+            title: "Error",
+            description: error.message,
+            variant: "destructive",
+          });
         }
-        
-        toast({
-          title: "Error",
-          description: errorMessage,
-          variant: "destructive",
-        });
-        return;
       }
     }
-
-    updateFormData({ email });
-    onNext();
   };
 
   return (
