@@ -27,6 +27,13 @@ export function StaffColumn({ staff, appointments, currentDate, currentTimeTop, 
     };
   };
 
+  // Filter appointments for this staff member or unassigned appointments
+  const staffAppointments = appointments.filter(apt => 
+    apt.staff_id === staff.id || apt.staff_id === null
+  );
+  
+  console.log(`Appointments for staff ${staff.id}:`, staffAppointments);
+
   return (
     <div 
       className="flex-shrink-0 relative border-r" 
@@ -56,33 +63,31 @@ export function StaffColumn({ staff, appointments, currentDate, currentTimeTop, 
       )}
 
       {/* Appointments */}
-      {appointments
-        .filter(apt => apt.staff_id === staff.id)
-        .map((appointment) => {
-          const style = getAppointmentStyle(appointment.start_time, appointment.end_time);
-          
-          return (
-            <div
-              key={appointment.id}
-              className={cn(
-                "absolute left-1 right-1 rounded-md p-2",
-                "bg-primary/10 hover:bg-primary/20 transition-colors",
-                "cursor-pointer text-sm"
-              )}
-              style={style}
-            >
-              <div className="font-medium">
-                {appointment.client?.first_name} {appointment.client?.last_name}
-              </div>
-              <div className="text-xs text-muted-foreground">
-                {format(new Date(appointment.start_time), 'h:mm a')} - {format(new Date(appointment.end_time), 'h:mm a')}
-              </div>
-              <div className="text-xs text-muted-foreground truncate">
-                {appointment.service?.name}
-              </div>
+      {staffAppointments.map((appointment) => {
+        const style = getAppointmentStyle(appointment.start_time, appointment.end_time);
+        
+        return (
+          <div
+            key={appointment.id}
+            className={cn(
+              "absolute left-1 right-1 rounded-md p-2",
+              "bg-primary/10 hover:bg-primary/20 transition-colors",
+              "cursor-pointer text-sm"
+            )}
+            style={style}
+          >
+            <div className="font-medium">
+              {appointment.client?.first_name} {appointment.client?.last_name}
             </div>
-          );
-        })}
+            <div className="text-xs text-muted-foreground">
+              {format(new Date(appointment.start_time), 'h:mm a')} - {format(new Date(appointment.end_time), 'h:mm a')}
+            </div>
+            <div className="text-xs text-muted-foreground truncate">
+              {appointment.service?.name}
+            </div>
+          </div>
+        );
+      })}
     </div>
   );
 }
