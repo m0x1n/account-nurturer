@@ -86,7 +86,7 @@ export function DashboardContent() {
                 id="insights-mode"
                 checked={showInsights}
                 onCheckedChange={setShowInsights}
-                className="data-[state=checked]:bg-primary"
+                className="data-[state=checked]:bg-muted data-[state=unchecked]:bg-muted-foreground/20 h-[24px] w-[44px]"
               />
               <Label 
                 htmlFor="insights-mode" 
