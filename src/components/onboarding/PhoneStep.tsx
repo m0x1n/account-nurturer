@@ -17,6 +17,7 @@ const PhoneStep = ({ formData, updateFormData, onNext, onBack }: PhoneStepProps)
   const [otp, setOtp] = useState("");
   const [showOtp, setShowOtp] = useState(false);
   const [isVerified, setIsVerified] = useState(false);
+  const [isProcessing, setIsProcessing] = useState(false);
   const { toast } = useToast();
 
   useEffect(() => {
@@ -39,6 +40,8 @@ const PhoneStep = ({ formData, updateFormData, onNext, onBack }: PhoneStepProps)
 
   const handleSendOtp = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (isProcessing) return;
+
     if (!phone) {
       toast({
         title: "Error",
@@ -48,53 +51,77 @@ const PhoneStep = ({ formData, updateFormData, onNext, onBack }: PhoneStepProps)
       return;
     }
 
+    setIsProcessing(true);
+
     try {
-      // First, sign up the user with email if they don't have a session
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) {
-        const { error: signUpError } = await supabase.auth.signUp({
-          email: formData.email,
-          password: crypto.randomUUID(), // Generate a random password
+      // First check if we already have a session
+      const { data: { session } } = await supabase.auth.getSession();
+      
+      if (!session) {
+        // If no session, check if the email exists
+        const { data: { users }, error: getUserError } = await supabase.auth.admin.listUsers({
+          filters: {
+            email: formData.email
+          }
         });
 
-        if (signUpError) {
-          toast({
-            title: "Error",
-            description: signUpError.message,
-            variant: "destructive",
+        if (getUserError) {
+          console.error('Error checking user:', getUserError);
+          throw new Error('Failed to check user status');
+        }
+
+        // If user doesn't exist, create them
+        if (!users || users.length === 0) {
+          const { error: signUpError } = await supabase.auth.signInWithOtp({
+            email: formData.email,
           });
-          return;
+
+          if (signUpError) {
+            if (signUpError.message.includes('rate_limit')) {
+              toast({
+                title: "Please wait",
+                description: "For security purposes, please wait a moment before trying again",
+                variant: "destructive",
+              });
+              return;
+            }
+            throw signUpError;
+          }
+
+          toast({
+            title: "Verification email sent",
+            description: "Please check your email to verify your account",
+          });
         }
       }
 
       // Now update the phone number
       const { error: updateError } = await supabase.auth.updateUser({ phone });
       if (updateError) {
-        toast({
-          title: "Error",
-          description: updateError.message,
-          variant: "destructive",
-        });
-        return;
+        throw updateError;
       }
 
-      // Simulate sending OTP
       toast({
         title: "OTP Sent",
         description: "Please check your phone for the verification code",
       });
       setShowOtp(true);
-    } catch (error) {
+    } catch (error: any) {
+      console.error('Error in phone verification:', error);
       toast({
         title: "Error",
-        description: "Failed to send verification code",
+        description: error.message || "Failed to send verification code",
         variant: "destructive",
       });
+    } finally {
+      setIsProcessing(false);
     }
   };
 
   const handleVerifyOtp = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (isProcessing) return;
+
     if (!otp) {
       toast({
         title: "Error",
@@ -104,9 +131,9 @@ const PhoneStep = ({ formData, updateFormData, onNext, onBack }: PhoneStepProps)
       return;
     }
 
+    setIsProcessing(true);
+
     try {
-      // In a real app, verify the OTP with Supabase
-      // For now, we'll simulate verification
       const { data: { user } } = await supabase.auth.getUser();
       if (user) {
         const { error } = await supabase
@@ -114,24 +141,20 @@ const PhoneStep = ({ formData, updateFormData, onNext, onBack }: PhoneStepProps)
           .update({ phone, phone_verified: true })
           .eq('id', user.id);
 
-        if (error) {
-          toast({
-            title: "Error",
-            description: "Failed to verify phone number",
-            variant: "destructive",
-          });
-          return;
-        }
+        if (error) throw error;
 
         updateFormData({ phone });
         onNext();
       }
-    } catch (error) {
+    } catch (error: any) {
+      console.error('Error verifying OTP:', error);
       toast({
         title: "Error",
-        description: "Failed to verify phone number",
+        description: error.message || "Failed to verify phone number",
         variant: "destructive",
       });
+    } finally {
+      setIsProcessing(false);
     }
   };
 
@@ -153,19 +176,35 @@ const PhoneStep = ({ formData, updateFormData, onNext, onBack }: PhoneStepProps)
               onChange={(e) => setPhone(e.target.value)}
               placeholder="+1 (555) 000-0000"
               className="w-full"
+              disabled={isProcessing}
             />
           </div>
           <div className="flex gap-4">
-            <Button type="button" variant="outline" onClick={onBack} className="flex-1">
+            <Button 
+              type="button" 
+              variant="outline" 
+              onClick={onBack} 
+              className="flex-1"
+              disabled={isProcessing}
+            >
               Back
             </Button>
             {isVerified ? (
-              <Button type="button" onClick={onNext} className="flex-1">
+              <Button 
+                type="button" 
+                onClick={onNext} 
+                className="flex-1"
+                disabled={isProcessing}
+              >
                 Continue
               </Button>
             ) : (
-              <Button type="submit" className="flex-1">
-                Send Code
+              <Button 
+                type="submit" 
+                className="flex-1"
+                disabled={isProcessing}
+              >
+                {isProcessing ? "Sending..." : "Send Code"}
               </Button>
             )}
           </div>
@@ -181,14 +220,25 @@ const PhoneStep = ({ formData, updateFormData, onNext, onBack }: PhoneStepProps)
               onChange={(e) => setOtp(e.target.value)}
               placeholder="Enter verification code"
               className="w-full"
+              disabled={isProcessing}
             />
           </div>
           <div className="flex gap-4">
-            <Button type="button" variant="outline" onClick={() => setShowOtp(false)} className="flex-1">
+            <Button 
+              type="button" 
+              variant="outline" 
+              onClick={() => setShowOtp(false)} 
+              className="flex-1"
+              disabled={isProcessing}
+            >
               Back
             </Button>
-            <Button type="submit" className="flex-1">
-              Verify
+            <Button 
+              type="submit" 
+              className="flex-1"
+              disabled={isProcessing}
+            >
+              {isProcessing ? "Verifying..." : "Verify"}
             </Button>
           </div>
         </form>
