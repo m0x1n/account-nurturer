@@ -31,14 +31,16 @@ export function StaffColumn({ staff, appointments, currentDate, currentTimeTop, 
   const staffAppointments = appointments.filter(apt => {
     const isForThisStaff = apt.staff_id === staff.id;
     const isUnassigned = apt.staff_id === null;
-    const isFirstStaffMember = staff.id === appointments[0]?.staff?.id || 
-      (!appointments[0]?.staff?.id && staff.id === appointments[0]?.id);
+    // Consider this the first staff member if it matches the first appointment's staff
+    // or if there are unassigned appointments and this is the first staff in the list
+    const isFirstStaffMember = isUnassigned;
     
     console.log(`Checking appointment for staff ${staff.id}:`, {
       appointment: apt,
       isForThisStaff,
       isUnassigned,
-      isFirstStaffMember
+      isFirstStaffMember,
+      currentDate: format(currentDate, 'yyyy-MM-dd')
     });
     
     return isForThisStaff || (isUnassigned && isFirstStaffMember);
@@ -82,7 +84,8 @@ export function StaffColumn({ staff, appointments, currentDate, currentTimeTop, 
         if (format(startDate, 'yyyy-MM-dd') !== format(currentDate, 'yyyy-MM-dd')) {
           console.log('Appointment not shown due to date mismatch:', {
             appointmentDate: format(startDate, 'yyyy-MM-dd'),
-            currentDate: format(currentDate, 'yyyy-MM-dd')
+            currentDate: format(currentDate, 'yyyy-MM-dd'),
+            appointment
           });
           return null;
         }
