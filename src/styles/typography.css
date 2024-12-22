@@ -1,0 +1,21 @@
+@import url('https://fonts.googleapis.com/css2?family=Lato:wght@300;400;500;600;700&display=swap');
+
+@layer base {
+  body {
+    @apply font-sans bg-background text-foreground antialiased;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    @apply font-serif font-medium tracking-tight;
+  }
+
+  h1 { @apply text-display-xl; }
+  h2 { @apply text-display-lg; }
+  h3 { @apply text-display; }
+  h4 { @apply text-title-lg; }
+  h5 { @apply text-title; }
+  h6 { @apply text-subtitle; }
+
+  p { @apply text-body leading-relaxed; }
+  small { @apply text-small; }
+}
