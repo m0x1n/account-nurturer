@@ -1,7 +1,6 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { useToast } from "@/hooks/use-toast";
 import { useBusinessServices } from "@/hooks/useBusinessServices";
 import { useBusinessData } from "@/hooks/useBusinessData";
@@ -13,11 +12,10 @@ import { OfferSection } from "./boost/OfferSection";
 import { ServicesSection } from "./boost/ServicesSection";
 
 interface BoostCampaignConfigProps {
-  isOpen: boolean;
   onClose: () => void;
 }
 
-export function BoostCampaignConfig({ isOpen, onClose }: BoostCampaignConfigProps) {
+export function BoostCampaignConfig({ onClose }: BoostCampaignConfigProps) {
   const { toast } = useToast();
   const { data: business } = useBusinessData();
   const { data: services } = useBusinessServices(business?.id);
@@ -153,78 +151,72 @@ export function BoostCampaignConfig({ isOpen, onClose }: BoostCampaignConfigProp
   };
 
   return (
-    <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="max-w-2xl">
-        <DialogHeader>
-          <DialogTitle>Configure Boost Campaign</DialogTitle>
-        </DialogHeader>
+    <div className="bg-background rounded-lg border p-6 space-y-8">
+      <div className="space-y-8">
+        <TargetingSection
+          targetingOption={targetingOption}
+          daysThreshold={daysThreshold}
+          onTargetingChange={setTargetingOption}
+          onDaysChange={setDaysThreshold}
+        />
 
-        <div className="space-y-8 py-4">
-          <TargetingSection
-            targetingOption={targetingOption}
-            daysThreshold={daysThreshold}
-            onTargetingChange={setTargetingOption}
-            onDaysChange={setDaysThreshold}
-          />
+        <ScheduleSection
+          days={scheduledDays}
+          onDayToggle={handleDayToggle}
+        />
 
-          <ScheduleSection
-            days={scheduledDays}
-            onDayToggle={handleDayToggle}
-          />
+        <OfferSection
+          discountType={discountType}
+          discountValue={discountValue}
+          onDiscountTypeChange={setDiscountType}
+          onDiscountValueChange={setDiscountValue}
+        />
 
-          <OfferSection
-            discountType={discountType}
-            discountValue={discountValue}
-            onDiscountTypeChange={setDiscountType}
-            onDiscountValueChange={setDiscountValue}
-          />
+        <ServicesSection
+          services={services}
+          selectedServices={selectedServices}
+          applyToAllServices={applyToAllServices}
+          onServiceToggle={handleServiceToggle}
+          onApplyToAllChange={setApplyToAllServices}
+        />
 
-          <ServicesSection
-            services={services}
-            selectedServices={selectedServices}
-            applyToAllServices={applyToAllServices}
-            onServiceToggle={handleServiceToggle}
-            onApplyToAllChange={setApplyToAllServices}
-          />
+        {showPreview && (
+          <div className="p-4 border rounded-lg bg-muted">
+            <h4 className="font-medium mb-2">Your offer: {discountValue}{discountType === "percent" ? "% off" : "$ off"} today & tomorrow!</h4>
+          </div>
+        )}
 
-          {showPreview && (
-            <div className="p-4 border rounded-lg bg-muted">
-              <h4 className="font-medium mb-2">Your offer: {discountValue}{discountType === "percent" ? "% off" : "$ off"} today & tomorrow!</h4>
-            </div>
-          )}
-
-          <div className="space-y-4">
-            <div className="flex gap-4">
-              <Button
-                variant="outline"
-                onClick={() => setShowPreview(!showPreview)}
-              >
-                {showPreview ? "Hide Preview" : "View Sample Email"}
+        <div className="space-y-4">
+          <div className="flex gap-4">
+            <Button
+              variant="outline"
+              onClick={() => setShowPreview(!showPreview)}
+            >
+              {showPreview ? "Hide Preview" : "View Sample Email"}
+            </Button>
+            <div className="flex-1 flex items-center gap-2">
+              <Input
+                type="email"
+                placeholder="Enter email for test"
+                value={testEmail}
+                onChange={(e) => setTestEmail(e.target.value)}
+              />
+              <Button onClick={handleTestEmail}>
+                Send
               </Button>
-              <div className="flex-1 flex items-center gap-2">
-                <Input
-                  type="email"
-                  placeholder="Enter email for test"
-                  value={testEmail}
-                  onChange={(e) => setTestEmail(e.target.value)}
-                />
-                <Button onClick={handleTestEmail}>
-                  Send
-                </Button>
-              </div>
             </div>
           </div>
         </div>
+      </div>
 
-        <div className="flex justify-end gap-4 mt-6">
-          <Button variant="outline" onClick={onClose}>
-            Cancel
-          </Button>
-          <Button onClick={handleSave}>
-            Save Campaign
-          </Button>
-        </div>
-      </DialogContent>
-    </Dialog>
+      <div className="flex justify-end gap-4">
+        <Button variant="outline" onClick={onClose}>
+          Cancel
+        </Button>
+        <Button onClick={handleSave}>
+          Save Campaign
+        </Button>
+      </div>
+    </div>
   );
 }

@@ -5,11 +5,11 @@ import {
   Clock, 
   Timer, 
   Bell, 
-  UserMinus 
+  UserMinus,
+  ChevronDown,
+  ChevronUp
 } from "lucide-react";
 import { Switch } from "@/components/ui/switch";
-import { Button } from "@/components/ui/button";
-import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { BoostCampaignConfig } from "@/components/marketing/campaigns/BoostCampaignConfig";
 
 interface Campaign {
@@ -72,7 +72,7 @@ export default function SmartCampaigns() {
     }
   ]);
 
-  const [configureId, setConfigureId] = useState<string | null>(null);
+  const [expandedId, setExpandedId] = useState<string | null>(null);
 
   const handleToggle = (id: string) => {
     setCampaigns(prevCampaigns =>
@@ -84,12 +84,8 @@ export default function SmartCampaigns() {
     );
   };
 
-  const handleConfigure = (id: string) => {
-    setConfigureId(id);
-  };
-
-  const handleCloseConfig = () => {
-    setConfigureId(null);
+  const handleExpand = (id: string) => {
+    setExpandedId(expandedId === id ? null : id);
   };
 
   return (
@@ -103,52 +99,53 @@ export default function SmartCampaigns() {
 
       <div className="space-y-4">
         {campaigns.map((campaign) => (
-          <div
-            key={campaign.id}
-            className="p-4 bg-card rounded-lg border shadow-sm"
-          >
-            <div className="flex items-start justify-between">
-              <div className="flex items-start gap-4">
-                <div className="mt-1 text-primary">
-                  {campaign.icon}
+          <div key={campaign.id} className="space-y-4">
+            <div className="p-4 bg-card rounded-lg border shadow-sm">
+              <div className="flex items-start justify-between">
+                <div className="flex items-start gap-4">
+                  <div className="mt-1 text-primary">
+                    {campaign.icon}
+                  </div>
+                  <div>
+                    <h3 className="font-medium text-lg">{campaign.name}</h3>
+                    <p className="text-muted-foreground text-sm">
+                      {campaign.description}
+                    </p>
+                  </div>
                 </div>
-                <div>
-                  <h3 className="font-medium text-lg">{campaign.name}</h3>
-                  <p className="text-muted-foreground text-sm">
-                    {campaign.description}
-                  </p>
+                <div className="flex items-center gap-4">
+                  {!campaign.isComingSoon && (
+                    <button
+                      className="flex items-center gap-1 text-sm text-primary hover:text-primary/80"
+                      onClick={() => handleExpand(campaign.id)}
+                    >
+                      Configure
+                      {expandedId === campaign.id ? (
+                        <ChevronUp className="h-4 w-4" />
+                      ) : (
+                        <ChevronDown className="h-4 w-4" />
+                      )}
+                    </button>
+                  )}
+                  {campaign.isComingSoon ? (
+                    <span className="text-sm text-muted-foreground">Coming Soon</span>
+                  ) : (
+                    <Switch
+                      checked={campaign.isActive}
+                      onCheckedChange={() => handleToggle(campaign.id)}
+                    />
+                  )}
                 </div>
-              </div>
-              <div className="flex items-center gap-4">
-                {!campaign.isComingSoon && (
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={() => handleConfigure(campaign.id)}
-                  >
-                    Configure
-                  </Button>
-                )}
-                {campaign.isComingSoon ? (
-                  <span className="text-sm text-muted-foreground">Coming Soon</span>
-                ) : (
-                  <Switch
-                    checked={campaign.isActive}
-                    onCheckedChange={() => handleToggle(campaign.id)}
-                  />
-                )}
               </div>
             </div>
+            {expandedId === campaign.id && campaign.id === "boost" && (
+              <div className="pl-10 pr-4 pb-4">
+                <BoostCampaignConfig onClose={() => setExpandedId(null)} />
+              </div>
+            )}
           </div>
         ))}
       </div>
-
-      {configureId === "boost" && (
-        <BoostCampaignConfig
-          isOpen={true}
-          onClose={handleCloseConfig}
-        />
-      )}
     </div>
   );
 }
