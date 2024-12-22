@@ -19,30 +19,9 @@ const Index = () => {
     clearAllSessions();
   }, []);
 
-  const handleGetStarted = async () => {
-    try {
-      // Clear any cached data
-      localStorage.clear();
-      sessionStorage.clear();
-      await supabase.auth.refreshSession();
-      
-      const { data: { session }, error: sessionError } = await supabase.auth.getSession();
-      
-      if (sessionError) {
-        console.error("Session error:", sessionError);
-        navigate("/login");
-        return;
-      }
-
-      if (session?.user) {
-        navigate("/onboarding");
-      } else {
-        navigate("/login");
-      }
-    } catch (error) {
-      console.error("Authentication error:", error);
-      navigate("/login");
-    }
+  const handleGetStarted = () => {
+    // For new users, go directly to onboarding
+    navigate("/onboarding");
   };
 
   const handleSignIn = () => {
