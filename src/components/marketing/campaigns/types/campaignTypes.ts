@@ -27,6 +27,7 @@ export interface Campaign {
   id: string;
   name: string;
   campaign_type: string;
+  campaign_subtype: string;
   status: string;
   created_at: string;
   settings: CampaignSettings;

@@ -53,7 +53,7 @@ export function CampaignTableRow({ campaign, onArchive }: CampaignTableRowProps)
         <div className="flex flex-col">
           <span>{getCampaignType()}</span>
           <span className="text-sm text-muted-foreground">
-            {getCampaignSubtype(campaign.campaign_type)}
+            {getCampaignSubtype(campaign.campaign_subtype || campaign.campaign_type)}
           </span>
         </div>
       </TableCell>

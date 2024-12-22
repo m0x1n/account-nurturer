@@ -348,6 +348,7 @@ export type Database = {
         Row: {
           archived_at: string | null
           business_id: string | null
+          campaign_subtype: string | null
           campaign_type: string
           created_at: string
           id: string
@@ -360,6 +361,7 @@ export type Database = {
         Insert: {
           archived_at?: string | null
           business_id?: string | null
+          campaign_subtype?: string | null
           campaign_type: string
           created_at?: string
           id?: string
@@ -372,6 +374,7 @@ export type Database = {
         Update: {
           archived_at?: string | null
           business_id?: string | null
+          campaign_subtype?: string | null
           campaign_type?: string
           created_at?: string
           id?: string

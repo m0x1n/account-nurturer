@@ -25,7 +25,7 @@ export const isBoostCampaignActive = (campaign: Campaign): boolean => {
   }
 
   // Then check if it's a boost campaign with valid schedule
-  if (campaign.campaign_type !== 'boost' || !campaign.settings?.schedule) {
+  if (campaign.campaign_subtype !== 'boost' || !campaign.settings?.schedule) {
     return false;
   }
 
