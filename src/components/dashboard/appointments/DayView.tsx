@@ -21,7 +21,7 @@ export function DayView({ date, appointments, staffMembers, selectedStaffIds }: 
         {filteredStaff.map(staff => (
           <div key={staff.id} className="font-semibold text-center flex flex-col items-center gap-2">
             <Avatar className="h-12 w-12">
-              <AvatarImage src={staff.profile_image_url || "https://images.unsplash.com/photo-1581092795360-fd1ca04f0952"} />
+              <AvatarImage src={staff.profile_image_url} />
               <AvatarFallback>{staff.first_name[0]}{staff.last_name[0]}</AvatarFallback>
             </Avatar>
             <span>{staff.first_name} {staff.last_name}</span>
@@ -29,8 +29,8 @@ export function DayView({ date, appointments, staffMembers, selectedStaffIds }: 
         ))}
         
         {hours.map(hour => (
-          <>
-            <div key={hour} className="text-sm text-muted-foreground">
+          <React.Fragment key={hour}>
+            <div className="text-sm text-muted-foreground">
               {format(new Date().setHours(hour, 0), 'h:mm a')}
             </div>
             {filteredStaff.map(staff => {
@@ -53,7 +53,7 @@ export function DayView({ date, appointments, staffMembers, selectedStaffIds }: 
                 </div>
               );
             })}
-          </>
+          </React.Fragment>
         ))}
       </div>
     </div>

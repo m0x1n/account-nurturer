@@ -1,7 +1,10 @@
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { ChevronLeft, ChevronRight } from "lucide-react";
+import { ChevronLeft, ChevronRight, Check } from "lucide-react";
 import { format } from "date-fns";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { Command, CommandEmpty, CommandGroup, CommandItem } from "@/components/ui/command";
+import { cn } from "@/lib/utils";
 
 interface CalendarHeaderProps {
   currentDate: Date;
@@ -44,6 +47,18 @@ export function CalendarHeader({
     onDateChange(newDate);
   };
 
+  const handleStaffSelect = (staffId: string) => {
+    if (view === 'week') {
+      onStaffChange([staffId]);
+    } else {
+      // For day view, toggle the staff member in the selection
+      const newSelection = selectedStaffIds.includes(staffId)
+        ? selectedStaffIds.filter(id => id !== staffId)
+        : [...selectedStaffIds, staffId];
+      onStaffChange(newSelection);
+    }
+  };
+
   return (
     <div className="flex items-center justify-between mb-4">
       <div className="flex items-center gap-2">
@@ -81,25 +96,54 @@ export function CalendarHeader({
             Week
           </Button>
         </div>
-        <Select
-          value={view === 'week' ? selectedStaffIds[0] : undefined}
-          onValueChange={(value) => {
-            if (view === 'week') {
-              onStaffChange([value]);
-            }
-          }}
-        >
-          <SelectTrigger className="w-[200px]">
-            <SelectValue placeholder="Select staff member" />
-          </SelectTrigger>
-          <SelectContent>
-            {staffMembers.map((staff) => (
-              <SelectItem key={staff.id} value={staff.id}>
-                {staff.first_name} {staff.last_name}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
+        {view === 'week' ? (
+          <Select
+            value={selectedStaffIds[0]}
+            onValueChange={(value) => onStaffChange([value])}
+          >
+            <SelectTrigger className="w-[200px]">
+              <SelectValue placeholder="Select staff member" />
+            </SelectTrigger>
+            <SelectContent>
+              {staffMembers.map((staff) => (
+                <SelectItem key={staff.id} value={staff.id}>
+                  {staff.first_name} {staff.last_name}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        ) : (
+          <Popover>
+            <PopoverTrigger asChild>
+              <Button variant="outline" className="w-[200px] justify-start">
+                {selectedStaffIds.length === 0
+                  ? "Select staff members"
+                  : `${selectedStaffIds.length} selected`}
+              </Button>
+            </PopoverTrigger>
+            <PopoverContent className="w-[200px] p-0">
+              <Command>
+                <CommandEmpty>No staff found.</CommandEmpty>
+                <CommandGroup>
+                  {staffMembers.map((staff) => (
+                    <CommandItem
+                      key={staff.id}
+                      onSelect={() => handleStaffSelect(staff.id)}
+                    >
+                      <Check
+                        className={cn(
+                          "mr-2 h-4 w-4",
+                          selectedStaffIds.includes(staff.id) ? "opacity-100" : "opacity-0"
+                        )}
+                      />
+                      {staff.first_name} {staff.last_name}
+                    </CommandItem>
+                  ))}
+                </CommandGroup>
+              </Command>
+            </PopoverContent>
+          </Popover>
+        )}
       </div>
     </div>
   );

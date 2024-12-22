@@ -7,8 +7,11 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { supabase } from "@/integrations/supabase/client";
 import { format } from "date-fns";
 import { CalendarView } from "./appointments/CalendarView";
+import { useState } from "react";
 
 export function AppointmentsContent() {
+  const [selectedStaffIds, setSelectedStaffIds] = useState<string[]>([]);
+
   const { data: appointments, isLoading } = useQuery({
     queryKey: ['appointments'],
     queryFn: async () => {
@@ -26,18 +29,24 @@ export function AppointmentsContent() {
     }
   });
 
-  const todayAppointments = appointments?.filter(
-    (apt) => format(new Date(apt.start_time), 'yyyy-MM-dd') === format(new Date(), 'yyyy-MM-dd')
-  );
+  const filterAppointmentsByStaff = (appointments: any[] | undefined) => {
+    if (!appointments) return [];
+    if (selectedStaffIds.length === 0) return appointments;
+    return appointments.filter(apt => selectedStaffIds.includes(apt.staff_id));
+  };
 
-  const upcomingAppointments = appointments?.filter(
+  const todayAppointments = filterAppointmentsByStaff(appointments?.filter(
+    (apt) => format(new Date(apt.start_time), 'yyyy-MM-dd') === format(new Date(), 'yyyy-MM-dd')
+  ));
+
+  const upcomingAppointments = filterAppointmentsByStaff(appointments?.filter(
     (apt) => new Date(apt.start_time) > new Date() && 
     format(new Date(apt.start_time), 'yyyy-MM-dd') !== format(new Date(), 'yyyy-MM-dd')
-  );
+  ));
 
-  const pastAppointments = appointments?.filter(
+  const pastAppointments = filterAppointmentsByStaff(appointments?.filter(
     (apt) => new Date(apt.start_time) < new Date()
-  );
+  ));
 
   const renderAppointmentTable = (appointments: any[]) => (
     <Table>
