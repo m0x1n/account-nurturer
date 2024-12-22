@@ -139,16 +139,22 @@ export function DayView({ currentDate, selectedStaffIds = [] }: DayViewProps) {
           className="flex-shrink-0 border-r bg-white z-10 relative" 
           style={{ width: TIME_COLUMN_WIDTH, minWidth: TIME_COLUMN_WIDTH }}
         >
-          {hours.map((hour) => (
-            <div
-              key={hour}
-              className="h-16 border-b text-sm text-muted-foreground relative"
-            >
-              <span className="absolute -top-3 right-4">
-                {format(new Date().setHours(hour, 0), 'h a')}
-              </span>
-            </div>
-          ))}
+          {hours.map((hour) => {
+            // Create a Date object for the current hour in local time
+            const timeForHour = new Date();
+            timeForHour.setHours(hour, 0, 0, 0);
+            
+            return (
+              <div
+                key={hour}
+                className="h-16 border-b text-sm text-muted-foreground relative"
+              >
+                <span className="absolute -top-3 right-4">
+                  {format(timeForHour, 'h a')}
+                </span>
+              </div>
+            );
+          })}
           
           {/* Current time indicator */}
           {format(currentDate, 'yyyy-MM-dd') === format(new Date(), 'yyyy-MM-dd') && (
