@@ -61,17 +61,27 @@ export function SalesBreakdown({ salesData }: SalesBreakdownProps) {
     }
 
     return (
-      <div className="flex flex-wrap gap-4 text-sm">
-        {payload.map((entry, index) => (
-          <div key={`legend-${index}`} className="flex items-center gap-2">
+      <div className="space-y-2">
+        {pieData.map((item, index) => (
+          <div key={item.name} className="flex items-center gap-2">
             <div
-              className="h-3 w-3 rounded-sm"
-              style={{ backgroundColor: entry.color }}
+              className="h-2.5 w-2.5 rounded-full"
+              style={{ backgroundColor: COLORS[item.name.toLowerCase().replace(' ', '') as keyof typeof COLORS] }}
             />
-            <span className="text-muted-foreground">{entry.value}</span>
-            <span className="font-medium">{entry.payload.value}%</span>
+            <span className="text-sm text-muted-foreground">{item.name}</span>
+            <span className="text-sm font-medium">
+              {item.value} | {item.value}%
+            </span>
           </div>
         ))}
+        <div className="pt-1">
+          <div className="flex items-center gap-2">
+            <span className="text-sm text-muted-foreground">Total Sales</span>
+            <span className="text-sm font-medium">
+              {pieData.reduce((acc, curr) => acc + curr.value, 0)} | 100%
+            </span>
+          </div>
+        </div>
       </div>
     );
   };
@@ -82,43 +92,45 @@ export function SalesBreakdown({ salesData }: SalesBreakdownProps) {
         <CardTitle>Sales Breakdown</CardTitle>
       </CardHeader>
       <CardContent>
-        <div className="flex flex-col items-center gap-8">
-          <div className="w-[300px] h-[300px]">
-            <ResponsiveContainer width="100%" height="100%">
-              <PieChart>
-                <Pie
-                  data={pieData}
-                  cx="50%"
-                  cy="50%"
-                  labelLine={false}
-                  label={renderCustomizedLabel}
-                  outerRadius={150}
-                  innerRadius={60}
-                  fill="#8884d8"
-                  dataKey="value"
-                  startAngle={90}
-                  endAngle={-270}
-                >
-                  {pieData.map((entry, index) => (
-                    <Cell 
-                      key={`cell-${index}`} 
-                      fill={COLORS[entry.name.toLowerCase().replace(' ', '') as keyof typeof COLORS]} 
-                    />
-                  ))}
-                </Pie>
-                <Tooltip 
-                  formatter={(value: number) => `${value}%`}
-                  contentStyle={{
-                    backgroundColor: 'white',
-                    border: '1px solid #e2e8f0',
-                    borderRadius: '6px',
-                    padding: '8px'
-                  }}
-                />
-              </PieChart>
-            </ResponsiveContainer>
+        <div className="flex items-start justify-between">
+          <div className="flex items-center space-x-8">
+            <div className="h-[120px] w-[120px]">
+              <ResponsiveContainer width="100%" height="100%">
+                <PieChart>
+                  <Pie
+                    data={pieData}
+                    cx="50%"
+                    cy="50%"
+                    labelLine={false}
+                    label={renderCustomizedLabel}
+                    outerRadius={45}
+                    innerRadius={35}
+                    fill="#8884d8"
+                    dataKey="value"
+                    startAngle={90}
+                    endAngle={-270}
+                  >
+                    {pieData.map((entry, index) => (
+                      <Cell 
+                        key={`cell-${index}`} 
+                        fill={COLORS[entry.name.toLowerCase().replace(' ', '') as keyof typeof COLORS]} 
+                      />
+                    ))}
+                  </Pie>
+                  <Tooltip 
+                    formatter={(value: number) => `${value}%`}
+                    contentStyle={{
+                      backgroundColor: 'white',
+                      border: '1px solid #e2e8f0',
+                      borderRadius: '6px',
+                      padding: '8px'
+                    }}
+                  />
+                </PieChart>
+              </ResponsiveContainer>
+            </div>
+            <CustomLegend />
           </div>
-          <Legend content={<CustomLegend />} />
         </div>
       </CardContent>
     </Card>
