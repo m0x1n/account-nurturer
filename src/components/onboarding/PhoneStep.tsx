@@ -1,9 +1,9 @@
-import { useState, useEffect } from "react";
+import { useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
+import { usePhoneVerification } from "@/hooks/usePhoneVerification";
 
 interface PhoneStepProps {
   formData: { phone: string; email: string };
@@ -13,12 +13,22 @@ interface PhoneStepProps {
 }
 
 const PhoneStep = ({ formData, updateFormData, onNext, onBack }: PhoneStepProps) => {
-  const [phone, setPhone] = useState(formData.phone);
-  const [otp, setOtp] = useState("");
-  const [showOtp, setShowOtp] = useState(false);
-  const [isVerified, setIsVerified] = useState(false);
-  const [isProcessing, setIsProcessing] = useState(false);
-  const { toast } = useToast();
+  const {
+    phone,
+    setPhone,
+    otp,
+    setOtp,
+    showOtp,
+    setShowOtp,
+    isVerified,
+    setIsVerified,
+    isProcessing,
+    handleSendOtp,
+    handleVerifyOtp,
+  } = usePhoneVerification(formData.email, () => {
+    updateFormData({ phone });
+    onNext();
+  });
 
   useEffect(() => {
     const checkPhoneVerification = async () => {
@@ -37,126 +47,6 @@ const PhoneStep = ({ formData, updateFormData, onNext, onBack }: PhoneStepProps)
     };
     checkPhoneVerification();
   }, []);
-
-  const handleSendOtp = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (isProcessing) return;
-
-    if (!phone) {
-      toast({
-        title: "Error",
-        description: "Please enter your phone number",
-        variant: "destructive",
-      });
-      return;
-    }
-
-    setIsProcessing(true);
-
-    try {
-      // First check if we already have a session
-      const { data: { session } } = await supabase.auth.getSession();
-      
-      if (!session) {
-        // If no session, check if the email exists
-        const { data: { users }, error: getUserError } = await supabase.auth.admin.listUsers({
-          filters: {
-            email: formData.email
-          }
-        });
-
-        if (getUserError) {
-          console.error('Error checking user:', getUserError);
-          throw new Error('Failed to check user status');
-        }
-
-        // If user doesn't exist, create them
-        if (!users || users.length === 0) {
-          const { error: signUpError } = await supabase.auth.signInWithOtp({
-            email: formData.email,
-          });
-
-          if (signUpError) {
-            if (signUpError.message.includes('rate_limit')) {
-              toast({
-                title: "Please wait",
-                description: "For security purposes, please wait a moment before trying again",
-                variant: "destructive",
-              });
-              return;
-            }
-            throw signUpError;
-          }
-
-          toast({
-            title: "Verification email sent",
-            description: "Please check your email to verify your account",
-          });
-        }
-      }
-
-      // Now update the phone number
-      const { error: updateError } = await supabase.auth.updateUser({ phone });
-      if (updateError) {
-        throw updateError;
-      }
-
-      toast({
-        title: "OTP Sent",
-        description: "Please check your phone for the verification code",
-      });
-      setShowOtp(true);
-    } catch (error: any) {
-      console.error('Error in phone verification:', error);
-      toast({
-        title: "Error",
-        description: error.message || "Failed to send verification code",
-        variant: "destructive",
-      });
-    } finally {
-      setIsProcessing(false);
-    }
-  };
-
-  const handleVerifyOtp = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (isProcessing) return;
-
-    if (!otp) {
-      toast({
-        title: "Error",
-        description: "Please enter the verification code",
-        variant: "destructive",
-      });
-      return;
-    }
-
-    setIsProcessing(true);
-
-    try {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (user) {
-        const { error } = await supabase
-          .from('profiles')
-          .update({ phone, phone_verified: true })
-          .eq('id', user.id);
-
-        if (error) throw error;
-
-        updateFormData({ phone });
-        onNext();
-      }
-    } catch (error: any) {
-      console.error('Error verifying OTP:', error);
-      toast({
-        title: "Error",
-        description: error.message || "Failed to verify phone number",
-        variant: "destructive",
-      });
-    } finally {
-      setIsProcessing(false);
-    }
-  };
 
   return (
     <div className="space-y-6">
