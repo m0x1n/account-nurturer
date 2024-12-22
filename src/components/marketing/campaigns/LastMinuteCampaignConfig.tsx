@@ -8,6 +8,7 @@ import { TargetingSection } from "./last-minute/TargetingSection";
 import { DiscountSection } from "./last-minute/DiscountSection";
 import { LastMinuteFormValues } from "./last-minute/types";
 import { useToast } from "@/hooks/use-toast";
+import { useBusinessData } from "@/hooks/useBusinessData";
 
 interface LastMinuteCampaignConfigProps {
   isOpen: boolean;
@@ -22,6 +23,7 @@ export function LastMinuteCampaignConfig({
 }: LastMinuteCampaignConfigProps) {
   const [isSaving, setIsSaving] = useState(false);
   const { toast } = useToast();
+  const { data: business } = useBusinessData();
 
   const form = useForm<LastMinuteFormValues>({
     defaultValues: {
@@ -39,6 +41,15 @@ export function LastMinuteCampaignConfig({
   });
 
   const handleSubmit = async (values: LastMinuteFormValues) => {
+    if (!business?.id) {
+      toast({
+        title: "Error",
+        description: "Business data not available",
+        variant: "destructive",
+      });
+      return;
+    }
+
     // Validate that at least one communication channel is enabled when campaign is enabled
     if (values.isEnabled && !values.sendEmail && !values.sendSMS) {
       toast({
@@ -54,14 +65,17 @@ export function LastMinuteCampaignConfig({
       const now = new Date().toISOString();
       
       // First, check if there's an existing active last-minute campaign
-      const { data: existingCampaigns } = await supabase
+      const { data: existingCampaign, error: queryError } = await supabase
         .from('marketing_campaigns')
         .select('id, is_active')
         .eq('campaign_subtype', 'last-minute')
+        .eq('business_id', business.id)
         .is('archived_at', null)
-        .single();
+        .maybeSingle();
 
-      if (existingCampaigns) {
+      if (queryError) throw queryError;
+
+      if (existingCampaign) {
         // Update existing campaign
         const { error } = await supabase
           .from('marketing_campaigns')
@@ -81,7 +95,7 @@ export function LastMinuteCampaignConfig({
             // Update end_date only when disabling
             ...(!values.isEnabled && { end_date: now }),
           })
-          .eq('id', existingCampaigns.id);
+          .eq('id', existingCampaign.id);
 
         if (error) throw error;
       } else {
@@ -89,6 +103,7 @@ export function LastMinuteCampaignConfig({
         const { error } = await supabase
           .from('marketing_campaigns')
           .insert({
+            business_id: business.id,
             campaign_type: 'smart',
             campaign_subtype: 'last-minute',
             name: 'Last Minute Campaign',
@@ -115,6 +130,7 @@ export function LastMinuteCampaignConfig({
           ? "Your last minute campaign is now running" 
           : "Your settings have been saved",
       });
+      onClose();
     } catch (error) {
       console.error("Error saving Last Minute Campaign:", error);
       toast({
