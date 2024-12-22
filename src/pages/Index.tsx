@@ -6,6 +6,19 @@ import { supabase } from "@/integrations/supabase/client";
 const Index = () => {
   const navigate = useNavigate();
 
+  useEffect(() => {
+    const clearAllSessions = async () => {
+      // Clear all storage
+      localStorage.clear();
+      sessionStorage.clear();
+
+      // Sign out and clear all sessions
+      await supabase.auth.signOut({ scope: 'global' });
+    };
+
+    clearAllSessions();
+  }, []);
+
   const handleGetStarted = async () => {
     try {
       // Clear any cached data
