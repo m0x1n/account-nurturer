@@ -7,10 +7,30 @@ const Index = () => {
   const navigate = useNavigate();
 
   const handleGetStarted = async () => {
-    const { data: { session } } = await supabase.auth.getSession();
-    if (session) {
-      navigate("/onboarding");
-    } else {
+    try {
+      const { data: { session }, error: sessionError } = await supabase.auth.getSession();
+      
+      if (sessionError) {
+        console.error("Session error:", sessionError);
+        navigate("/login");
+        return;
+      }
+
+      // Check if user exists and is valid
+      if (session) {
+        const { data: { user }, error: userError } = await supabase.auth.getUser();
+        if (userError || !user) {
+          console.error("User error:", userError);
+          await supabase.auth.signOut();
+          navigate("/login");
+          return;
+        }
+        navigate("/onboarding");
+      } else {
+        navigate("/login");
+      }
+    } catch (error) {
+      console.error("Authentication error:", error);
       navigate("/login");
     }
   };
