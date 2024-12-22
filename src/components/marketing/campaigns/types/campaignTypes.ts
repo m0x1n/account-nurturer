@@ -36,6 +36,8 @@ export interface Campaign {
   campaign_subtype: CampaignSubtype;
   status: string;
   created_at: string;
+  start_date: string | null;
+  end_date: string | null;
   settings: CampaignSettings;
   campaign_metrics?: CampaignMetrics[];
   is_active?: boolean;

@@ -353,10 +353,12 @@ export type Database = {
           created_at: string
           custom_message: string | null
           custom_subject: string | null
+          end_date: string | null
           id: string
           is_active: boolean | null
           name: string
           settings: Json | null
+          start_date: string | null
           status: string | null
           updated_at: string
         }
@@ -368,10 +370,12 @@ export type Database = {
           created_at?: string
           custom_message?: string | null
           custom_subject?: string | null
+          end_date?: string | null
           id?: string
           is_active?: boolean | null
           name: string
           settings?: Json | null
+          start_date?: string | null
           status?: string | null
           updated_at?: string
         }
@@ -383,10 +387,12 @@ export type Database = {
           created_at?: string
           custom_message?: string | null
           custom_subject?: string | null
+          end_date?: string | null
           id?: string
           is_active?: boolean | null
           name?: string
           settings?: Json | null
+          start_date?: string | null
           status?: string | null
           updated_at?: string
         }

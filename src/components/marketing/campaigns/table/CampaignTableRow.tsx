@@ -6,6 +6,7 @@ import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { Campaign } from "../types/campaignTypes";
 import { getCampaignType, getCampaignSubtype, isBoostCampaignActive } from "../utils/campaignUtils";
+import { format } from "date-fns";
 
 interface CampaignTableRowProps {
   campaign: Campaign;
@@ -37,6 +38,11 @@ export function CampaignTableRow({ campaign, onArchive }: CampaignTableRowProps)
     onArchive();
   };
 
+  const formatDate = (date: string | null) => {
+    if (!date) return '-';
+    return format(new Date(date), 'MMM d, yyyy');
+  };
+
   return (
     <TableRow>
       <TableCell className="font-medium">
@@ -57,7 +63,9 @@ export function CampaignTableRow({ campaign, onArchive }: CampaignTableRowProps)
           </span>
         </div>
       </TableCell>
-      <TableCell>{new Date(campaign.created_at).toLocaleDateString()}</TableCell>
+      <TableCell>{formatDate(campaign.created_at)}</TableCell>
+      <TableCell>{formatDate(campaign.start_date)}</TableCell>
+      <TableCell>{formatDate(campaign.end_date)}</TableCell>
       <TableCell className="text-right">
         {campaign.campaign_metrics?.[0]?.users_targeted || 0}
       </TableCell>

@@ -10,7 +10,9 @@ export function CampaignTableHeader() {
       <TableRow>
         <TableHead>Name</TableHead>
         <TableHead>Type</TableHead>
-        <TableHead>Date Sent</TableHead>
+        <TableHead>Created Date</TableHead>
+        <TableHead>Start Date</TableHead>
+        <TableHead>End Date</TableHead>
         <TableHead className="text-right">Sent</TableHead>
         <TableHead className="text-right">% Opened</TableHead>
         <TableHead className="text-right">% Clicked</TableHead>
