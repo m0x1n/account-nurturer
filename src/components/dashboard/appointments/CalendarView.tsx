@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { CalendarHeader } from "./CalendarHeader";
 import { DayView } from "./DayView";
@@ -32,6 +32,19 @@ export function CalendarView() {
       return data || [];
     }
   });
+
+  // Update default staff selection when view changes or when staff members are loaded
+  useEffect(() => {
+    if (staffMembers.length > 0) {
+      if (view === 'day') {
+        // Select all staff members for day view
+        setSelectedStaffIds(staffMembers.map(staff => staff.id));
+      } else {
+        // Select first staff member for week view
+        setSelectedStaffIds([staffMembers[0].id]);
+      }
+    }
+  }, [view, staffMembers]);
 
   // Ensure we have valid staff IDs by filtering against actual staff members
   const validSelectedStaffIds = selectedStaffIds.filter(id => 
