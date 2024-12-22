@@ -82,7 +82,10 @@ export type Database = {
       }
       bank_accounts: {
         Row: {
+          account_holder_name: string | null
           account_number: string
+          account_type: string | null
+          bank_name: string | null
           business_id: string | null
           created_at: string
           id: string
@@ -91,7 +94,10 @@ export type Database = {
           verified: boolean | null
         }
         Insert: {
+          account_holder_name?: string | null
           account_number: string
+          account_type?: string | null
+          bank_name?: string | null
           business_id?: string | null
           created_at?: string
           id?: string
@@ -100,7 +106,10 @@ export type Database = {
           verified?: boolean | null
         }
         Update: {
+          account_holder_name?: string | null
           account_number?: string
+          account_type?: string | null
+          bank_name?: string | null
           business_id?: string | null
           created_at?: string
           id?: string
