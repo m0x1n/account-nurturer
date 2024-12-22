@@ -39,6 +39,16 @@ export function LastMinuteCampaignConfig({
   });
 
   const handleSubmit = async (values: LastMinuteFormValues) => {
+    // Validate that at least one communication channel is enabled when campaign is enabled
+    if (values.isEnabled && !values.sendEmail && !values.sendSMS) {
+      toast({
+        title: "Validation Error",
+        description: "Please enable at least one communication channel (Email or Text Message)",
+        variant: "destructive",
+      });
+      return;
+    }
+
     setIsSaving(true);
     try {
       const now = new Date().toISOString();
@@ -87,6 +97,10 @@ export function LastMinuteCampaignConfig({
     }
   };
 
+  // Calculate if save button should be disabled
+  const values = form.watch();
+  const isSaveDisabled = isSaving || (values.isEnabled && !values.sendEmail && !values.sendSMS);
+
   if (!isOpen) return null;
 
   return (
@@ -101,7 +115,7 @@ export function LastMinuteCampaignConfig({
             <Button variant="outline" onClick={onClose}>
               Cancel
             </Button>
-            <Button type="submit" disabled={isSaving}>
+            <Button type="submit" disabled={isSaveDisabled}>
               Save Campaign
             </Button>
           </div>
