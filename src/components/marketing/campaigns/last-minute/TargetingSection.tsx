@@ -32,7 +32,7 @@ export function TargetingSection({ form, readOnly }: TargetingSectionProps) {
         )}
       />
 
-      <div className={readOnly ? 'opacity-70 pointer-events-none' : ''}>
+      <div className={`space-y-6 ${readOnly ? 'opacity-70 pointer-events-none' : ''}`}>
         <FormField
           control={form.control}
           name="sendEmail"
