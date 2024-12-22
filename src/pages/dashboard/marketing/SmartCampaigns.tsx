@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { 
-  Rocket, 
+  Zap,  // Changed from Rocket
   Calendar, 
   Clock, 
   Timer, 
@@ -27,7 +27,7 @@ export default function SmartCampaigns() {
       id: "boost",
       name: "Boost Campaigns",
       description: "Increase bookings during specific periods with targeted promotions",
-      icon: <Rocket className="h-6 w-6" />,
+      icon: <Zap className="h-6 w-6" />,  // Changed from Rocket to Zap
       isActive: false
     },
     {
@@ -91,7 +91,7 @@ export default function SmartCampaigns() {
   return (
     <div className="p-6 space-y-6">
       <div className="flex items-center gap-2 mb-6">
-        <Rocket className="h-6 w-6 text-primary" />
+        <Zap className="h-6 w-6 text-primary" />  {/* Changed from Rocket to Zap */}
         <h1 className="text-2xl font-serif font-bold">
           Smart Campaigns
         </h1>
