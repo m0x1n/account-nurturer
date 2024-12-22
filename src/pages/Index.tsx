@@ -16,15 +16,7 @@ const Index = () => {
         return;
       }
 
-      // Check if user exists and is valid
-      if (session) {
-        const { data: { user }, error: userError } = await supabase.auth.getUser();
-        if (userError || !user) {
-          console.error("User error:", userError);
-          await supabase.auth.signOut();
-          navigate("/login");
-          return;
-        }
+      if (session?.user) {
         navigate("/onboarding");
       } else {
         navigate("/login");
