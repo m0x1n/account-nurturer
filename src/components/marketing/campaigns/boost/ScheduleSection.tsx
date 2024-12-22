@@ -19,15 +19,15 @@ export function ScheduleSection({ days, onDayToggle, readOnly }: ScheduleProps) 
   if (!days || days.length === 0) return null;
 
   return (
-    <Card className={cn("p-6", readOnly && "opacity-75")}>
-      <div className="space-y-4">
+    <Card className={cn("p-6 my-8", readOnly && "opacity-75")}>
+      <div className="space-y-6">
         <div className="space-y-2">
           <Label className="text-lg font-medium">When do you need a boost?</Label>
           <p className="text-sm text-muted-foreground">
             Boost will end automatically on the last day.
           </p>
         </div>
-        <div className="space-y-2">
+        <div className="space-y-3">
           {days.map((day, index) => (
             <div 
               key={day.date} 
