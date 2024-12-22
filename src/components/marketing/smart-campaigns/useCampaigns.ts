@@ -17,45 +17,47 @@ export function useCampaigns(initialCampaigns: Campaign[]) {
   const [expandedId, setExpandedId] = useState<string | null>(null);
 
   useEffect(() => {
-    checkActiveBoostCampaign();
+    checkActiveCampaigns();
   }, []);
 
-  const checkActiveBoostCampaign = async () => {
+  const checkActiveCampaigns = async () => {
     try {
-      const { data: activeBoost, error } = await supabase
+      const { data: activeCampaigns, error } = await supabase
         .from('marketing_campaigns')
-        .select('*, settings')
-        .eq('campaign_type', 'boost')
-        .eq('is_active', true)
-        .is('archived_at', null)
-        .maybeSingle();
+        .select('campaign_type, status, settings')
+        .eq('status', 'active')
+        .is('archived_at', null);
 
       if (error) {
-        console.error('Error checking active boost campaign:', error);
+        console.error('Error checking active campaigns:', error);
         return;
       }
 
-      if (activeBoost) {
-        const settings = activeBoost.settings as any;
-        const scheduledDays = settings?.schedule || [];
-        const lastDay = scheduledDays[scheduledDays.length - 1]?.date;
-        
-        const isStillValid = lastDay && isAfter(new Date(lastDay), new Date());
-
+      if (activeCampaigns) {
         setCampaigns(prevCampaigns =>
-          prevCampaigns.map(campaign =>
-            campaign.id === "boost"
-              ? { 
-                  ...campaign, 
-                  isActive: isStillValid,
-                  isDisabled: isStillValid 
-                }
-              : campaign
-          )
+          prevCampaigns.map(campaign => {
+            const activeCampaign = activeCampaigns.find(
+              ac => ac.campaign_type.toLowerCase() === campaign.id
+            );
+
+            if (activeCampaign) {
+              const settings = activeCampaign.settings as any;
+              const scheduledDays = settings?.schedule || [];
+              const lastDay = scheduledDays[scheduledDays.length - 1]?.date;
+              const isStillValid = lastDay ? isAfter(new Date(lastDay), new Date()) : true;
+
+              return {
+                ...campaign,
+                isActive: isStillValid,
+                isDisabled: isStillValid
+              };
+            }
+            return campaign;
+          })
         );
       }
     } catch (error) {
-      console.error('Error checking active boost campaign:', error);
+      console.error('Error checking active campaigns:', error);
     }
   };
 

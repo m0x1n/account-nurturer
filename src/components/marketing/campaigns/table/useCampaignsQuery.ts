@@ -23,7 +23,8 @@ export function useCampaignsQuery() {
               percent_unsubscribed
             )
           `)
-          .is('archived_at', null);
+          .is('archived_at', null)
+          .order('created_at', { ascending: false });
 
         if (error) throw error;
         return campaigns;

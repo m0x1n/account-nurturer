@@ -1,6 +1,7 @@
 import { Archive } from "lucide-react";
 import { TableCell, TableRow } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 
@@ -9,6 +10,7 @@ interface CampaignTableRowProps {
     id: string;
     name: string;
     campaign_type: string;
+    status: string;
     created_at: string;
     campaign_metrics?: Array<{
       users_targeted: number;
@@ -26,7 +28,7 @@ export function CampaignTableRow({ campaign, onArchive }: CampaignTableRowProps)
   const handleArchive = async () => {
     const { error } = await supabase
       .from('marketing_campaigns')
-      .update({ archived_at: new Date().toISOString() })
+      .update({ archived_at: new Date().toISOString(), status: 'archived' })
       .eq('id', campaign.id);
 
     if (error) {
@@ -46,14 +48,22 @@ export function CampaignTableRow({ campaign, onArchive }: CampaignTableRowProps)
   };
 
   const getCampaignType = (type: string) => {
-    // Smart campaign types
     const smartTypes = ['boost', 'last-minute', 'slow-days', 'limited-time', 'reminder', 'rescue'];
     return smartTypes.includes(type.toLowerCase()) ? 'Smart' : 'Manual';
   };
 
   return (
     <TableRow key={campaign.id}>
-      <TableCell className="font-medium">{campaign.name}</TableCell>
+      <TableCell className="font-medium">
+        <div className="flex items-center gap-2">
+          {campaign.name}
+          {campaign.status === 'active' && (
+            <Badge variant="default" className="bg-primary">
+              ACTIVE
+            </Badge>
+          )}
+        </div>
+      </TableCell>
       <TableCell>{getCampaignType(campaign.campaign_type)}</TableCell>
       <TableCell>{new Date(campaign.created_at).toLocaleDateString()}</TableCell>
       <TableCell className="text-right">

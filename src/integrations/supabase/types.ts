@@ -354,6 +354,7 @@ export type Database = {
           is_active: boolean | null
           name: string
           settings: Json | null
+          status: string | null
           updated_at: string
         }
         Insert: {
@@ -365,6 +366,7 @@ export type Database = {
           is_active?: boolean | null
           name: string
           settings?: Json | null
+          status?: string | null
           updated_at?: string
         }
         Update: {
@@ -376,6 +378,7 @@ export type Database = {
           is_active?: boolean | null
           name?: string
           settings?: Json | null
+          status?: string | null
           updated_at?: string
         }
         Relationships: [
