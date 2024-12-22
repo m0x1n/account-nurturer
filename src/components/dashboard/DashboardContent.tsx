@@ -124,7 +124,7 @@ export function DashboardContent() {
           >
             <CardHeader>
               <CardTitle className="text-sm font-medium text-muted-foreground">
-                CAPACITY
+                UTILIZATION
               </CardTitle>
             </CardHeader>
             <CardContent>
