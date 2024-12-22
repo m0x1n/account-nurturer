@@ -36,6 +36,8 @@ export function CampaignCard({
 
   const lastMinuteInfo = `The Fill Last Minute Openings feature is used to fill unbooked appointments in the final 24-48 hours. It starts by looking at the open spots on your calendar, and then, based on your unique business history, determines how likely those spots are to be booked in the coming days. The spots that are unlikely to be booked are then offered to select clients who have expressed interest.`;
 
+  const boostInfo = `Boosts are designed to reach a large amount of contacts in a short period of time. Perfect for sending out a special promotion or when business has been slow. We automatically targets customers who are likely ready to come back, and sends campaigns to give your business a boost.`;
+
   return (
     <div 
       className={`p-4 bg-card rounded-lg border shadow-sm transition-all duration-200 
@@ -55,7 +57,7 @@ export function CampaignCard({
                   ACTIVE
                 </Badge>
               )}
-              {id === 'last-minute' && (
+              {(id === 'last-minute' || id === 'boost') && (
                 <TooltipProvider>
                   <Tooltip>
                     <TooltipTrigger asChild>
@@ -65,7 +67,7 @@ export function CampaignCard({
                       className="max-w-[400px] p-4 bg-white border shadow-lg rounded-lg"
                     >
                       <p className="text-sm text-gray-700 leading-relaxed">
-                        {lastMinuteInfo}
+                        {id === 'last-minute' ? lastMinuteInfo : boostInfo}
                       </p>
                     </TooltipContent>
                   </Tooltip>
