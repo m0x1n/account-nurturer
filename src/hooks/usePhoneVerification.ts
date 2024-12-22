@@ -58,15 +58,16 @@ export const usePhoneVerification = (email: string, onSuccess: () => void) => {
       if (!user) {
         // If no session, sign in with OTP
         const { error: signInError } = await supabase.auth.signInWithOtp({
-          email,
-          options: {
-            data: { phone }
-          }
+          phone,
+          channel: 'sms'
         });
         if (signInError) throw signInError;
       } else {
         // If session exists, update phone
-        const { error: updateError } = await supabase.auth.updateUser({ phone });
+        const { error: updateError } = await supabase.auth.updateUser({ 
+          phone,
+          phone_confirm: true
+        });
         if (updateError) throw updateError;
       }
       
@@ -132,11 +133,11 @@ export const usePhoneVerification = (email: string, onSuccess: () => void) => {
     setIsProcessing(true);
 
     try {
-      // First verify the OTP
+      // Verify the phone OTP
       const { data: { user }, error: verifyError } = await supabase.auth.verifyOtp({
-        email,
+        phone,
         token: otp,
-        type: 'email'
+        type: 'sms'
       });
 
       if (verifyError) throw verifyError;
