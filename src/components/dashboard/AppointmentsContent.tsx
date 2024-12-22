@@ -3,17 +3,17 @@ import { Calendar, List } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
-export function BookingsContent() {
+export function AppointmentsContent() {
   return (
     <main className="flex-1 overflow-y-auto">
       <div className="container px-4 py-6">
         <div className="flex items-center justify-between mb-8">
           <div className="flex items-center gap-4">
-            <h1 className="text-3xl font-bold">Bookings</h1>
+            <h1 className="text-3xl font-bold">Appointments</h1>
           </div>
           <Button>
             <Calendar className="h-4 w-4 mr-2" />
-            New Booking
+            New Appointment
           </Button>
         </div>
 
@@ -33,28 +33,28 @@ export function BookingsContent() {
             <div className="grid gap-4">
               <Card>
                 <CardHeader>
-                  <CardTitle>Today's Bookings</CardTitle>
+                  <CardTitle>Today's Appointments</CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <p className="text-sm text-muted-foreground">No bookings for today</p>
+                  <p className="text-sm text-muted-foreground">No appointments for today</p>
                 </CardContent>
               </Card>
 
               <Card>
                 <CardHeader>
-                  <CardTitle>Upcoming Bookings</CardTitle>
+                  <CardTitle>Upcoming Appointments</CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <p className="text-sm text-muted-foreground">No upcoming bookings</p>
+                  <p className="text-sm text-muted-foreground">No upcoming appointments</p>
                 </CardContent>
               </Card>
 
               <Card>
                 <CardHeader>
-                  <CardTitle>Past Bookings</CardTitle>
+                  <CardTitle>Past Appointments</CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <p className="text-sm text-muted-foreground">No past bookings</p>
+                  <p className="text-sm text-muted-foreground">No past appointments</p>
                 </CardContent>
               </Card>
             </div>

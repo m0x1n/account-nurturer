@@ -22,7 +22,7 @@ const mainMenuItems = [
     ]
   },
   { title: "Services and Products", icon: ShoppingBag, url: "/dashboard/services" },
-  { title: "Bookings", icon: Calendar, url: "/dashboard/bookings" },
+  { title: "Appointments", icon: Calendar, url: "/dashboard/appointments" },
   { title: "Clients", icon: Users, url: "/dashboard/clients" },
   { title: "Staff", icon: Users2, url: "/dashboard/staff" },
   { title: "Point of Sale", icon: ShoppingCart, url: "/dashboard/pos" },
