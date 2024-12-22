@@ -127,7 +127,7 @@ export default function SetupChecklist() {
       id: "bank-account",
       title: "Set Up Payment Details",
       description: "Add your bank account to receive payments",
-      route: "/dashboard/settings/payment",
+      route: "/dashboard/settings/payment-settings", // Updated route to match the settings submenu
       completed: !!bankAccount,
     },
     {
@@ -135,7 +135,7 @@ export default function SetupChecklist() {
       title: "Import Client Records",
       description: "Import your existing client records via CSV",
       route: "/dashboard/clients/import",
-      completed: false, // This will need to be implemented separately
+      completed: false,
     },
     {
       id: "booking-link",
