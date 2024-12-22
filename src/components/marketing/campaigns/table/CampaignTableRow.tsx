@@ -48,7 +48,6 @@ export function CampaignTableRow({ campaign, onArchive }: CampaignTableRowProps)
   };
 
   const getCampaignType = (type: string) => {
-    // List of all possible smart campaign types
     const smartCampaignTypes = [
       'boost',
       'last-minute',
@@ -58,7 +57,6 @@ export function CampaignTableRow({ campaign, onArchive }: CampaignTableRowProps)
       'rescue'
     ];
     
-    // Check if the campaign type matches any of our smart campaign types
     return smartCampaignTypes.includes(type.toLowerCase()) ? 'Smart' : 'Manual';
   };
 
