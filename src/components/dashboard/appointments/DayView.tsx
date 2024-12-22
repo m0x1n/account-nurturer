@@ -103,7 +103,7 @@ export function DayView({ currentDate, selectedStaffIds = [] }: DayViewProps) {
 
       const { data, error } = await query;
       if (error) throw error;
-      console.log('Fetched appointments:', data); // Add this line for debugging
+      console.log('Fetched appointments:', data);
       return data || [];
     }
   });
@@ -112,13 +112,11 @@ export function DayView({ currentDate, selectedStaffIds = [] }: DayViewProps) {
     <div className="flex flex-col h-[calc(100vh-200px)]">
       {/* Staff header */}
       <div className="flex items-center border-b bg-white sticky top-0 z-20">
-        {/* Time column header space */}
         <div 
           className="flex-shrink-0 border-r bg-white" 
           style={{ width: TIME_COLUMN_WIDTH, minWidth: TIME_COLUMN_WIDTH }}
         />
         
-        {/* Staff headers */}
         <div className="flex">
           {staffData?.map((staff) => (
             <StaffHeader
@@ -134,7 +132,7 @@ export function DayView({ currentDate, selectedStaffIds = [] }: DayViewProps) {
       <div className="flex flex-1 border rounded-lg bg-white overflow-hidden">
         {/* Time column */}
         <div 
-          className="flex-shrink-0 border-r bg-white z-10" 
+          className="flex-shrink-0 border-r bg-white z-10 relative" 
           style={{ width: TIME_COLUMN_WIDTH, minWidth: TIME_COLUMN_WIDTH }}
         >
           {hours.map((hour) => (
@@ -147,6 +145,19 @@ export function DayView({ currentDate, selectedStaffIds = [] }: DayViewProps) {
               </span>
             </div>
           ))}
+          
+          {/* Current time indicator */}
+          {format(currentDate, 'yyyy-MM-dd') === format(new Date(), 'yyyy-MM-dd') && (
+            <div 
+              className="absolute right-0 z-20 flex items-center"
+              style={{ top: `${currentTimeTop}%` }}
+            >
+              <div className="bg-red-500 text-white text-xs px-2 py-1 rounded-full -mr-2">
+                {format(new Date(), 'h:mm a')}
+              </div>
+              <div className="flex-1 h-px bg-red-500" />
+            </div>
+          )}
         </div>
 
         {/* Staff columns */}

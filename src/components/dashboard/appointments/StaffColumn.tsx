@@ -1,128 +1,32 @@
-import { format, differenceInMinutes, startOfDay } from "date-fns";
-import { cn } from "@/lib/utils";
-import { STAFF_COLUMN_WIDTH } from "./constants";
+import { format } from "date-fns";
 
 interface StaffColumnProps {
-  staff: {
-    id: string;
-  };
+  staff: any;
   appointments: any[];
   currentDate: Date;
   currentTimeTop: number;
   dayStart: Date;
 }
 
-export function StaffColumn({ staff, appointments, currentDate, currentTimeTop, dayStart }: StaffColumnProps) {
+export function StaffColumn({ staff, appointments, currentDate }: StaffColumnProps) {
   const hours = Array.from({ length: 24 }, (_, i) => i);
 
-  const getAppointmentStyle = (startTime: string, endTime: string) => {
-    const start = new Date(startTime);
-    const end = new Date(endTime);
-    const minutesFromMidnight = differenceInMinutes(start, startOfDay(start));
-    const duration = differenceInMinutes(end, start);
-    
-    return {
-      top: `${(minutesFromMidnight / (24 * 60)) * 100}%`,
-      height: `${(duration / (24 * 60)) * 100}%`,
-      width: '100%', // Ensure the card takes full width of its container
-    };
-  };
-
-  // Filter appointments for this staff member AND unassigned appointments if this is the first staff member
-  const staffAppointments = appointments.filter(apt => {
-    const isForThisStaff = apt.staff_id === staff.id;
-    const isUnassigned = apt.staff_id === null;
-    
-    // Find the first staff member in the appointments array that has appointments
-    const firstStaffWithAppointments = appointments.find(a => a.staff_id)?.staff_id;
-    // This is the first staff member if it's the first one with appointments or if there are no staff appointments
-    const isFirstStaffMember = !firstStaffWithAppointments || staff.id === firstStaffWithAppointments;
-    
-    console.log(`Checking appointment for staff ${staff.id}:`, {
-      appointment: apt,
-      isForThisStaff,
-      isUnassigned,
-      isFirstStaffMember,
-      firstStaffWithAppointments,
-      currentDate: format(currentDate, 'yyyy-MM-dd')
-    });
-    
-    return isForThisStaff || (isUnassigned && isFirstStaffMember);
-  });
-  
-  console.log(`Filtered appointments for staff ${staff.id}:`, staffAppointments);
-
   return (
-    <div 
-      className="flex-shrink-0 relative border-r" 
-      style={{ 
-        width: `${STAFF_COLUMN_WIDTH}px`, 
-        minWidth: `${STAFF_COLUMN_WIDTH}px`,
-        maxWidth: `${STAFF_COLUMN_WIDTH}px`
-      }}
-    >
-      {/* Hour grid lines */}
+    <div className="flex-1 min-w-[200px] border-r relative">
       {hours.map((hour) => (
-        <div
-          key={hour}
-          className="h-16 border-b border-gray-100"
-        />
-      ))}
-
-      {/* Current time indicator */}
-      {format(currentDate, 'yyyy-MM-dd') === format(new Date(), 'yyyy-MM-dd') && (
-        <div 
-          className="absolute left-0 right-0 flex items-center z-20 pointer-events-none"
-          style={{ top: `${currentTimeTop}%` }}
-        >
-          <div className="w-2 h-2 rounded-full bg-red-500 -ml-1"></div>
-          <div className="flex-1 h-px bg-red-500"></div>
+        <div key={hour} className="h-16 border-b relative">
+          {appointments
+            .filter(apt => new Date(apt.start_time).getHours() === hour)
+            .map((apt) => (
+              <div
+                key={apt.id}
+                className="bg-primary/10 p-2 text-sm rounded mb-1"
+              >
+                {apt.client?.first_name} {apt.client?.last_name} - {apt.service?.name}
+              </div>
+            ))}
         </div>
-      )}
-
-      {/* Appointments */}
-      {staffAppointments.map((appointment) => {
-        const startDate = new Date(appointment.start_time);
-        
-        // Only show appointments for the current day
-        if (format(startDate, 'yyyy-MM-dd') !== format(currentDate, 'yyyy-MM-dd')) {
-          console.log('Appointment not shown due to date mismatch:', {
-            appointmentDate: format(startDate, 'yyyy-MM-dd'),
-            currentDate: format(currentDate, 'yyyy-MM-dd'),
-            appointment
-          });
-          return null;
-        }
-
-        const style = getAppointmentStyle(appointment.start_time, appointment.end_time);
-        console.log('Appointment style calculated:', {
-          appointment,
-          style,
-          startDate: format(startDate, 'yyyy-MM-dd HH:mm:ss')
-        });
-        
-        return (
-          <div
-            key={appointment.id}
-            className={cn(
-              "absolute left-1 right-1 rounded-md p-2",
-              "bg-primary/10 hover:bg-primary/20 transition-colors",
-              "cursor-pointer text-sm overflow-hidden"
-            )}
-            style={style}
-          >
-            <div className="font-medium truncate">
-              {appointment.client?.first_name} {appointment.client?.last_name}
-            </div>
-            <div className="text-xs text-muted-foreground">
-              {format(new Date(appointment.start_time), 'h:mm a')} - {format(new Date(appointment.end_time), 'h:mm a')}
-            </div>
-            <div className="text-xs text-muted-foreground truncate">
-              {appointment.service?.name}
-            </div>
-          </div>
-        );
-      })}
+      ))}
     </div>
   );
 }
