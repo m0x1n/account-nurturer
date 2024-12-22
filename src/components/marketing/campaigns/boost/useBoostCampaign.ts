@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { addDays, format, isAfter } from "date-fns";
+import { addDays, format, isAfter, subDays } from "date-fns";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 
@@ -35,6 +35,54 @@ export const useBoostCampaign = (
   });
 
   const [scheduledDays, setScheduledDays] = useState(nextSevenDays);
+
+  const calculateTargetAudience = async () => {
+    if (!business?.id) return 0;
+
+    if (targetingOption === 'all') {
+      // Count all clients for the business
+      const { count } = await supabase
+        .from('clients')
+        .select('*', { count: 'exact', head: true })
+        .eq('business_id', business.id);
+      
+      return count || 0;
+    } else {
+      // Count clients with no recent visits
+      const thresholdDate = subDays(new Date(), parseInt(daysThreshold));
+      
+      // Get clients with completed appointments in the threshold period
+      const { data: appointments } = await supabase
+        .from('appointments')
+        .select('client_id')
+        .eq('business_id', business.id)
+        .eq('status', 'completed')
+        .gte('start_time', thresholdDate.toISOString())
+        .lt('start_time', new Date().toISOString());
+
+      // Get clients with future appointments
+      const { data: futureAppointments } = await supabase
+        .from('appointments')
+        .select('client_id')
+        .eq('business_id', business.id)
+        .gte('start_time', new Date().toISOString());
+
+      // Get all client IDs that should be excluded
+      const excludedClientIds = new Set([
+        ...(appointments?.map(a => a.client_id) || []),
+        ...(futureAppointments?.map(a => a.client_id) || [])
+      ]);
+
+      // Count total clients minus excluded ones
+      const { count } = await supabase
+        .from('clients')
+        .select('*', { count: 'exact', head: true })
+        .eq('business_id', business.id)
+        .not('id', 'in', `(${Array.from(excludedClientIds).join(',')})`);
+
+      return count || 0;
+    }
+  };
 
   const handleDayToggle = (index: number) => {
     setScheduledDays(days =>
@@ -109,6 +157,9 @@ export const useBoostCampaign = (
     }
 
     try {
+      // Calculate target audience size
+      const targetAudienceSize = await calculateTargetAudience();
+
       const { data: campaign, error: campaignError } = await supabase
         .from("marketing_campaigns")
         .upsert({
@@ -138,12 +189,12 @@ export const useBoostCampaign = (
 
       if (campaignError) throw campaignError;
 
-      // Create initial metrics for the campaign - removing generated columns
+      // Create initial metrics for the campaign
       const { error: metricsError } = await supabase
         .from("campaign_metrics")
         .insert({
           campaign_id: campaign.id,
-          users_targeted: 0,
+          users_targeted: targetAudienceSize,
           users_engaged: 0,
           users_opened: 0,
           users_clicked: 0,
