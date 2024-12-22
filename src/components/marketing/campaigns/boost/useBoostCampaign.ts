@@ -46,7 +46,7 @@ export const useBoostCampaign = (
       }
 
       if (existingCampaign) {
-        const settings = existingCampaign.settings as BoostSettings;
+        const settings = existingCampaign.settings as unknown as BoostSettings;
         setCampaignName(existingCampaign.name);
         setTargetingOption(settings.targeting?.type || "all");
         setDaysThreshold(settings.targeting?.daysThreshold?.toString() || "30");
@@ -132,7 +132,7 @@ export const useBoostCampaign = (
           is_active: isBoostStillValid(),
           start_date: startDate,
           end_date: endDate,
-          settings,
+          settings: settings as any, // Type cast for Supabase
         })
         .select()
         .single();

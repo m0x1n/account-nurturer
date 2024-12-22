@@ -90,7 +90,7 @@ export function LastMinuteCampaignConfig({
           .from('marketing_campaigns')
           .update({
             is_active: values.isEnabled,
-            settings,
+            settings: settings as any, // Type cast for Supabase
             custom_subject: values.customSubject ? values.subjectText : null,
             custom_message: values.customMessage ? values.messageText : null,
             ...(values.isEnabled && { start_date: now }),
@@ -108,7 +108,7 @@ export function LastMinuteCampaignConfig({
             campaign_subtype: 'last-minute',
             name: 'Last Minute Campaign',
             is_active: values.isEnabled,
-            settings,
+            settings: settings as any, // Type cast for Supabase
             custom_subject: values.customSubject ? values.subjectText : null,
             custom_message: values.customMessage ? values.messageText : null,
             start_date: values.isEnabled ? now : null,

@@ -1,9 +1,12 @@
+import { Json } from "@/integrations/supabase/types";
+
 export interface LastMinuteSettings {
   sendEmail: boolean;
   sendSMS: boolean;
   enableDiscounts: boolean;
   discountType: "percent" | "money";
   discountValue: number;
+  [key: string]: string | number | boolean; // Add index signature for JSON compatibility
 }
 
 export interface BoostSettings {
@@ -20,6 +23,7 @@ export interface BoostSettings {
     date: string;
     enabled: boolean;
   }[];
+  [key: string]: any; // Add index signature for JSON compatibility
 }
 
 export type CampaignSettings = LastMinuteSettings | BoostSettings;
