@@ -69,14 +69,11 @@ export function DashboardContent() {
               <ChartContainer config={chartConfig} className="h-[300px]">
                 <Bar 
                   data={salesData}
-                  dataKey="sales" // Added the missing dataKey prop here
+                  dataKey="sales"
+                  fill="var(--color-sales)"
+                  radius={[4, 4, 0, 0]}
                 >
                   <ChartTooltip />
-                  <Bar
-                    dataKey="sales"
-                    fill="var(--color-sales)"
-                    radius={[4, 4, 0, 0]}
-                  />
                 </Bar>
               </ChartContainer>
             </CardContent>
