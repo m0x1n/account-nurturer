@@ -1,24 +1,25 @@
 import { Route, Routes } from "react-router-dom";
 import { Toaster } from "@/components/ui/toaster";
-import { AuthProvider } from "@/providers/auth";
-import { ThemeProvider } from "@/providers/theme";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 
-import Login from "@/pages/auth/Login";
-import Register from "@/pages/auth/Register";
-import ForgotPassword from "@/pages/auth/ForgotPassword";
-import ResetPassword from "@/pages/auth/ResetPassword";
-import Dashboard from "@/pages/dashboard/Dashboard";
-import Calendar from "@/pages/dashboard/Calendar";
-import Clients from "@/pages/dashboard/Clients";
-import Marketing from "@/pages/dashboard/Marketing";
-import Campaigns from "@/pages/dashboard/marketing/Campaigns";
-import Settings from "@/pages/dashboard/Settings";
-import NotFound from "@/pages/NotFound";
-import Layout from "@/components/layout/Layout";
-import AuthLayout from "@/components/layout/AuthLayout";
-import RequireAuth from "@/components/auth/RequireAuth";
+import Layout from "./components/layout/Layout";
+import AuthLayout from "./components/layout/AuthLayout";
+import RequireAuth from "./components/auth/RequireAuth";
+import { AuthProvider } from "./providers/auth";
+import { ThemeProvider } from "./providers/theme";
+
+import Login from "./pages/auth/Login";
+import Register from "./pages/auth/Register";
+import ForgotPassword from "./pages/auth/ForgotPassword";
+import ResetPassword from "./pages/auth/ResetPassword";
+import Dashboard from "./pages/dashboard/Dashboard";
+import Calendar from "./pages/dashboard/Calendar";
+import Clients from "./pages/dashboard/Clients";
+import Marketing from "./pages/dashboard/Marketing";
+import Campaigns from "./pages/dashboard/marketing/Campaigns";
+import Settings from "./pages/dashboard/Settings";
+import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
 

@@ -13,6 +13,7 @@ interface Campaign {
 
 export default function Campaigns() {
   const [selectedCampaign, setSelectedCampaign] = useState<string | null>(null);
+  const [isConfigOpen, setIsConfigOpen] = useState(false);
   const [campaigns, setCampaigns] = useState<Campaign[]>([
     {
       id: "boost",
@@ -59,6 +60,9 @@ export default function Campaigns() {
         : campaign
     ));
     setSelectedCampaign(campaignId);
+    if (campaignId === "boost") {
+      setIsConfigOpen(true);
+    }
   };
 
   return (
@@ -91,7 +95,12 @@ export default function Campaigns() {
         </div>
 
         <div className="bg-card rounded-lg border p-4">
-          {selectedCampaign === "boost" && <BoostCampaignConfig />}
+          {selectedCampaign === "boost" && (
+            <BoostCampaignConfig 
+              isOpen={isConfigOpen} 
+              onClose={() => setIsConfigOpen(false)} 
+            />
+          )}
           {selectedCampaign && selectedCampaign !== "boost" && (
             <div className="flex items-center justify-center h-full text-muted-foreground">
               Configuration options coming soon
