@@ -1,4 +1,4 @@
-import { ChevronDown, ChevronUp, LucideIcon } from "lucide-react";
+import { ChevronDown, ChevronUp } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 
 interface CampaignCardProps {
@@ -30,7 +30,14 @@ export function CampaignCard({
             {icon}
           </div>
           <div>
-            <h3 className="font-medium text-lg">{name}</h3>
+            <div className="flex items-center gap-2">
+              <h3 className="font-medium text-lg">{name}</h3>
+              {isActive && (
+                <Badge variant="default" className="bg-primary">
+                  ACTIVE
+                </Badge>
+              )}
+            </div>
             <p className="text-muted-foreground text-sm">
               {description}
             </p>
@@ -50,14 +57,8 @@ export function CampaignCard({
               )}
             </button>
           )}
-          {isComingSoon ? (
+          {isComingSoon && (
             <span className="text-sm text-muted-foreground">Coming Soon</span>
-          ) : (
-            isActive && (
-              <Badge variant="default" className="bg-primary">
-                ACTIVE
-              </Badge>
-            )
           )}
         </div>
       </div>

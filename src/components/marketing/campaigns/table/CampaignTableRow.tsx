@@ -52,6 +52,18 @@ export function CampaignTableRow({ campaign, onArchive }: CampaignTableRowProps)
     return smartTypes.includes(type.toLowerCase()) ? 'Smart' : 'Manual';
   };
 
+  const getCampaignSubtype = (type: string) => {
+    const subtypeMap: { [key: string]: string } = {
+      'boost': 'Boost',
+      'last-minute': 'Fill Last Minute Openings',
+      'slow-days': 'Fill Slow Days',
+      'limited-time': 'Limited Time Specials',
+      'reminder': 'Reminder to Book Again',
+      'rescue': 'Rescue Lost Customers'
+    };
+    return subtypeMap[type.toLowerCase()] || type;
+  };
+
   return (
     <TableRow key={campaign.id}>
       <TableCell className="font-medium">
@@ -64,7 +76,14 @@ export function CampaignTableRow({ campaign, onArchive }: CampaignTableRowProps)
           )}
         </div>
       </TableCell>
-      <TableCell>{getCampaignType(campaign.campaign_type)}</TableCell>
+      <TableCell>
+        <div className="flex flex-col">
+          <span>{getCampaignType(campaign.campaign_type)}</span>
+          <span className="text-sm text-muted-foreground">
+            {getCampaignSubtype(campaign.campaign_type)}
+          </span>
+        </div>
+      </TableCell>
       <TableCell>{new Date(campaign.created_at).toLocaleDateString()}</TableCell>
       <TableCell className="text-right">
         {campaign.campaign_metrics?.[0]?.users_targeted || 0}
