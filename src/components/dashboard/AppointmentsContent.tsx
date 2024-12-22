@@ -1,20 +1,16 @@
 import { useQuery } from "@tanstack/react-query";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Calendar as CalendarIcon, List, Search } from "lucide-react";
+import { Calendar as CalendarIcon, List } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { supabase } from "@/integrations/supabase/client";
 import { format } from "date-fns";
 import { CalendarView } from "./appointments/CalendarView";
 import { useState } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { NewAppointmentForm } from "./appointments/NewAppointmentForm";
-import { Calendar } from "@/components/ui/calendar";
-import { Input } from "@/components/ui/input";
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
-import { cn } from "@/lib/utils";
-import { Pagination, PaginationContent, PaginationItem, PaginationLink, PaginationNext, PaginationPrevious } from "@/components/ui/pagination";
+import { AppointmentFilters } from "./appointments/AppointmentFilters";
+import { AppointmentSection } from "./appointments/AppointmentSection";
+import { AppointmentPagination } from "./appointments/AppointmentPagination";
 
 export function AppointmentsContent() {
   const [selectedStaffIds, setSelectedStaffIds] = useState<string[]>([]);
@@ -71,44 +67,12 @@ export function AppointmentsContent() {
     (apt) => new Date(apt.start_time) < new Date()
   ));
 
-  // Pagination logic
   const paginatedUpcomingAppointments = upcomingAppointments.slice(
     (currentPage - 1) * appointmentsPerPage,
     currentPage * appointmentsPerPage
   );
 
   const totalPages = Math.ceil(upcomingAppointments.length / appointmentsPerPage);
-
-  const renderAppointmentTable = (appointments: any[]) => (
-    <Table>
-      <TableHeader>
-        <TableRow>
-          <TableHead>Time</TableHead>
-          <TableHead>Client</TableHead>
-          <TableHead>Staff</TableHead>
-          <TableHead>Service</TableHead>
-          <TableHead>Status</TableHead>
-        </TableRow>
-      </TableHeader>
-      <TableBody>
-        {appointments.map((appointment) => (
-          <TableRow key={appointment.id}>
-            <TableCell>
-              {format(new Date(appointment.start_time), 'MMM d, h:mm a')}
-            </TableCell>
-            <TableCell>
-              {appointment.client?.first_name} {appointment.client?.last_name}
-            </TableCell>
-            <TableCell>
-              {appointment.staff?.first_name} {appointment.staff?.last_name}
-            </TableCell>
-            <TableCell>{appointment.service?.name}</TableCell>
-            <TableCell className="capitalize">{appointment.status}</TableCell>
-          </TableRow>
-        ))}
-      </TableBody>
-    </Table>
-  );
 
   return (
     <main className="flex-1 overflow-y-auto">
@@ -148,123 +112,37 @@ export function AppointmentsContent() {
           </TabsList>
           
           <TabsContent value="list">
-            <div className="flex gap-4 mb-4">
-              <div className="flex-1 relative">
-                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                <Input
-                  placeholder="Search by client or staff name..."
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                  className="w-full pl-9"
-                />
-              </div>
-              <Popover>
-                <PopoverTrigger asChild>
-                  <Button
-                    variant="outline"
-                    className={cn(
-                      "justify-start text-left font-normal",
-                      !selectedDate && "text-muted-foreground"
-                    )}
-                  >
-                    <CalendarIcon className="mr-2 h-4 w-4" />
-                    {selectedDate ? format(selectedDate, "PPP") : "Pick a date"}
-                  </Button>
-                </PopoverTrigger>
-                <PopoverContent className="w-auto p-0" align="start">
-                  <Calendar
-                    mode="single"
-                    selected={selectedDate}
-                    onSelect={setSelectedDate}
-                    initialFocus
-                  />
-                </PopoverContent>
-              </Popover>
-              {selectedDate && (
-                <Button
-                  variant="ghost"
-                  onClick={() => setSelectedDate(undefined)}
-                >
-                  Clear date
-                </Button>
-              )}
-            </div>
+            <AppointmentFilters
+              searchQuery={searchQuery}
+              setSearchQuery={setSearchQuery}
+              selectedDate={selectedDate}
+              setSelectedDate={setSelectedDate}
+            />
 
             <div className="grid gap-4">
-              <Card>
-                <CardHeader>
-                  <CardTitle>Today's Appointments</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  {isLoading ? (
-                    <p className="text-sm text-muted-foreground">Loading...</p>
-                  ) : todayAppointments?.length ? (
-                    renderAppointmentTable(todayAppointments)
-                  ) : (
-                    <p className="text-sm text-muted-foreground">No appointments for today</p>
-                  )}
-                </CardContent>
-              </Card>
+              <AppointmentSection
+                title="Today's Appointments"
+                appointments={todayAppointments}
+                isLoading={isLoading}
+              />
 
-              <Card>
-                <CardHeader>
-                  <CardTitle>Upcoming Appointments</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  {isLoading ? (
-                    <p className="text-sm text-muted-foreground">Loading...</p>
-                  ) : paginatedUpcomingAppointments?.length ? (
-                    <>
-                      {renderAppointmentTable(paginatedUpcomingAppointments)}
-                      {totalPages > 1 && (
-                        <Pagination className="mt-4">
-                          <PaginationContent>
-                            <PaginationItem>
-                              <PaginationPrevious 
-                                onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
-                                className={cn(currentPage === 1 && "pointer-events-none opacity-50")}
-                              />
-                            </PaginationItem>
-                            {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
-                              <PaginationItem key={page}>
-                                <PaginationLink
-                                  onClick={() => setCurrentPage(page)}
-                                  isActive={currentPage === page}
-                                >
-                                  {page}
-                                </PaginationLink>
-                              </PaginationItem>
-                            ))}
-                            <PaginationItem>
-                              <PaginationNext 
-                                onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
-                                className={cn(currentPage === totalPages && "pointer-events-none opacity-50")}
-                              />
-                            </PaginationItem>
-                          </PaginationContent>
-                        </Pagination>
-                      )}
-                    </>
-                  ) : (
-                    <p className="text-sm text-muted-foreground">No upcoming appointments</p>
-                  )}
-                </CardContent>
-              </Card>
+              <AppointmentSection
+                title="Upcoming Appointments"
+                appointments={paginatedUpcomingAppointments}
+                isLoading={isLoading}
+              >
+                <AppointmentPagination
+                  currentPage={currentPage}
+                  totalPages={totalPages}
+                  setCurrentPage={setCurrentPage}
+                />
+              </AppointmentSection>
 
-              <Card>
-                <CardHeader>
-                  <CardTitle>Past Appointments</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  {isLoading ? (
-                    <p className="text-sm text-muted-foreground">Loading...</p>
-                  ) : pastAppointments?.length ? (
-                    renderAppointmentTable(pastAppointments)
-                  ) : (
-                    <p className="text-sm text-muted-foreground">No past appointments</p>
-                  )}
-                </CardContent>
-              </Card>
+              <AppointmentSection
+                title="Past Appointments"
+                appointments={pastAppointments}
+                isLoading={isLoading}
+              />
             </div>
           </TabsContent>
 
