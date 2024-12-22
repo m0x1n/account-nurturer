@@ -1,5 +1,6 @@
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
+import { Campaign } from "../types/campaignTypes";
 
 export function useCampaignsQuery() {
   const queryClient = useQueryClient();
@@ -27,7 +28,12 @@ export function useCampaignsQuery() {
           .order('created_at', { ascending: false });
 
         if (error) throw error;
-        return campaigns;
+        
+        // Parse the settings JSON for each campaign
+        return campaigns.map((campaign): Campaign => ({
+          ...campaign,
+          settings: campaign.settings as unknown as Campaign['settings']
+        }));
       },
     }),
     invalidate: () => queryClient.invalidateQueries({ queryKey: ['campaigns-with-metrics'] })

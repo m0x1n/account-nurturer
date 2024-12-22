@@ -29,8 +29,10 @@ export interface Campaign {
   campaign_type: string;
   status: string;
   created_at: string;
-  settings?: CampaignSettings;
+  settings: CampaignSettings;
   campaign_metrics?: CampaignMetrics[];
   is_active?: boolean;
   archived_at?: string | null;
+  business_id: string;
+  updated_at: string;
 }
