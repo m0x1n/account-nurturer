@@ -1,4 +1,4 @@
-import { Home, ShoppingBag, Calendar, Users, Users2, ShoppingCart, BarChart2, Mail, Settings, Plus, Link, LogOut, LayoutDashboard, CheckSquare, CreditCard, ChevronDown } from "lucide-react";
+import { Home, ShoppingBag, Calendar, Users, Users2, ShoppingCart, BarChart2, Mail, Settings, Plus, Link, LogOut, LayoutDashboard, CheckSquare, CreditCard, Clock } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   Sidebar,
@@ -12,6 +12,7 @@ import {
 } from "@/components/ui/sidebar";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 const mainMenuItems = [
   { 
@@ -35,7 +36,9 @@ const mainMenuItems = [
     icon: Settings, 
     url: "/dashboard/settings",
     submenu: [
-      { title: "Payment Settings", icon: CreditCard, url: "/dashboard/payment-settings" }
+      { title: "Payment Settings", icon: CreditCard, url: "/dashboard/settings/payment-settings" },
+      { title: "Business Hours", icon: Clock, url: "/dashboard/settings/business-hours" },
+      { title: "Booking Link", icon: Link, url: "/dashboard/settings/booking-link" }
     ]
   },
 ];
@@ -51,12 +54,17 @@ interface DashboardSidebarProps {
 
 export function DashboardSidebar({ onLogout }: DashboardSidebarProps) {
   const [openMenus, setOpenMenus] = useState<{ [key: string]: boolean }>({});
+  const navigate = useNavigate();
 
   const toggleMenu = (title: string) => {
     setOpenMenus(prev => ({
       ...prev,
       [title]: !prev[title]
     }));
+  };
+
+  const handleNavigation = (url: string) => {
+    navigate(url);
   };
 
   return (
@@ -82,22 +90,25 @@ export function DashboardSidebar({ onLogout }: DashboardSidebarProps) {
                       <CollapsibleContent>
                         <div className="pl-8 mt-2 space-y-1">
                           {item.submenu.map((subItem) => (
-                            <SidebarMenuButton key={subItem.title} asChild>
-                              <a href={subItem.url} className="flex items-center gap-3 text-sm">
-                                <subItem.icon className="h-4 w-4" />
-                                <span>{subItem.title}</span>
-                              </a>
+                            <SidebarMenuButton 
+                              key={subItem.title}
+                              onClick={() => handleNavigation(subItem.url)}
+                              className="flex items-center gap-3 text-sm w-full"
+                            >
+                              <subItem.icon className="h-4 w-4" />
+                              <span>{subItem.title}</span>
                             </SidebarMenuButton>
                           ))}
                         </div>
                       </CollapsibleContent>
                     </Collapsible>
                   ) : (
-                    <SidebarMenuButton asChild>
-                      <a href={item.url} className="flex items-center gap-3">
-                        <item.icon className="h-4 w-4" />
-                        <span>{item.title}</span>
-                      </a>
+                    <SidebarMenuButton
+                      onClick={() => handleNavigation(item.url)}
+                      className="flex items-center gap-3 w-full"
+                    >
+                      <item.icon className="h-4 w-4" />
+                      <span>{item.title}</span>
                     </SidebarMenuButton>
                   )}
                 </SidebarMenuItem>
@@ -112,11 +123,12 @@ export function DashboardSidebar({ onLogout }: DashboardSidebarProps) {
             <SidebarMenu>
               {additionalItems.map((item) => (
                 <SidebarMenuItem key={item.title}>
-                  <SidebarMenuButton asChild>
-                    <a href={item.url} className="flex items-center gap-3">
-                      <item.icon className="h-4 w-4" />
-                      <span>{item.title}</span>
-                    </a>
+                  <SidebarMenuButton
+                    onClick={() => handleNavigation(item.url)}
+                    className="flex items-center gap-3 w-full"
+                  >
+                    <item.icon className="h-4 w-4" />
+                    <span>{item.title}</span>
                   </SidebarMenuButton>
                 </SidebarMenuItem>
               ))}
