@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useRef } from "react";
+import React, { useEffect, useState } from "react";
 import { format, startOfDay } from "date-fns";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
@@ -103,6 +103,7 @@ export function DayView({ currentDate, selectedStaffIds = [] }: DayViewProps) {
 
       const { data, error } = await query;
       if (error) throw error;
+      console.log('Fetched appointments:', data); // Add this line for debugging
       return data || [];
     }
   });
