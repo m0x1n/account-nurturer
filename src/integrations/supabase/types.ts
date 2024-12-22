@@ -9,43 +9,46 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
-      appointments: {
-        Row: {
-          business_id: string | null
-          client_id: string | null
-          created_at: string
-          end_time: string
-          id: string
-          notes: string | null
-          service_id: string | null
-          start_time: string
-          status: string | null
-          updated_at: string
-        }
-        Insert: {
-          business_id?: string | null
-          client_id?: string | null
-          created_at?: string
-          end_time: string
-          id?: string
-          notes?: string | null
-          service_id?: string | null
-          start_time: string
-          status?: string | null
-          updated_at?: string
-        }
-        Update: {
-          business_id?: string | null
-          client_id?: string | null
-          created_at?: string
-          end_time?: string
-          id?: string
-          notes?: string | null
-          service_id?: string | null
-          start_time?: string
-          status?: string | null
-          updated_at?: string
-        }
+appointments: {
+  Row: {
+    business_id: string | null
+    client_id: string | null
+    created_at: string
+    end_time: string
+    id: string
+    notes: string | null
+    service_id: string | null
+    staff_id: string | null // Added staff_id field
+    start_time: string
+    status: string | null
+    updated_at: string
+  }
+  Insert: {
+    business_id?: string | null
+    client_id?: string | null
+    created_at?: string
+    end_time: string
+    id?: string
+    notes?: string | null
+    service_id?: string | null
+    staff_id?: string | null // Added staff_id field
+    start_time: string
+    status?: string | null
+    updated_at?: string
+  }
+  Update: {
+    business_id?: string | null
+    client_id?: string | null
+    created_at?: string
+    end_time?: string
+    id?: string
+    notes?: string | null
+    service_id?: string | null
+    staff_id?: string | null // Added staff_id field
+    start_time?: string
+    status?: string | null
+    updated_at?: string
+  }
         Relationships: [
           {
             foreignKeyName: "appointments_business_id_fkey"
@@ -66,6 +69,13 @@ export type Database = {
             columns: ["service_id"]
             isOneToOne: false
             referencedRelation: "services"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "appointments_staff_id_fkey"
+            columns: ["staff_id"]
+            isOneToOne: false
+            referencedRelation: "staff_members"
             referencedColumns: ["id"]
           },
         ]
@@ -522,3 +532,5 @@ export type CompositeTypes<
   : PublicCompositeTypeNameOrOptions extends keyof PublicSchema["CompositeTypes"]
     ? PublicSchema["CompositeTypes"][PublicCompositeTypeNameOrOptions]
     : never
+
+}
