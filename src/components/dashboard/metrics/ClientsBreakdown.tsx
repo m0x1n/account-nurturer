@@ -5,8 +5,8 @@ import { HelpCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 
-// Using our primary blue and a lighter shade for better contrast
-const COLORS = ['#377DF7', '#5691F8'];
+// Using primary blue and secondary gray for better contrast
+const COLORS = ['#377DF7', '#D9D9D9'];
 
 interface ClientsBreakdownProps {
   clientsData: Array<{
