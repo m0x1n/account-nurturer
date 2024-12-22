@@ -17,6 +17,7 @@ import ServicesAndProducts from "@/pages/dashboard/ServicesAndProducts";
 import ImportClients from "@/pages/dashboard/ImportClients";
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
+import { SidebarProvider } from "@/components/ui/sidebar";
 
 const DashboardLayout = () => {
   const [isLoading, setIsLoading] = useState(true);
@@ -39,29 +40,31 @@ const DashboardLayout = () => {
   }
 
   return (
-    <div className="flex h-screen overflow-hidden">
-      <DashboardSidebar onLogout={handleLogout} />
-      <div className="flex-1 overflow-y-auto">
-        <Routes>
-          <Route path="/" element={<DashboardContent />} />
-          <Route path="setup-checklist" element={<SetupChecklist />} />
-          <Route path="staff" element={<Staff />} />
-          <Route path="clients" element={<Clients />} />
-          <Route path="services-and-products" element={<ServicesAndProducts />} />
-          <Route path="pos" element={<POS />} />
-          <Route path="insights" element={<Insights />} />
-          <Route path="marketing" element={<Marketing />} />
-          <Route path="add-ons" element={<AddOns />} />
-          <Route path="quick-links" element={<QuickLinks />} />
-          <Route path="settings" element={<Settings />} />
-          <Route path="settings/payment-settings" element={<PaymentSettings />} />
-          <Route path="settings/business-hours" element={<BusinessHours />} />
-          <Route path="settings/booking-link" element={<BookingLink />} />
-          <Route path="settings/import-clients" element={<ImportClients />} />
-          <Route path="*" element={<Navigate to="/dashboard" replace />} />
-        </Routes>
+    <SidebarProvider>
+      <div className="flex h-screen w-full overflow-hidden">
+        <DashboardSidebar onLogout={handleLogout} />
+        <div className="flex-1 overflow-y-auto">
+          <Routes>
+            <Route path="/" element={<DashboardContent />} />
+            <Route path="setup-checklist" element={<SetupChecklist />} />
+            <Route path="staff" element={<Staff />} />
+            <Route path="clients" element={<Clients />} />
+            <Route path="services-and-products" element={<ServicesAndProducts />} />
+            <Route path="pos" element={<POS />} />
+            <Route path="insights" element={<Insights />} />
+            <Route path="marketing" element={<Marketing />} />
+            <Route path="add-ons" element={<AddOns />} />
+            <Route path="quick-links" element={<QuickLinks />} />
+            <Route path="settings" element={<Settings />} />
+            <Route path="settings/payment-settings" element={<PaymentSettings />} />
+            <Route path="settings/business-hours" element={<BusinessHours />} />
+            <Route path="settings/booking-link" element={<BookingLink />} />
+            <Route path="settings/import-clients" element={<ImportClients />} />
+            <Route path="*" element={<Navigate to="/dashboard" replace />} />
+          </Routes>
+        </div>
       </div>
-    </div>
+    </SidebarProvider>
   );
 };
 
