@@ -41,6 +41,8 @@ export function LastMinuteCampaignConfig({
   const handleSubmit = async (values: LastMinuteFormValues) => {
     setIsSaving(true);
     try {
+      const now = new Date().toISOString();
+      
       const { error } = await supabase
         .from('marketing_campaigns')
         .insert({
@@ -57,6 +59,11 @@ export function LastMinuteCampaignConfig({
           },
           custom_subject: values.customSubject ? values.subjectText : null,
           custom_message: values.customMessage ? values.messageText : null,
+          // Set start_date when campaign is enabled
+          start_date: values.isEnabled ? now : null,
+          // Don't set end_date when enabling, only when disabling
+          end_date: !values.isEnabled ? now : null,
+          // created_at will be set automatically by the database
         });
 
       if (error) throw error;
