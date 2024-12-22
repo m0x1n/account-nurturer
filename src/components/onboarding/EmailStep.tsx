@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -13,26 +13,7 @@ interface EmailStepProps {
 
 const EmailStep = ({ formData, updateFormData, onNext }: EmailStepProps) => {
   const [email, setEmail] = useState(formData.email);
-  const [isVerified, setIsVerified] = useState(false);
   const { toast } = useToast();
-
-  useEffect(() => {
-    const checkEmailVerification = async () => {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (user?.email) {
-        const { data } = await supabase
-          .from('profiles')
-          .select('email_verified')
-          .eq('id', user.id)
-          .single();
-        
-        if (data?.email_verified) {
-          setIsVerified(true);
-        }
-      }
-    };
-    checkEmailVerification();
-  }, []);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -53,9 +34,8 @@ const EmailStep = ({ formData, updateFormData, onNext }: EmailStepProps) => {
       return;
     }
 
-    // Update email in auth if different
     const { data: { user } } = await supabase.auth.getUser();
-    if (user?.email !== email) {
+    if (user) {
       const { error } = await supabase.auth.updateUser({ email });
       if (error) {
         toast({
@@ -67,12 +47,12 @@ const EmailStep = ({ formData, updateFormData, onNext }: EmailStepProps) => {
       }
       toast({
         title: "Verification Email Sent",
-        description: "Please check your inbox to verify your email address",
+        description: "Please check your inbox to verify your email address. You can continue with the setup while waiting.",
       });
-    } else if (isVerified) {
-      updateFormData({ email });
-      onNext();
     }
+
+    updateFormData({ email });
+    onNext();
   };
 
   return (
@@ -93,7 +73,7 @@ const EmailStep = ({ formData, updateFormData, onNext }: EmailStepProps) => {
         />
       </div>
       <Button type="submit" className="w-full">
-        {isVerified ? "Continue" : "Verify Email"}
+        Continue
       </Button>
     </form>
   );

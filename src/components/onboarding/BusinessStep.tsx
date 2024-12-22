@@ -21,7 +21,7 @@ const BusinessStep = ({ formData, updateFormData, onNext, onBack }: BusinessStep
     if (!businessName) {
       toast({
         title: "Error",
-        description: "Please enter your business name",
+        description: "Please enter your business name or click Skip",
         variant: "destructive",
       });
       return;
@@ -53,11 +53,16 @@ const BusinessStep = ({ formData, updateFormData, onNext, onBack }: BusinessStep
     }
   };
 
+  const handleSkip = () => {
+    updateFormData({ businessName: "" });
+    onNext();
+  };
+
   return (
     <form onSubmit={handleSubmit} className="space-y-6">
       <div className="space-y-2">
         <h2 className="text-2xl font-bold text-gray-900">Business Details</h2>
-        <p className="text-gray-500">Tell us about your business</p>
+        <p className="text-gray-500">Tell us about your business (optional)</p>
       </div>
       <div className="space-y-2">
         <Label htmlFor="businessName">Business name</Label>
@@ -72,6 +77,9 @@ const BusinessStep = ({ formData, updateFormData, onNext, onBack }: BusinessStep
       <div className="flex gap-4">
         <Button type="button" variant="outline" onClick={onBack} className="flex-1">
           Back
+        </Button>
+        <Button type="button" variant="outline" onClick={handleSkip} className="flex-1">
+          Skip
         </Button>
         <Button type="submit" className="flex-1">
           Continue

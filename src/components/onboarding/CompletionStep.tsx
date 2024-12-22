@@ -1,5 +1,6 @@
 import { Button } from "@/components/ui/button";
-import { CheckCircle2 } from "lucide-react";
+import { CheckCircle2, AlertTriangle } from "lucide-react";
+import { Alert, AlertDescription } from "@/components/ui/alert";
 
 interface CompletionStepProps {
   formData: {
@@ -25,6 +26,12 @@ const CompletionStep = ({ formData, onNext, onBack }: CompletionStepProps) => {
           Thanks for joining us, {formData.firstName}! Your account has been created successfully.
         </p>
       </div>
+      <Alert variant="warning" className="text-left">
+        <AlertTriangle className="h-4 w-4" />
+        <AlertDescription>
+          Please verify your email address to fully enable your account. Check your inbox for the verification link.
+        </AlertDescription>
+      </Alert>
       <div className="space-y-4">
         <div className="text-sm text-gray-500">
           <p>Email: {formData.email}</p>
