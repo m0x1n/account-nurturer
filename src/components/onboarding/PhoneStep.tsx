@@ -23,6 +23,7 @@ const PhoneStep = ({ formData, updateFormData, onNext, onBack }: PhoneStepProps)
     isVerified,
     setIsVerified,
     isProcessing,
+    cooldownSeconds,
     handleSendOtp,
     handleVerifyOtp,
   } = usePhoneVerification(formData.email, () => {
@@ -66,7 +67,7 @@ const PhoneStep = ({ formData, updateFormData, onNext, onBack }: PhoneStepProps)
               onChange={(e) => setPhone(e.target.value)}
               placeholder="+1 (555) 000-0000"
               className="w-full"
-              disabled={isProcessing}
+              disabled={isProcessing || cooldownSeconds > 0}
             />
           </div>
           <div className="flex gap-4">
@@ -92,9 +93,13 @@ const PhoneStep = ({ formData, updateFormData, onNext, onBack }: PhoneStepProps)
               <Button 
                 type="submit" 
                 className="flex-1"
-                disabled={isProcessing}
+                disabled={isProcessing || cooldownSeconds > 0}
               >
-                {isProcessing ? "Sending..." : "Send Code"}
+                {cooldownSeconds > 0 
+                  ? `Wait ${cooldownSeconds}s` 
+                  : isProcessing 
+                    ? "Sending..." 
+                    : "Send Code"}
               </Button>
             )}
           </div>
