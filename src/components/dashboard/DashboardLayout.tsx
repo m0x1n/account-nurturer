@@ -12,6 +12,7 @@ import PaymentSettings from "@/pages/dashboard/PaymentSettings";
 import ImportClients from "@/pages/dashboard/ImportClients";
 import BusinessHours from "@/pages/dashboard/BusinessHours";
 import BookingLink from "@/pages/dashboard/BookingLink";
+import Settings from "@/pages/dashboard/Settings";
 import { useEffect, useState } from "react";
 
 const DashboardLayout = () => {
@@ -85,6 +86,7 @@ const DashboardLayout = () => {
           <Route path="staff" element={<Staff />} />
           <Route path="clients" element={<Clients />} />
           <Route path="clients/import" element={<ImportClients />} />
+          <Route path="settings" element={<Settings />} />
           <Route path="settings/payment-settings" element={<PaymentSettings />} />
           <Route path="settings/business-hours" element={<BusinessHours />} />
           <Route path="settings/booking-link" element={<BookingLink />} />
