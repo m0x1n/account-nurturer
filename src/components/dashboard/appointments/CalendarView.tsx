@@ -20,10 +20,12 @@ export function CalendarView() {
         {view === "day" ? (
           <DayView
             currentDate={currentDate}
+            selectedStaffIds={[]}
           />
         ) : (
           <WeekView
             currentDate={currentDate}
+            selectedStaffId=""
           />
         )}
       </CardContent>

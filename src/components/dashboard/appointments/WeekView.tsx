@@ -5,10 +5,10 @@ import { supabase } from "@/integrations/supabase/client";
 
 interface WeekViewProps {
   currentDate: Date;
-  selectedStaffId: string;
+  selectedStaffId?: string;
 }
 
-export function WeekView({ currentDate, selectedStaffId }: WeekViewProps) {
+export function WeekView({ currentDate, selectedStaffId = "" }: WeekViewProps) {
   const days = Array.from({ length: 7 }, (_, i) => addDays(currentDate, i));
   const hours = Array.from({ length: 24 }, (_, i) => i);
 
@@ -31,8 +31,6 @@ export function WeekView({ currentDate, selectedStaffId }: WeekViewProps) {
   const { data: appointments = [] } = useQuery({
     queryKey: ['appointments', currentDate, selectedStaffId],
     queryFn: async () => {
-      if (!selectedStaffId) return [];
-
       const { data: businesses } = await supabase
         .from('businesses')
         .select('id')
@@ -49,8 +47,7 @@ export function WeekView({ currentDate, selectedStaffId }: WeekViewProps) {
           client:clients(first_name, last_name),
           service:services(name)
         `)
-        .eq('business_id', businesses[0].id)
-        .eq('staff_id', selectedStaffId);
+        .eq('business_id', businesses[0].id);
 
       if (error) throw error;
       return data || [];
@@ -60,7 +57,7 @@ export function WeekView({ currentDate, selectedStaffId }: WeekViewProps) {
   if (!staffMember) {
     return (
       <div className="mt-4 text-center text-muted-foreground">
-        Please select a staff member to view their weekly schedule
+        Select a staff member to view their weekly schedule
       </div>
     );
   }

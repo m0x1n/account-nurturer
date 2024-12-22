@@ -6,7 +6,7 @@ import { supabase } from "@/integrations/supabase/client";
 
 interface DayViewProps {
   currentDate: Date;
-  selectedStaffIds: string[];
+  selectedStaffIds?: string[];
 }
 
 interface Appointment {
@@ -14,7 +14,7 @@ interface Appointment {
   business_id: string | null;
   client_id: string | null;
   service_id: string | null;
-  staff_id?: string | null; // Made staff_id optional to match database schema
+  staff_id?: string | null;
   start_time: string;
   end_time: string;
   status: string | null;
@@ -28,7 +28,7 @@ interface Appointment {
   };
 }
 
-export function DayView({ currentDate, selectedStaffIds }: DayViewProps) {
+export function DayView({ currentDate, selectedStaffIds = [] }: DayViewProps) {
   const hours = Array.from({ length: 24 }, (_, i) => i);
 
   const { data: staffMembers = [] } = useQuery({
