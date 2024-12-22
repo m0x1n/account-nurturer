@@ -19,6 +19,12 @@ export const getCampaignSubtype = (type: string) => {
 };
 
 export const isBoostCampaignActive = (campaign: Campaign): boolean => {
+  // First check if the campaign is marked as active in the database
+  if (!campaign.is_active) {
+    return false;
+  }
+
+  // Then check if it's a boost campaign with valid schedule
   if (campaign.campaign_type !== 'boost' || !campaign.settings?.schedule) {
     return false;
   }

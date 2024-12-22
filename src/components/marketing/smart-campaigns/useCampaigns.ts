@@ -1,6 +1,5 @@
 import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
-import { isAfter } from "date-fns";
 
 export interface Campaign {
   id: string;
@@ -24,8 +23,7 @@ export function useCampaigns(initialCampaigns: Campaign[]) {
     try {
       const { data: activeCampaigns, error } = await supabase
         .from('marketing_campaigns')
-        .select('campaign_type, status, settings')
-        .eq('status', 'active')
+        .select('campaign_type, status, settings, is_active')
         .is('archived_at', null);
 
       if (error) {
@@ -40,8 +38,10 @@ export function useCampaigns(initialCampaigns: Campaign[]) {
               ac => ac.campaign_type.toLowerCase() === campaign.id
             );
 
-            // A campaign is active if it exists in activeCampaigns and has 'active' status
-            const isActive = !!activeCampaign && activeCampaign.status === 'active';
+            // A campaign is active if it exists, is marked as active, and has 'active' status
+            const isActive = !!activeCampaign && 
+              activeCampaign.is_active && 
+              activeCampaign.status === 'active';
 
             return {
               ...campaign,
