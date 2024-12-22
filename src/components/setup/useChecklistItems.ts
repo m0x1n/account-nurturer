@@ -1,90 +1,18 @@
-import { useQuery } from "@tanstack/react-query";
-import { supabase } from "@/integrations/supabase/client";
+import { useBusinessData } from "@/hooks/useBusinessData";
+import { useBusinessServices } from "@/hooks/useBusinessServices";
+import { useStaffMembers } from "@/hooks/useStaffMembers";
+import { useBusinessHours } from "@/hooks/useBusinessHours";
+import { useBankAccount } from "@/hooks/useBankAccount";
+import { useBookingLink } from "@/hooks/useBookingLink";
 import { ChecklistItem } from "./types";
 
 export const useChecklistItems = () => {
-  const { data: businessData } = useQuery({
-    queryKey: ["business"],
-    queryFn: async () => {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) throw new Error("No user found");
-
-      const { data: businesses } = await supabase
-        .from("businesses")
-        .select("*")
-        .eq("owner_id", user.id)
-        .maybeSingle();
-
-      return businesses;
-    },
-  });
-
-  const { data: services } = useQuery({
-    queryKey: ["services"],
-    queryFn: async () => {
-      if (!businessData?.id) return [];
-      const { data } = await supabase
-        .from("services")
-        .select("*")
-        .eq("business_id", businessData.id);
-      return data || [];
-    },
-    enabled: !!businessData?.id,
-  });
-
-  const { data: staff } = useQuery({
-    queryKey: ["staff"],
-    queryFn: async () => {
-      if (!businessData?.id) return [];
-      const { data } = await supabase
-        .from("staff_members")
-        .select("*")
-        .eq("business_id", businessData.id);
-      return data || [];
-    },
-    enabled: !!businessData?.id,
-  });
-
-  const { data: businessHours } = useQuery({
-    queryKey: ["business-hours"],
-    queryFn: async () => {
-      if (!businessData?.id) return [];
-      const { data } = await supabase
-        .from("business_hours")
-        .select("*")
-        .eq("business_id", businessData.id);
-      return data || [];
-    },
-    enabled: !!businessData?.id,
-  });
-
-  const { data: bankAccount } = useQuery({
-    queryKey: ["bank-account"],
-    queryFn: async () => {
-      if (!businessData?.id) return null;
-      const { data } = await supabase
-        .from("bank_accounts")
-        .select("*")
-        .eq("business_id", businessData.id)
-        .maybeSingle();
-      return data;
-    },
-    enabled: !!businessData?.id,
-  });
-
-  const { data: bookingLink } = useQuery({
-    queryKey: ["booking-link"],
-    queryFn: async () => {
-      if (!businessData?.id) return null;
-      const { data } = await supabase
-        .from("booking_links")
-        .select("*")
-        .eq("business_id", businessData.id)
-        .maybeSingle();
-      return data;
-    },
-    enabled: !!businessData?.id,
-  });
+  const { data: businessData } = useBusinessData();
+  const { data: services } = useBusinessServices(businessData?.id);
+  const { data: staff } = useStaffMembers(businessData?.id);
+  const { data: businessHours } = useBusinessHours(businessData?.id);
+  const { data: bankAccount } = useBankAccount(businessData?.id);
+  const { data: bookingLink } = useBookingLink(businessData?.id);
 
   const checklistItems: ChecklistItem[] = [
     {
@@ -119,7 +47,7 @@ export const useChecklistItems = () => {
       id: "import-clients",
       title: "Import Client Records",
       description: "Import your existing client records via CSV",
-      route: "/dashboard/settings/import-clients", // Fixed the route here
+      route: "/dashboard/settings/import-clients",
       completed: false,
     },
     {
