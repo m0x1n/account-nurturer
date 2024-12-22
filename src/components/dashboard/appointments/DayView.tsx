@@ -5,7 +5,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { StaffHeader } from "./StaffHeader";
 import { StaffColumn } from "./StaffColumn";
-import { STAFF_COLUMN_WIDTH, TIME_COLUMN_WIDTH } from "./constants";
+import { TIME_COLUMN_WIDTH } from "./constants";
 
 interface DayViewProps {
   currentDate: Date;
@@ -14,7 +14,6 @@ interface DayViewProps {
 
 export function DayView({ currentDate, selectedStaffIds = [] }: DayViewProps) {
   const [currentTimeTop, setCurrentTimeTop] = useState<number>(0);
-  const containerRef = useRef<HTMLDivElement>(null);
   const hours = Array.from({ length: 24 }, (_, i) => i);
   const dayStart = startOfDay(currentDate);
 
@@ -41,12 +40,17 @@ export function DayView({ currentDate, selectedStaffIds = [] }: DayViewProps) {
 
       if (!businesses || businesses.length === 0) return [];
 
-      const { data: staff } = await supabase
+      let query = supabase
         .from('staff_members')
         .select('*')
         .eq('business_id', businesses[0].id)
         .eq('status', 'active');
 
+      if (selectedStaffIds.length > 0) {
+        query = query.in('id', selectedStaffIds);
+      }
+
+      const { data: staff } = await query;
       return staff || [];
     }
   });
@@ -104,12 +108,12 @@ export function DayView({ currentDate, selectedStaffIds = [] }: DayViewProps) {
   });
 
   return (
-    <div className="flex flex-col h-[calc(100vh-200px)]" ref={containerRef}>
+    <div className="flex flex-col h-[calc(100vh-200px)]">
       {/* Staff header */}
       <div className="flex items-center border-b bg-white sticky top-0 z-20">
         {/* Time column header space */}
         <div 
-          className="flex-shrink-0" 
+          className="flex-shrink-0 border-r bg-white" 
           style={{ width: TIME_COLUMN_WIDTH, minWidth: TIME_COLUMN_WIDTH }}
         />
         
@@ -151,7 +155,7 @@ export function DayView({ currentDate, selectedStaffIds = [] }: DayViewProps) {
               <StaffColumn
                 key={staff.id}
                 staff={staff}
-                appointments={appointments || []}
+                appointments={appointments.filter(apt => apt.staff_id === staff.id)}
                 currentDate={currentDate}
                 currentTimeTop={currentTimeTop}
                 dayStart={dayStart}
