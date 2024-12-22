@@ -8,10 +8,14 @@ export interface CampaignMetrics {
 export interface ScheduleDay {
   date: string;
   enabled: boolean;
+  formatted: string;
 }
 
 export interface CampaignSettings {
-  schedule?: ScheduleDay[];
+  schedule?: {
+    date: string;
+    enabled: boolean;
+  }[];
   targeting?: {
     type: string;
     daysThreshold: number;

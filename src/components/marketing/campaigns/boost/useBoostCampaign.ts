@@ -63,6 +63,12 @@ export const useBoostCampaign = (
     try {
       const targetAudienceSize = await calculateTargetAudience(targetingOption, daysThreshold);
 
+      // Format schedule data for database storage
+      const scheduleForDb = scheduledDays.map(({ date, enabled }) => ({
+        date,
+        enabled
+      }));
+
       const { data: campaign, error: campaignError } = await supabase
         .from("marketing_campaigns")
         .upsert({
@@ -76,7 +82,7 @@ export const useBoostCampaign = (
               type: targetingOption,
               daysThreshold: parseInt(daysThreshold),
             },
-            schedule: scheduledDays,
+            schedule: scheduleForDb,
             discount: {
               type: discountType,
               value: parseFloat(discountValue),
