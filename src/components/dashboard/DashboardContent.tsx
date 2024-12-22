@@ -1,6 +1,6 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { SidebarTrigger } from "@/components/ui/sidebar";
-import { BarChart } from "recharts";
+import { Bar } from "recharts";
 import { ChartContainer, ChartTooltip } from "@/components/ui/chart";
 import { NotificationsPanel } from "./NotificationsPanel";
 import { Bell } from "lucide-react";
@@ -79,6 +79,26 @@ export function DashboardContent() {
           </Card>
         </div>
 
+        <div className="mt-8">
+          <Card>
+            <CardHeader>
+              <CardTitle>Clients Served Breakdown</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <ChartContainer config={chartConfig} className="h-[300px]">
+                <Bar data={chartData}>
+                  <ChartTooltip />
+                  <Bar
+                    dataKey="clients"
+                    fill="var(--color-clients)"
+                    radius={[4, 4, 0, 0]}
+                  />
+                </Bar>
+              </ChartContainer>
+            </CardContent>
+          </Card>
+        </div>
+
         <div className="mt-8 grid gap-6 md:grid-cols-2">
           <Card>
             <CardHeader>
@@ -94,26 +114,6 @@ export function DashboardContent() {
             </CardHeader>
             <CardContent>
               <p className="text-sm text-muted-foreground">Client risk analysis coming soon...</p>
-            </CardContent>
-          </Card>
-        </div>
-
-        <div className="mt-8">
-          <Card>
-            <CardHeader>
-              <CardTitle>Clients Served Breakdown</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <ChartContainer config={chartConfig} className="h-[300px]">
-                <BarChart data={chartData}>
-                  <ChartTooltip />
-                  <BarChart.Bar
-                    dataKey="clients"
-                    fill="var(--color-clients)"
-                    radius={[4, 4, 0, 0]}
-                  />
-                </BarChart>
-              </ChartContainer>
             </CardContent>
           </Card>
         </div>
