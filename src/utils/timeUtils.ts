@@ -2,12 +2,11 @@ import { format } from "date-fns";
 
 export const calculateCurrentTimePosition = () => {
   const now = new Date();
-  const hours = now.getHours();
-  const minutes = now.getMinutes();
-  const totalMinutesInDay = 24 * 60;
-  const currentMinutes = (hours * 60) + minutes;
-  
-  return (currentMinutes / totalMinutesInDay) * 100;
+  const minutesSinceMidnight = now.getHours() * 60 + now.getMinutes();
+  const pixelsPerMinute = 64 / 60; // 64 pixels per hour divided by 60 minutes
+  const pixelsFromTop = minutesSinceMidnight * pixelsPerMinute;
+  const totalHeight = 24 * 64; // 24 hours * 64px per hour
+  return (pixelsFromTop / totalHeight) * 100;
 };
 
 export const formatTimeLabel = (date: Date) => {
