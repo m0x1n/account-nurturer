@@ -7,6 +7,7 @@ import { DashboardContent } from "./DashboardContent";
 import { AppointmentsContent } from "./AppointmentsContent";
 import Staff from "@/pages/dashboard/Staff";
 import Clients from "@/pages/dashboard/Clients";
+import SetupChecklist from "@/components/setup/SetupChecklist";
 import { useEffect, useState } from "react";
 
 const DashboardLayout = () => {
@@ -76,7 +77,7 @@ const DashboardLayout = () => {
           <Route index element={<DashboardContent />} />
           <Route path="dashboard" element={<DashboardContent />} />
           <Route path="appointments" element={<AppointmentsContent />} />
-          <Route path="setup-checklist" element={<div>Setup Checklist Coming Soon...</div>} />
+          <Route path="setup-checklist" element={<SetupChecklist />} />
           <Route path="staff" element={<Staff />} />
           <Route path="clients" element={<Clients />} />
           <Route path="*" element={<Navigate to="/dashboard" replace />} />
