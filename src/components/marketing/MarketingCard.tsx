@@ -6,25 +6,11 @@ interface MarketingCardProps {
   title: string;
   description: string;
   features?: string[];
-  onClick?: () => void;
-  interactive?: boolean;
 }
 
-export function MarketingCard({ 
-  icon: Icon, 
-  title, 
-  description, 
-  features,
-  onClick,
-  interactive 
-}: MarketingCardProps) {
+export function MarketingCard({ icon: Icon, title, description, features }: MarketingCardProps) {
   return (
-    <Card 
-      className={`overflow-hidden transition-all duration-300 ${
-        interactive ? 'cursor-pointer hover:shadow-lg hover:-translate-y-1' : ''
-      } bg-gradient-to-br from-white to-secondary/80 dark:from-gray-900 dark:to-gray-800`}
-      onClick={onClick}
-    >
+    <Card className="overflow-hidden transition-all duration-300 hover:shadow-lg hover:-translate-y-1 bg-gradient-to-br from-white to-secondary/80 dark:from-gray-900 dark:to-gray-800">
       <CardHeader>
         <CardTitle className="flex items-center gap-2 font-serif text-xl">
           <Icon className="h-5 w-5 text-primary" />

@@ -1,12 +1,8 @@
 import { BarChart3, Gift, Megaphone, Share2, Target } from "lucide-react";
-import { Button } from "@/components/ui/button";
 import { MarketingCard } from "@/components/marketing/MarketingCard";
 import { MarketingSection } from "@/components/marketing/MarketingSection";
-import { useNavigate } from "react-router-dom";
 
 export default function Marketing() {
-  const navigate = useNavigate();
-
   return (
     <div className="p-6 min-h-screen bg-gradient-to-br from-background to-secondary/20">
       <div className="flex items-center gap-2 mb-6">
@@ -17,9 +13,9 @@ export default function Marketing() {
       </div>
 
       {/* Marketing Overview Section */}
-      <div className="mb-8 max-w-2xl">
+      <div className="mb-8">
         <h2 className="text-lg font-semibold mb-4">Marketing Overview</h2>
-        <div className="space-y-4">
+        <MarketingSection>
           <MarketingCard
             icon={Target}
             title="Engage"
@@ -29,8 +25,6 @@ export default function Marketing() {
               "Send personalized SMS messages",
               "Schedule automated follow-ups"
             ]}
-            onClick={() => navigate("/dashboard/marketing/campaigns")}
-            interactive
           />
           <MarketingCard
             icon={Gift}
@@ -62,7 +56,7 @@ export default function Marketing() {
               "Build your online presence"
             ]}
           />
-        </div>
+        </MarketingSection>
       </div>
     </div>
   );
