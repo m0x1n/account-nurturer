@@ -6,12 +6,15 @@ import {
   Timer, 
   Bell, 
   UserMinus,
+  ChevronUp,
 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { BoostCampaignConfig } from "@/components/marketing/campaigns/BoostCampaignConfig";
 import { LastMinuteCampaignConfig } from "@/components/marketing/campaigns/LastMinuteCampaignConfig";
 import { CampaignCard } from "@/components/marketing/smart-campaigns/CampaignCard";
 import { useCampaigns } from "@/components/marketing/smart-campaigns/useCampaigns";
+import { Button } from "@/components/ui/button";
+import { useNavigate } from "react-router-dom";
 
 const INITIAL_CAMPAIGNS = [
   {
@@ -66,6 +69,7 @@ const INITIAL_CAMPAIGNS = [
 
 export default function SmartCampaigns() {
   const { toast } = useToast();
+  const navigate = useNavigate();
   const {
     campaigns,
     setCampaigns,
@@ -73,6 +77,10 @@ export default function SmartCampaigns() {
     setExpandedId,
     handleExpand,
   } = useCampaigns(INITIAL_CAMPAIGNS);
+
+  const handleNavigateUp = () => {
+    navigate('/dashboard/marketing/engage');
+  };
 
   const handleBoostSaveSuccess = (isActive: boolean) => {
     setCampaigns(prevCampaigns =>
@@ -114,11 +122,22 @@ export default function SmartCampaigns() {
 
   return (
     <div className="p-6 space-y-6">
-      <div className="flex items-center gap-2 mb-6">
-        <Zap className="h-6 w-6 text-primary" />
-        <h1 className="text-2xl font-serif font-bold">
-          Smart Campaigns
-        </h1>
+      <div className="flex items-center justify-between mb-6">
+        <div className="flex items-center gap-2">
+          <Zap className="h-6 w-6 text-primary" />
+          <h1 className="text-2xl font-serif font-bold">
+            Smart Campaigns
+          </h1>
+        </div>
+        <Button
+          variant="ghost"
+          size="sm"
+          onClick={handleNavigateUp}
+          className="flex items-center gap-2"
+        >
+          <ChevronUp className="h-4 w-4" />
+          <span>Back to Engage</span>
+        </Button>
       </div>
 
       <div className="space-y-4">
