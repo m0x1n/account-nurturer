@@ -9,6 +9,7 @@ import {
 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { BoostCampaignConfig } from "@/components/marketing/campaigns/BoostCampaignConfig";
+import { LastMinuteCampaignConfig } from "@/components/marketing/campaigns/LastMinuteCampaignConfig";
 import { CampaignCard } from "@/components/marketing/smart-campaigns/CampaignCard";
 import { useCampaigns } from "@/components/marketing/smart-campaigns/useCampaigns";
 
@@ -27,7 +28,7 @@ const INITIAL_CAMPAIGNS = [
     description: "Automatically promote available slots within 24-48 hours",
     icon: <Clock className="h-6 w-6" />,
     isActive: false,
-    isComingSoon: true
+    isComingSoon: false
   },
   {
     id: "slow-days",
@@ -92,6 +93,25 @@ export default function SmartCampaigns() {
     });
   };
 
+  const handleLastMinuteSaveSuccess = (isActive: boolean) => {
+    setCampaigns(prevCampaigns =>
+      prevCampaigns.map(campaign =>
+        campaign.id === "last-minute"
+          ? { ...campaign, isActive, isDisabled: isActive }
+          : campaign
+      )
+    );
+    
+    setExpandedId(null);
+
+    toast({
+      title: isActive ? "Last Minute Campaign Activated" : "Last Minute Campaign Saved",
+      description: isActive 
+        ? "Your last minute campaign is now running" 
+        : "Your last minute campaign has been saved",
+    });
+  };
+
   return (
     <div className="p-6 space-y-6">
       <div className="flex items-center gap-2 mb-6">
@@ -115,6 +135,15 @@ export default function SmartCampaigns() {
                   isOpen={expandedId === campaign.id} 
                   onClose={() => setExpandedId(null)}
                   onSaveSuccess={handleBoostSaveSuccess}
+                />
+              </div>
+            )}
+            {expandedId === campaign.id && campaign.id === "last-minute" && (
+              <div className="pl-10 pr-4 pb-4">
+                <LastMinuteCampaignConfig 
+                  isOpen={expandedId === campaign.id} 
+                  onClose={() => setExpandedId(null)}
+                  onSaveSuccess={handleLastMinuteSaveSuccess}
                 />
               </div>
             )}
