@@ -8,6 +8,11 @@ const Index = () => {
 
   const handleGetStarted = async () => {
     try {
+      // Clear any cached data
+      localStorage.clear();
+      sessionStorage.clear();
+      await supabase.auth.refreshSession();
+      
       const { data: { session }, error: sessionError } = await supabase.auth.getSession();
       
       if (sessionError) {
