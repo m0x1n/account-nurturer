@@ -31,46 +31,34 @@ const Onboarding = () => {
   });
 
   useEffect(() => {
-    const checkSession = async () => {
-      try {
-        const { data: { session } } = await supabase.auth.getSession();
-        
-        if (!session) {
-          navigate("/login");
-          return;
-        }
-
-        // Set the email from the session
-        setFormData(prev => ({
-          ...prev,
-          email: session.user.email || "",
-        }));
-        
-        setIsLoading(false);
-      } catch (error) {
-        console.error("Session check error:", error);
-        toast({
-          title: "Error",
-          description: "Failed to check authentication status",
-          variant: "destructive",
-        });
-        navigate("/login");
-      }
-    };
-
     checkSession();
+  }, []);
 
-    // Set up auth state change listener
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
-      if (event === 'SIGNED_OUT') {
+  const checkSession = async () => {
+    try {
+      const { data: { session }, error } = await supabase.auth.getSession();
+      
+      if (error) {
+        console.error("Session error:", error);
         navigate("/login");
+        return;
       }
-    });
 
-    return () => {
-      subscription.unsubscribe();
-    };
-  }, [navigate, toast]);
+      if (!session) {
+        navigate("/login");
+        return;
+      }
+
+      setFormData((prev) => ({
+        ...prev,
+        email: session.user.email || "",
+      }));
+      setIsLoading(false);
+    } catch (error) {
+      console.error("Session check error:", error);
+      navigate("/login");
+    }
+  };
 
   const updateFormData = (data: Partial<typeof formData>) => {
     setFormData((prev) => ({
