@@ -22,12 +22,12 @@ export function DayView({ currentDate, selectedStaffIds = [] }: DayViewProps) {
   const hours = Array.from({ length: 24 }, (_, i) => i);
   const dayStart = startOfDay(currentDate);
 
-  // Calculate visible staff count based on container width, accounting for time column
+  // Calculate visible staff count based on container width, accounting for time column and scroll buttons
   useEffect(() => {
     const calculateVisibleStaff = () => {
       if (containerRef.current) {
-        const containerWidth = containerRef.current.offsetWidth - (TIME_COLUMN_WIDTH + 2 * SCROLL_BUTTON_WIDTH);
-        const newVisibleCount = Math.floor(containerWidth / STAFF_COLUMN_WIDTH);
+        const availableWidth = containerRef.current.offsetWidth - TIME_COLUMN_WIDTH - (2 * SCROLL_BUTTON_WIDTH);
+        const newVisibleCount = Math.floor(availableWidth / STAFF_COLUMN_WIDTH);
         setVisibleStaffCount(Math.max(1, newVisibleCount));
       }
     };
@@ -70,7 +70,6 @@ export function DayView({ currentDate, selectedStaffIds = [] }: DayViewProps) {
     }
   });
 
-  // Fetch working hours for the current date
   const { data: workingHours = [] } = useQuery({
     queryKey: ['working-hours', format(currentDate, 'yyyy-MM-dd')],
     queryFn: async () => {
@@ -136,17 +135,25 @@ export function DayView({ currentDate, selectedStaffIds = [] }: DayViewProps) {
     <div className="flex flex-col h-[calc(100vh-200px)]" ref={containerRef}>
       {/* Staff header with scroll buttons */}
       <div className="flex items-center border-b bg-white sticky top-0 z-20">
-        <div className="flex-shrink-0" style={{ width: TIME_COLUMN_WIDTH }} />
+        {/* Time column header space */}
+        <div 
+          className="flex-shrink-0" 
+          style={{ width: TIME_COLUMN_WIDTH, minWidth: TIME_COLUMN_WIDTH }}
+        />
+        
+        {/* Left scroll button */}
         <Button
           variant="ghost"
           size="icon"
           onClick={handleScrollLeft}
           disabled={scrollPosition === 0}
           className="h-12"
-          style={{ width: SCROLL_BUTTON_WIDTH }}
+          style={{ width: SCROLL_BUTTON_WIDTH, minWidth: SCROLL_BUTTON_WIDTH }}
         >
           <ChevronLeft className="h-4 w-4" />
         </Button>
+
+        {/* Staff headers container */}
         <div className="flex overflow-hidden">
           <div 
             className="flex transition-transform duration-300"
@@ -161,13 +168,15 @@ export function DayView({ currentDate, selectedStaffIds = [] }: DayViewProps) {
             ))}
           </div>
         </div>
+
+        {/* Right scroll button */}
         <Button
           variant="ghost"
           size="icon"
           onClick={handleScrollRight}
           disabled={!staffData || scrollPosition >= (staffData.length - visibleStaffCount) * STAFF_COLUMN_WIDTH}
           className="h-12"
-          style={{ width: SCROLL_BUTTON_WIDTH }}
+          style={{ width: SCROLL_BUTTON_WIDTH, minWidth: SCROLL_BUTTON_WIDTH }}
         >
           <ChevronRight className="h-4 w-4" />
         </Button>
@@ -178,7 +187,7 @@ export function DayView({ currentDate, selectedStaffIds = [] }: DayViewProps) {
         {/* Time column */}
         <div 
           className="flex-shrink-0 border-r bg-white z-10" 
-          style={{ width: TIME_COLUMN_WIDTH }}
+          style={{ width: TIME_COLUMN_WIDTH, minWidth: TIME_COLUMN_WIDTH }}
         >
           {hours.map((hour) => (
             <div
