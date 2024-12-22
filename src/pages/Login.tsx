@@ -20,12 +20,34 @@ const Login = () => {
     localStorage.clear();
     sessionStorage.clear();
     
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
       if (event === 'SIGNED_IN' && session) {
-        navigate("/onboarding");
+        // Check if user has completed onboarding
+        const { data: profile } = await supabase
+          .from('profiles')
+          .select('completed_onboarding')
+          .eq('id', session.user.id)
+          .single();
+
+        if (profile?.completed_onboarding) {
+          navigate("/dashboard");
+        } else {
+          navigate("/onboarding");
+        }
       }
       if (event === 'USER_UPDATED' && session) {
-        navigate("/onboarding");
+        // Same logic for user updates
+        const { data: profile } = await supabase
+          .from('profiles')
+          .select('completed_onboarding')
+          .eq('id', session.user.id)
+          .single();
+
+        if (profile?.completed_onboarding) {
+          navigate("/dashboard");
+        } else {
+          navigate("/onboarding");
+        }
       }
       if (event === 'SIGNED_OUT') {
         toast({
