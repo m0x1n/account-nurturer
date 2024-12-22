@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Form } from "@/components/ui/form";
 import { Button } from "@/components/ui/button";
 import { useForm } from "react-hook-form";
@@ -39,6 +39,43 @@ export function LastMinuteCampaignConfig({
       messageText: "",
     },
   });
+
+  useEffect(() => {
+    const loadExistingCampaign = async () => {
+      if (!business?.id) return;
+
+      const { data: existingCampaign, error } = await supabase
+        .from('marketing_campaigns')
+        .select('*')
+        .eq('campaign_subtype', 'last-minute')
+        .eq('business_id', business.id)
+        .is('archived_at', null)
+        .maybeSingle();
+
+      if (error) {
+        console.error('Error loading campaign:', error);
+        return;
+      }
+
+      if (existingCampaign) {
+        const settings = existingCampaign.settings || {};
+        form.reset({
+          isEnabled: existingCampaign.is_active,
+          sendEmail: settings.sendEmail || false,
+          sendSMS: settings.sendSMS || false,
+          enableDiscounts: settings.enableDiscounts || false,
+          discountType: settings.discountType || "percent",
+          discountValue: settings.discountValue || 25,
+          customSubject: existingCampaign.custom_subject ? true : false,
+          customMessage: existingCampaign.custom_message ? true : false,
+          subjectText: existingCampaign.custom_subject || "",
+          messageText: existingCampaign.custom_message || "",
+        });
+      }
+    };
+
+    loadExistingCampaign();
+  }, [business?.id, form]);
 
   const handleSubmit = async (values: LastMinuteFormValues) => {
     if (!business?.id) {
@@ -161,7 +198,7 @@ export function LastMinuteCampaignConfig({
             <Button variant="outline" onClick={onClose}>
               Cancel
             </Button>
-            <Button type="submit" disabled={isSaveDisabled}>
+            <Button type="submit" disabled={isSaving}>
               Save Campaign
             </Button>
           </div>

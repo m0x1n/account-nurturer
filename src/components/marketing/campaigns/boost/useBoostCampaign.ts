@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { useBoostValidation } from "./validation/useBoostValidation";
@@ -15,7 +15,7 @@ export const useBoostCampaign = (
   const { checkExistingBoostCampaign, validateBusinessData } = useBoostValidation(business);
   const { calculateTargetAudience } = useAudienceCalculation(business);
   const { handleTestEmail: handleTestEmailSend } = useEmailTesting();
-  const { scheduledDays, handleDayToggle, isBoostStillValid } = useScheduling();
+  const { scheduledDays, handleDayToggle, isBoostStillValid, setScheduledDays } = useScheduling();
 
   const [campaignName, setCampaignName] = useState("");
   const [targetingOption, setTargetingOption] = useState("all");
@@ -26,6 +26,42 @@ export const useBoostCampaign = (
   const [applyToAllServices, setApplyToAllServices] = useState(true);
   const [testEmail, setTestEmail] = useState("");
   const [showPreview, setShowPreview] = useState(false);
+
+  useEffect(() => {
+    const loadExistingCampaign = async () => {
+      if (!business?.id) return;
+
+      const { data: existingCampaign, error } = await supabase
+        .from('marketing_campaigns')
+        .select('*')
+        .eq('campaign_subtype', 'boost')
+        .eq('business_id', business.id)
+        .is('archived_at', null)
+        .maybeSingle();
+
+      if (error) {
+        console.error('Error loading campaign:', error);
+        return;
+      }
+
+      if (existingCampaign) {
+        const settings = existingCampaign.settings || {};
+        setCampaignName(existingCampaign.name);
+        setTargetingOption(settings.targeting?.type || "all");
+        setDaysThreshold(settings.targeting?.daysThreshold?.toString() || "30");
+        setDiscountType(settings.discount?.type || "percent");
+        setDiscountValue(settings.discount?.value?.toString() || "");
+        setApplyToAllServices(settings.services === "all");
+        setSelectedServices(settings.services === "all" ? [] : (settings.services || []));
+        
+        if (settings.schedule) {
+          setScheduledDays(settings.schedule);
+        }
+      }
+    };
+
+    loadExistingCampaign();
+  }, [business?.id, setScheduledDays]);
 
   const handleServiceToggle = (serviceId: string) => {
     setSelectedServices(prev =>

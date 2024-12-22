@@ -1,34 +1,41 @@
-import { addDays, format, isAfter } from "date-fns";
 import { useState } from "react";
-import { ScheduleDay } from "../../types/campaignTypes";
+import { addDays, format, isAfter } from "date-fns";
 
 export const useScheduling = () => {
-  const nextSevenDays = Array.from({ length: 7 }, (_, i) => {
-    const date = addDays(new Date(), i);
-    return {
-      date: format(date, "yyyy-MM-dd"),
-      enabled: true,
-      formatted: format(date, "EEEE (MMM d)"),
-    };
+  const [scheduledDays, setScheduledDays] = useState(() => {
+    const days = [];
+    for (let i = 0; i < 7; i++) {
+      const date = addDays(new Date(), i);
+      days.push({
+        date: date.toISOString(),
+        enabled: false,
+        formatted: format(date, "EEEE, MMM d"),
+      });
+    }
+    return days;
   });
 
-  const [scheduledDays, setScheduledDays] = useState<ScheduleDay[]>(nextSevenDays);
-
   const handleDayToggle = (index: number) => {
-    setScheduledDays(days =>
-      days.map((day, i) =>
+    setScheduledDays((prevDays) =>
+      prevDays.map((day, i) =>
         i === index ? { ...day, enabled: !day.enabled } : day
       )
     );
   };
 
   const isBoostStillValid = () => {
-    const lastDay = scheduledDays[scheduledDays.length - 1].date;
-    return isAfter(new Date(lastDay), new Date());
+    const enabledDays = scheduledDays.filter((day) => day.enabled);
+    if (enabledDays.length === 0) return false;
+
+    const lastDay = enabledDays
+      .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())[0];
+
+    return lastDay ? isAfter(new Date(lastDay.date), new Date()) : false;
   };
 
   return {
     scheduledDays,
+    setScheduledDays,
     handleDayToggle,
     isBoostStillValid,
   };
