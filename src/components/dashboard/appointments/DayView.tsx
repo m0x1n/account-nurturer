@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { StaffHeader } from "./StaffHeader";
 import { StaffColumn } from "./StaffColumn";
+import { STAFF_COLUMN_WIDTH, TIME_COLUMN_WIDTH, SCROLL_BUTTON_WIDTH } from "./constants";
 
 interface DayViewProps {
   currentDate: Date;
@@ -20,15 +21,14 @@ export function DayView({ currentDate, selectedStaffIds = [] }: DayViewProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const hours = Array.from({ length: 24 }, (_, i) => i);
   const dayStart = startOfDay(currentDate);
-  const staffColumnWidth = 200;
 
   // Calculate visible staff count based on container width
   useEffect(() => {
     const calculateVisibleStaff = () => {
       if (containerRef.current) {
-        const containerWidth = containerRef.current.offsetWidth - 84; // Subtract time column (20px) and scroll buttons (32px each)
-        const newVisibleCount = Math.floor(containerWidth / staffColumnWidth);
-        setVisibleStaffCount(Math.max(1, newVisibleCount)); // Ensure at least 1 staff member is visible
+        const containerWidth = containerRef.current.offsetWidth - (TIME_COLUMN_WIDTH + 2 * SCROLL_BUTTON_WIDTH);
+        const newVisibleCount = Math.floor(containerWidth / STAFF_COLUMN_WIDTH);
+        setVisibleStaffCount(Math.max(1, newVisibleCount));
       }
     };
 
@@ -37,7 +37,6 @@ export function DayView({ currentDate, selectedStaffIds = [] }: DayViewProps) {
     return () => window.removeEventListener('resize', calculateVisibleStaff);
   }, []);
 
-  // Update current time indicator position
   useEffect(() => {
     const updateCurrentTime = () => {
       const now = new Date();
@@ -126,25 +125,26 @@ export function DayView({ currentDate, selectedStaffIds = [] }: DayViewProps) {
   });
 
   const handleScrollLeft = () => {
-    setScrollPosition(Math.max(0, scrollPosition - staffColumnWidth));
+    setScrollPosition(Math.max(0, scrollPosition - STAFF_COLUMN_WIDTH));
   };
 
   const handleScrollRight = () => {
-    const maxScroll = Math.max(0, (staffData?.length || 0) - visibleStaffCount) * staffColumnWidth;
-    setScrollPosition(Math.min(maxScroll, scrollPosition + staffColumnWidth));
+    const maxScroll = Math.max(0, (staffData?.length || 0) - visibleStaffCount) * STAFF_COLUMN_WIDTH;
+    setScrollPosition(Math.min(maxScroll, scrollPosition + STAFF_COLUMN_WIDTH));
   };
 
   return (
     <div className="flex flex-col h-[calc(100vh-200px)]" ref={containerRef}>
       {/* Staff header with scroll buttons */}
       <div className="flex items-center border-b bg-white sticky top-0 z-20">
-        <div className="w-20 flex-shrink-0" /> {/* Time column space */}
+        <div className="flex-shrink-0" style={{ width: TIME_COLUMN_WIDTH }} />
         <Button
           variant="ghost"
           size="icon"
           onClick={handleScrollLeft}
           disabled={scrollPosition === 0}
           className="h-12"
+          style={{ width: SCROLL_BUTTON_WIDTH }}
         >
           <ChevronLeft className="h-4 w-4" />
         </Button>
@@ -166,8 +166,9 @@ export function DayView({ currentDate, selectedStaffIds = [] }: DayViewProps) {
           variant="ghost"
           size="icon"
           onClick={handleScrollRight}
-          disabled={!staffData || scrollPosition >= (staffData.length - visibleStaffCount) * staffColumnWidth}
+          disabled={!staffData || scrollPosition >= (staffData.length - visibleStaffCount) * STAFF_COLUMN_WIDTH}
           className="h-12"
+          style={{ width: SCROLL_BUTTON_WIDTH }}
         >
           <ChevronRight className="h-4 w-4" />
         </Button>
@@ -176,7 +177,7 @@ export function DayView({ currentDate, selectedStaffIds = [] }: DayViewProps) {
       {/* Main calendar grid */}
       <div className="flex flex-1 border rounded-lg bg-white overflow-hidden">
         {/* Time column */}
-        <div className="w-20 flex-shrink-0 border-r bg-white z-10">
+        <div className="flex-shrink-0 border-r bg-white z-10" style={{ width: TIME_COLUMN_WIDTH }}>
           {hours.map((hour) => (
             <div
               key={hour}

@@ -1,5 +1,6 @@
 import { format, differenceInMinutes, startOfDay } from "date-fns";
 import { cn } from "@/lib/utils";
+import { STAFF_COLUMN_WIDTH } from "./constants";
 
 interface StaffColumnProps {
   staff: {
@@ -27,7 +28,7 @@ export function StaffColumn({ staff, appointments, currentDate, currentTimeTop, 
   };
 
   return (
-    <div className="w-[200px] flex-shrink-0 relative border-r">
+    <div className="flex-shrink-0 relative border-r" style={{ width: STAFF_COLUMN_WIDTH }}>
       {/* Hour grid lines */}
       {hours.map((hour) => (
         <div
