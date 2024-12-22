@@ -81,7 +81,11 @@ const DashboardLayout = () => {
           <Route path="setup-checklist" element={<SetupChecklist />} />
           <Route path="staff" element={<Staff />} />
           <Route path="clients" element={<Clients />} />
-          <Route path="payment-settings" element={<PaymentSettings />} />
+          <Route path="clients/import" element={<Navigate to="/dashboard/clients" />} />
+          <Route path="settings/payment-settings" element={<PaymentSettings />} />
+          <Route path="business-hours" element={<Navigate to="/dashboard/settings" />} />
+          <Route path="services" element={<Navigate to="/dashboard/settings" />} />
+          <Route path="booking-link" element={<Navigate to="/dashboard/settings" />} />
           <Route path="*" element={<Navigate to="/dashboard" replace />} />
         </Routes>
       </div>

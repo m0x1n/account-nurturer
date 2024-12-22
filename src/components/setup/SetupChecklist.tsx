@@ -127,7 +127,7 @@ export default function SetupChecklist() {
       id: "bank-account",
       title: "Set Up Payment Details",
       description: "Add your bank account to receive payments",
-      route: "/dashboard/settings/payment-settings", // Updated route to match the settings submenu
+      route: "/dashboard/settings/payment-settings",
       completed: !!bankAccount,
     },
     {
@@ -135,7 +135,7 @@ export default function SetupChecklist() {
       title: "Import Client Records",
       description: "Import your existing client records via CSV",
       route: "/dashboard/clients/import",
-      completed: false,
+      completed: false, // Will be implemented when the import feature is added
     },
     {
       id: "booking-link",
@@ -146,9 +146,12 @@ export default function SetupChecklist() {
     },
   ];
 
-  // Calculate progress
-  const completedItems = checklistItems.filter(item => item.completed).length;
-  const totalProgress = (completedItems / checklistItems.length) * 100;
+  // Calculate progress whenever checklistItems or their completion status changes
+  useEffect(() => {
+    const completedItems = checklistItems.filter(item => item.completed).length;
+    const totalProgress = (completedItems / checklistItems.length) * 100;
+    setProgress(totalProgress);
+  }, [checklistItems]);
 
   return (
     <div className="p-6 max-w-4xl mx-auto">
@@ -158,9 +161,9 @@ export default function SetupChecklist() {
           Complete these steps to get your business ready for appointments
         </p>
         <div className="mt-4">
-          <Progress value={totalProgress} className="h-2" />
+          <Progress value={progress} className="h-2" />
           <p className="text-sm text-muted-foreground mt-2">
-            {completedItems} of {checklistItems.length} tasks completed
+            {checklistItems.filter(item => item.completed).length} of {checklistItems.length} tasks completed
           </p>
         </div>
       </div>
