@@ -61,7 +61,7 @@ export function SalesBreakdown({ salesData }: SalesBreakdownProps) {
     }
 
     return (
-      <div className="flex flex-col gap-2 text-sm">
+      <div className="flex flex-wrap gap-4 text-sm">
         {payload.map((entry, index) => (
           <div key={`legend-${index}`} className="flex items-center gap-2">
             <div
@@ -69,7 +69,7 @@ export function SalesBreakdown({ salesData }: SalesBreakdownProps) {
               style={{ backgroundColor: entry.color }}
             />
             <span className="text-muted-foreground">{entry.value}</span>
-            <span className="ml-auto font-medium">{entry.payload.value}%</span>
+            <span className="font-medium">{entry.payload.value}%</span>
           </div>
         ))}
       </div>
@@ -82,8 +82,8 @@ export function SalesBreakdown({ salesData }: SalesBreakdownProps) {
         <CardTitle>Sales Breakdown</CardTitle>
       </CardHeader>
       <CardContent>
-        <div className="flex items-center justify-between">
-          <div className="w-[200px] h-[200px]">
+        <div className="flex flex-col items-center gap-8">
+          <div className="w-[300px] h-[300px]">
             <ResponsiveContainer width="100%" height="100%">
               <PieChart>
                 <Pie
@@ -92,8 +92,8 @@ export function SalesBreakdown({ salesData }: SalesBreakdownProps) {
                   cy="50%"
                   labelLine={false}
                   label={renderCustomizedLabel}
-                  outerRadius={100}
-                  innerRadius={40}
+                  outerRadius={150}
+                  innerRadius={60}
                   fill="#8884d8"
                   dataKey="value"
                   startAngle={90}
@@ -118,9 +118,7 @@ export function SalesBreakdown({ salesData }: SalesBreakdownProps) {
               </PieChart>
             </ResponsiveContainer>
           </div>
-          <div className="flex-1 ml-8">
-            <Legend content={<CustomLegend />} />
-          </div>
+          <Legend content={<CustomLegend />} />
         </div>
       </CardContent>
     </Card>
