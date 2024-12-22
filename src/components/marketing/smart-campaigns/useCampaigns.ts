@@ -22,13 +22,18 @@ export function useCampaigns(initialCampaigns: Campaign[]) {
 
   const checkActiveBoostCampaign = async () => {
     try {
-      const { data: activeBoost } = await supabase
+      const { data: activeBoost, error } = await supabase
         .from('marketing_campaigns')
         .select('*, settings')
         .eq('campaign_type', 'boost')
         .eq('is_active', true)
         .is('archived_at', null)
-        .single();
+        .maybeSingle();
+
+      if (error) {
+        console.error('Error checking active boost campaign:', error);
+        return;
+      }
 
       if (activeBoost) {
         const settings = activeBoost.settings as any;
