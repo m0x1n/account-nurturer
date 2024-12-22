@@ -27,6 +27,7 @@ export const useBoostCampaign = (
   const [applyToAllServices, setApplyToAllServices] = useState(true);
   const [testEmail, setTestEmail] = useState("");
   const [showPreview, setShowPreview] = useState(false);
+  const [isActive, setIsActive] = useState(false);
 
   useEffect(() => {
     const loadExistingCampaign = async () => {
@@ -46,6 +47,7 @@ export const useBoostCampaign = (
       }
 
       if (existingCampaign) {
+        setIsActive(existingCampaign.is_active || false);
         const settings = existingCampaign.settings as unknown as BoostSettings;
         setCampaignName(existingCampaign.name);
         setTargetingOption(settings.targeting?.type || "all");
@@ -206,5 +208,6 @@ export const useBoostCampaign = (
     handleServiceToggle,
     handleTestEmail,
     handleSave,
+    isActive,
   };
 };
