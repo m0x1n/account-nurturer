@@ -7,6 +7,7 @@ import { StaffHeader } from "./StaffHeader";
 import { StaffColumn } from "./StaffColumn";
 import { TimeColumn } from "./TimeColumn";
 import { calculateCurrentTimePosition } from "@/utils/timeUtils";
+import { TIME_COLUMN_WIDTH } from "./constants";
 
 interface DayViewProps {
   currentDate: Date;
