@@ -28,7 +28,7 @@ export default function SetupChecklist() {
         .from("businesses")
         .select("*")
         .eq("owner_id", user.id)
-        .single();
+        .maybeSingle();
 
       return businesses;
     },
@@ -81,7 +81,7 @@ export default function SetupChecklist() {
         .from("bank_accounts")
         .select("*")
         .eq("business_id", businessData.id)
-        .single();
+        .maybeSingle();
       return data;
     },
     enabled: !!businessData?.id,
@@ -95,7 +95,7 @@ export default function SetupChecklist() {
         .from("booking_links")
         .select("*")
         .eq("business_id", businessData.id)
-        .single();
+        .maybeSingle();
       return data;
     },
     enabled: !!businessData?.id,
