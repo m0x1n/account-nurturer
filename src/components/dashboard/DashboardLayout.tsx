@@ -8,6 +8,7 @@ import { AppointmentsContent } from "./AppointmentsContent";
 import Staff from "@/pages/dashboard/Staff";
 import Clients from "@/pages/dashboard/Clients";
 import SetupChecklist from "@/components/setup/SetupChecklist";
+import PaymentSettings from "@/pages/dashboard/PaymentSettings";
 import { useEffect, useState } from "react";
 
 const DashboardLayout = () => {
@@ -80,6 +81,7 @@ const DashboardLayout = () => {
           <Route path="setup-checklist" element={<SetupChecklist />} />
           <Route path="staff" element={<Staff />} />
           <Route path="clients" element={<Clients />} />
+          <Route path="payment-settings" element={<PaymentSettings />} />
           <Route path="*" element={<Navigate to="/dashboard" replace />} />
         </Routes>
       </div>

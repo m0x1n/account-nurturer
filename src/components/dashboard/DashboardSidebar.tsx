@@ -1,4 +1,4 @@
-import { Home, ShoppingBag, Calendar, Users, Users2, ShoppingCart, BarChart2, Mail, Settings, Plus, Link, LogOut, LayoutDashboard, CheckSquare } from "lucide-react";
+import { Home, ShoppingBag, Calendar, Users, Users2, ShoppingCart, BarChart2, Mail, Settings, Plus, Link, LogOut, LayoutDashboard, CheckSquare, CreditCard } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   Sidebar,
@@ -29,6 +29,7 @@ const mainMenuItems = [
   { title: "Insights", icon: BarChart2, url: "/dashboard/insights" },
   { title: "Marketing", icon: Mail, url: "/dashboard/marketing" },
   { title: "Settings", icon: Settings, url: "/dashboard/settings" },
+  { title: "Payment Settings", icon: CreditCard, url: "/dashboard/payment-settings" },
 ];
 
 const additionalItems = [
