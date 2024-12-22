@@ -19,7 +19,7 @@ interface CalendarHeaderProps {
 export function CalendarHeader({
   currentDate,
   view,
-  selectedStaffIds,
+  selectedStaffIds = [], // Provide default empty array
   onDateChange,
   onViewChange,
   onStaffChange,
@@ -51,7 +51,6 @@ export function CalendarHeader({
     if (view === 'week') {
       onStaffChange([staffId]);
     } else {
-      // For day view, toggle the staff member in the selection
       const newSelection = selectedStaffIds.includes(staffId)
         ? selectedStaffIds.filter(id => id !== staffId)
         : [...selectedStaffIds, staffId];
@@ -125,7 +124,7 @@ export function CalendarHeader({
               <Command>
                 <CommandEmpty>No staff found.</CommandEmpty>
                 <CommandGroup>
-                  {staffMembers.map((staff) => (
+                  {(staffMembers || []).map((staff) => (
                     <CommandItem
                       key={staff.id}
                       onSelect={() => handleStaffSelect(staff.id)}
