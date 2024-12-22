@@ -18,7 +18,11 @@ export function ScheduleSection({ days, onDayToggle }: ScheduleProps) {
       <Label className="text-sm font-medium">When do you need a boost?</Label>
       <div className="space-y-2">
         {days.map((day, index) => (
-          <div key={day.formatted} className="flex items-center justify-between">
+          <div 
+            // Use date as key since it's unique for each day
+            key={day.date} 
+            className="flex items-center justify-between"
+          >
             <span className="text-sm">{day.formatted}</span>
             <Switch
               checked={day.enabled}
