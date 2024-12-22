@@ -19,7 +19,13 @@ export function CampaignsTable() {
           *,
           campaign_metrics (
             users_targeted,
-            users_engaged
+            users_engaged,
+            users_opened,
+            users_clicked,
+            users_unsubscribed,
+            percent_opened,
+            percent_clicked,
+            percent_unsubscribed
           )
         `);
 
@@ -55,9 +61,15 @@ export function CampaignsTable() {
               <TableCell className="text-right">
                 {campaign.campaign_metrics?.[0]?.users_targeted || 0}
               </TableCell>
-              <TableCell className="text-right">-</TableCell>
-              <TableCell className="text-right">-</TableCell>
-              <TableCell className="text-right">-</TableCell>
+              <TableCell className="text-right">
+                {campaign.campaign_metrics?.[0]?.percent_opened?.toFixed(1) || '-'}%
+              </TableCell>
+              <TableCell className="text-right">
+                {campaign.campaign_metrics?.[0]?.percent_clicked?.toFixed(1) || '-'}%
+              </TableCell>
+              <TableCell className="text-right">
+                {campaign.campaign_metrics?.[0]?.percent_unsubscribed?.toFixed(1) || '-'}%
+              </TableCell>
             </TableRow>
           ))}
         </TableBody>

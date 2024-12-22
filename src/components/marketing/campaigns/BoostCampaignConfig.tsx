@@ -70,7 +70,8 @@ export function BoostCampaignConfig({ isOpen, onClose }: BoostCampaignConfigProp
     }
 
     try {
-      const { error } = await supabase
+      // Save the campaign first
+      const { data: campaign, error: campaignError } = await supabase
         .from("marketing_campaigns")
         .upsert({
           business_id: business.id,
@@ -93,9 +94,28 @@ export function BoostCampaignConfig({ isOpen, onClose }: BoostCampaignConfigProp
             },
             services: applyToAllServices ? "all" : selectedServices,
           },
+        })
+        .select()
+        .single();
+
+      if (campaignError) throw campaignError;
+
+      // Create initial metrics for the campaign
+      const { error: metricsError } = await supabase
+        .from("campaign_metrics")
+        .insert({
+          campaign_id: campaign.id,
+          users_targeted: 0,
+          users_engaged: 0,
+          users_opened: 0,
+          users_clicked: 0,
+          users_unsubscribed: 0,
+          percent_opened: 0,
+          percent_clicked: 0,
+          percent_unsubscribed: 0
         });
 
-      if (error) throw error;
+      if (metricsError) throw metricsError;
 
       toast({
         title: "Campaign Saved",
