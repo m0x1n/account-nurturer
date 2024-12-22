@@ -1,242 +1,168 @@
 import { Mail, MessageSquare, Star, Gift, Smartphone, HeadphonesIcon, MousePointerClick, Share2, Globe, BarChart3 } from "lucide-react";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { MarketingCard } from "@/components/marketing/MarketingCard";
+import { MarketingSection } from "@/components/marketing/MarketingSection";
 
 export default function Marketing() {
   return (
-    <div className="p-6">
+    <div className="p-6 min-h-screen bg-gradient-to-br from-background to-secondary/20">
       <div className="flex items-center gap-2 mb-6">
-        <Mail className="h-6 w-6" />
-        <h1 className="text-2xl font-bold">Marketing</h1>
+        <Mail className="h-6 w-6 text-primary" />
+        <h1 className="text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-primary to-primary-dark">Marketing</h1>
       </div>
 
       <Tabs defaultValue="communication" className="space-y-6">
-        <TabsList className="grid grid-cols-2 md:grid-cols-5 h-auto gap-4">
-          <TabsTrigger value="communication">Communication</TabsTrigger>
-          <TabsTrigger value="promotions">Promotions</TabsTrigger>
-          <TabsTrigger value="engagement">Engagement</TabsTrigger>
-          <TabsTrigger value="digital">Digital Presence</TabsTrigger>
-          <TabsTrigger value="analytics">Analytics</TabsTrigger>
+        <TabsList className="grid grid-cols-2 md:grid-cols-5 h-auto gap-4 bg-transparent">
+          <TabsTrigger value="communication" className="data-[state=active]:bg-primary data-[state=active]:text-white">
+            Communication
+          </TabsTrigger>
+          <TabsTrigger value="promotions" className="data-[state=active]:bg-primary data-[state=active]:text-white">
+            Promotions
+          </TabsTrigger>
+          <TabsTrigger value="engagement" className="data-[state=active]:bg-primary data-[state=active]:text-white">
+            Engagement
+          </TabsTrigger>
+          <TabsTrigger value="digital" className="data-[state=active]:bg-primary data-[state=active]:text-white">
+            Digital Presence
+          </TabsTrigger>
+          <TabsTrigger value="analytics" className="data-[state=active]:bg-primary data-[state=active]:text-white">
+            Analytics
+          </TabsTrigger>
         </TabsList>
 
         <TabsContent value="communication" className="space-y-4">
-          <div className="grid gap-4 md:grid-cols-2">
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <Mail className="h-5 w-5" />
-                  Email & SMS Marketing
-                </CardTitle>
-                <CardDescription>
-                  Automated messaging campaigns and templates
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <ul className="list-disc pl-4 space-y-2">
-                  <li>Appointment reminders</li>
-                  <li>Promotional campaigns</li>
-                  <li>Loyalty updates</li>
-                  <li>Drip campaigns</li>
-                </ul>
-              </CardContent>
-            </Card>
-
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <MessageSquare className="h-5 w-5" />
-                  In-App Chat & Support
-                </CardTitle>
-                <CardDescription>
-                  Direct communication channels with clients
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <ul className="list-disc pl-4 space-y-2">
-                  <li>Client-to-business chat</li>
-                  <li>Automated FAQs</li>
-                  <li>Chatbot support</li>
-                  <li>Quick responses</li>
-                </ul>
-              </CardContent>
-            </Card>
-          </div>
+          <MarketingSection>
+            <MarketingCard
+              icon={Mail}
+              title="Email & SMS Marketing"
+              description="Automated messaging campaigns and templates"
+              features={[
+                "Appointment reminders",
+                "Promotional campaigns",
+                "Loyalty updates",
+                "Drip campaigns"
+              ]}
+            />
+            <MarketingCard
+              icon={MessageSquare}
+              title="In-App Chat & Support"
+              description="Direct communication channels with clients"
+              features={[
+                "Client-to-business chat",
+                "Automated FAQs",
+                "Chatbot support",
+                "Quick responses"
+              ]}
+            />
+          </MarketingSection>
         </TabsContent>
 
         <TabsContent value="promotions" className="space-y-4">
-          <div className="grid gap-4 md:grid-cols-2">
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <Gift className="h-5 w-5" />
-                  Promotions & Discounts
-                </CardTitle>
-                <CardDescription>
-                  Create and manage special offers
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <ul className="list-disc pl-4 space-y-2">
-                  <li>Seasonal offers</li>
-                  <li>Referral discounts</li>
-                  <li>Success tracking</li>
-                  <li>Custom campaigns</li>
-                </ul>
-              </CardContent>
-            </Card>
-
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <Star className="h-5 w-5" />
-                  Membership & Loyalty
-                </CardTitle>
-                <CardDescription>
-                  Reward your regular customers
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <ul className="list-disc pl-4 space-y-2">
-                  <li>Subscription memberships</li>
-                  <li>Points system</li>
-                  <li>Redemption options</li>
-                  <li>Member perks</li>
-                </ul>
-              </CardContent>
-            </Card>
-          </div>
+          <MarketingSection>
+            <MarketingCard
+              icon={Gift}
+              title="Promotions & Discounts"
+              description="Create and manage special offers"
+              features={[
+                "Seasonal offers",
+                "Referral discounts",
+                "Success tracking",
+                "Custom campaigns"
+              ]}
+            />
+            <MarketingCard
+              icon={Star}
+              title="Membership & Loyalty"
+              description="Reward your regular customers"
+              features={[
+                "Subscription memberships",
+                "Points system",
+                "Redemption options",
+                "Member perks"
+              ]}
+            />
+          </MarketingSection>
         </TabsContent>
 
         <TabsContent value="engagement" className="space-y-4">
-          <div className="grid gap-4 md:grid-cols-2">
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <Star className="h-5 w-5" />
-                  Client Reviews
-                </CardTitle>
-                <CardDescription>
-                  Manage and boost your online reputation
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <ul className="list-disc pl-4 space-y-2">
-                  <li>Automated review requests</li>
-                  <li>Google integration</li>
-                  <li>Yelp integration</li>
-                  <li>Social media presence</li>
-                </ul>
-              </CardContent>
-            </Card>
-
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <Smartphone className="h-5 w-5" />
-                  Branded App
-                </CardTitle>
-                <CardDescription>
-                  Custom mobile experience for your clients
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <ul className="list-disc pl-4 space-y-2">
-                  <li>White-label solution</li>
-                  <li>Integrated booking</li>
-                  <li>Push notifications</li>
-                  <li>Loyalty integration</li>
-                </ul>
-              </CardContent>
-            </Card>
-          </div>
+          <MarketingSection>
+            <MarketingCard
+              icon={Star}
+              title="Client Reviews"
+              description="Manage and boost your online reputation"
+              features={[
+                "Automated review requests",
+                "Google integration",
+                "Yelp integration",
+                "Social media presence"
+              ]}
+            />
+            <MarketingCard
+              icon={Smartphone}
+              title="Branded App"
+              description="Custom mobile experience for your clients"
+              features={[
+                "White-label solution",
+                "Integrated booking",
+                "Push notifications",
+                "Loyalty integration"
+              ]}
+            />
+          </MarketingSection>
         </TabsContent>
 
         <TabsContent value="digital" className="space-y-4">
-          <div className="grid gap-4 md:grid-cols-2">
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <MousePointerClick className="h-5 w-5" />
-                  Ad Campaigns
-                </CardTitle>
-                <CardDescription>
-                  Reach new customers effectively
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <ul className="list-disc pl-4 space-y-2">
-                  <li>Local targeting</li>
-                  <li>Performance tracking</li>
-                  <li>ROI analytics</li>
-                  <li>Campaign optimization</li>
-                </ul>
-              </CardContent>
-            </Card>
-
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <Share2 className="h-5 w-5" />
-                  Social Media
-                </CardTitle>
-                <CardDescription>
-                  Manage your social presence
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <ul className="list-disc pl-4 space-y-2">
-                  <li>Post scheduling</li>
-                  <li>Content suggestions</li>
-                  <li>Engagement tracking</li>
-                  <li>Trend analysis</li>
-                </ul>
-              </CardContent>
-            </Card>
-
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <Globe className="h-5 w-5" />
-                  Website & SEO
-                </CardTitle>
-                <CardDescription>
-                  Optimize your online presence
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <ul className="list-disc pl-4 space-y-2">
-                  <li>SEO optimization</li>
-                  <li>Website builder</li>
-                  <li>Traffic analytics</li>
-                  <li>Conversion tracking</li>
-                </ul>
-              </CardContent>
-            </Card>
-          </div>
+          <MarketingSection>
+            <MarketingCard
+              icon={MousePointerClick}
+              title="Ad Campaigns"
+              description="Reach new customers effectively"
+              features={[
+                "Local targeting",
+                "Performance tracking",
+                "ROI analytics",
+                "Campaign optimization"
+              ]}
+            />
+            <MarketingCard
+              icon={Share2}
+              title="Social Media"
+              description="Manage your social presence"
+              features={[
+                "Post scheduling",
+                "Content suggestions",
+                "Engagement tracking",
+                "Trend analysis"
+              ]}
+            />
+            <MarketingCard
+              icon={Globe}
+              title="Website & SEO"
+              description="Optimize your online presence"
+              features={[
+                "SEO optimization",
+                "Website builder",
+                "Traffic analytics",
+                "Conversion tracking"
+              ]}
+            />
+          </MarketingSection>
         </TabsContent>
 
         <TabsContent value="analytics" className="space-y-4">
-          <div className="grid gap-4 md:grid-cols-2">
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <BarChart3 className="h-5 w-5" />
-                  Marketing Analytics
-                </CardTitle>
-                <CardDescription>
-                  Track and optimize your marketing efforts
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <ul className="list-disc pl-4 space-y-2">
-                  <li>Client retention rates</li>
-                  <li>Marketing ROI</li>
-                  <li>Campaign performance</li>
-                  <li>Demographic insights</li>
-                </ul>
-              </CardContent>
-            </Card>
-          </div>
+          <MarketingSection>
+            <MarketingCard
+              icon={BarChart3}
+              title="Marketing Analytics"
+              description="Track and optimize your marketing efforts"
+              features={[
+                "Client retention rates",
+                "Marketing ROI",
+                "Campaign performance",
+                "Demographic insights"
+              ]}
+            />
+          </MarketingSection>
         </TabsContent>
       </Tabs>
     </div>
