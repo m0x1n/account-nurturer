@@ -129,17 +129,22 @@ export function CalendarHeader({
         ) : (
           <Popover>
             <PopoverTrigger asChild>
-              <Button variant="outline" className="w-[200px] justify-start">
-                {selectedStaffIds.length === 0
-                  ? "Select staff members"
-                  : `${selectedStaffIds.length} selected`}
+              <Button variant="outline" className="w-[200px] justify-between">
+                <span className="truncate">
+                  {selectedStaffIds.length === 0
+                    ? "Select staff members"
+                    : `${selectedStaffIds.length} selected`}
+                </span>
+                <Check className={cn(
+                  "ml-2 h-4 w-4",
+                  allSelected ? "opacity-100" : "opacity-0"
+                )} />
               </Button>
             </PopoverTrigger>
             <PopoverContent className="w-[200px] p-0" align="end">
               <Command className="w-full">
                 <CommandGroup>
                   <CommandItem
-                    value="Select All"
                     onSelect={() => handleStaffSelect('all')}
                     className="cursor-pointer"
                   >
@@ -149,12 +154,11 @@ export function CalendarHeader({
                         allSelected ? "opacity-100" : "opacity-0"
                       )}
                     />
-                    Select All
+                    <span>Select All</span>
                   </CommandItem>
                   {staffMembers.map((staff) => (
                     <CommandItem
                       key={staff.id}
-                      value={`${staff.first_name} ${staff.last_name}`}
                       onSelect={() => handleStaffSelect(staff.id)}
                       className="cursor-pointer"
                     >
@@ -164,7 +168,7 @@ export function CalendarHeader({
                           selectedStaffIds.includes(staff.id) ? "opacity-100" : "opacity-0"
                         )}
                       />
-                      {staff.first_name} {staff.last_name}
+                      <span>{staff.first_name} {staff.last_name}</span>
                     </CommandItem>
                   ))}
                 </CommandGroup>
