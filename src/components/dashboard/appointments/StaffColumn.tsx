@@ -31,15 +31,18 @@ export function StaffColumn({ staff, appointments, currentDate, currentTimeTop, 
   const staffAppointments = appointments.filter(apt => {
     const isForThisStaff = apt.staff_id === staff.id;
     const isUnassigned = apt.staff_id === null;
-    // Consider this the first staff member if it matches the first appointment's staff
-    // or if there are unassigned appointments and this is the first staff in the list
-    const isFirstStaffMember = isUnassigned;
+    
+    // Find the first staff member in the appointments array that has appointments
+    const firstStaffWithAppointments = appointments.find(a => a.staff_id)?.staff_id;
+    // This is the first staff member if it's the first one with appointments or if there are no staff appointments
+    const isFirstStaffMember = !firstStaffWithAppointments || staff.id === firstStaffWithAppointments;
     
     console.log(`Checking appointment for staff ${staff.id}:`, {
       appointment: apt,
       isForThisStaff,
       isUnassigned,
       isFirstStaffMember,
+      firstStaffWithAppointments,
       currentDate: format(currentDate, 'yyyy-MM-dd')
     });
     
