@@ -4,7 +4,7 @@ import { useToast } from "@/components/ui/use-toast";
 import { SidebarProvider } from "@/components/ui/sidebar";
 import { DashboardSidebar } from "./DashboardSidebar";
 import { DashboardContent } from "./DashboardContent";
-import { BookingsContent } from "./BookingsContent";
+import { AppointmentsContent } from "./AppointmentsContent";
 
 const DashboardLayout = () => {
   const navigate = useNavigate();
@@ -32,7 +32,7 @@ const DashboardLayout = () => {
         <Routes>
           <Route index element={<DashboardContent />} />
           <Route path="dashboard" element={<DashboardContent />} />
-          <Route path="bookings" element={<BookingsContent />} />
+          <Route path="appointments" element={<AppointmentsContent />} />
           <Route path="setup-checklist" element={<div>Setup Checklist Coming Soon...</div>} />
           <Route path="*" element={<Navigate to="/dashboard" replace />} />
         </Routes>
