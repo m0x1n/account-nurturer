@@ -46,11 +46,19 @@ const EmailStep = ({ formData, updateFormData, onNext }: EmailStepProps) => {
       try {
         const { error } = await supabase.auth.updateUser({ email });
         if (error) {
-          // Check both error.code and error message for email_exists
-          if (error.message.includes("email_exists") || 
-              (typeof error === 'object' && 
-               'code' in error && 
-               error.code === 'email_exists')) {
+          let errorMessage = error.message;
+          let isEmailExists = false;
+
+          // Check if error is an email_exists error
+          if (typeof error === 'object') {
+            if ('code' in error && error.code === 'email_exists') {
+              isEmailExists = true;
+            } else if (error.message?.includes('email_exists')) {
+              isEmailExists = true;
+            }
+          }
+
+          if (isEmailExists) {
             toast({
               title: "Error",
               description: "This email is already registered. Please use a different email or contact support if you think this is a mistake.",
@@ -58,35 +66,43 @@ const EmailStep = ({ formData, updateFormData, onNext }: EmailStepProps) => {
             });
             return;
           }
+
           toast({
             title: "Error",
-            description: error.message,
+            description: errorMessage,
             variant: "destructive",
           });
           return;
         }
+
         toast({
           title: "Verification Email Sent",
           description: "Please check your inbox to verify your email address. You can continue with the setup while waiting.",
         });
       } catch (error: any) {
-        // Parse error message if it's a JSON string
         let errorMessage = error.message;
+        let isEmailExists = false;
+
+        // Try to parse the error body if it's a JSON string
         try {
           if (typeof error.body === 'string') {
             const parsedError = JSON.parse(error.body);
             if (parsedError.code === 'email_exists') {
-              toast({
-                title: "Error",
-                description: "This email is already registered. Please use a different email or contact support if you think this is a mistake.",
-                variant: "destructive",
-              });
-              return;
+              isEmailExists = true;
             }
             errorMessage = parsedError.message || error.message;
           }
         } catch (e) {
           // If parsing fails, use the original error message
+        }
+
+        if (isEmailExists) {
+          toast({
+            title: "Error",
+            description: "This email is already registered. Please use a different email or contact support if you think this is a mistake.",
+            variant: "destructive",
+          });
+          return;
         }
         
         toast({
