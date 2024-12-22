@@ -75,9 +75,6 @@ export function CalendarHeader({
 
   const allSelected = safeStaffMembers.length > 0 && safeSelectedStaffIds.length === safeStaffMembers.length;
 
-  console.log('Staff Members:', safeStaffMembers);
-  console.log('Selected Staff IDs:', safeSelectedStaffIds);
-
   return (
     <div className="flex items-center justify-between mb-4">
       <div className="flex items-center gap-2">
@@ -115,73 +112,75 @@ export function CalendarHeader({
             Week
           </Button>
         </div>
-        {view === 'week' ? (
-          <Select
-            value={safeSelectedStaffIds[0] || ''}
-            onValueChange={(value) => onStaffChange([value])}
-          >
-            <SelectTrigger className="w-[200px]">
-              <SelectValue placeholder="Select staff member" />
-            </SelectTrigger>
-            <SelectContent>
-              {safeStaffMembers.map((staff) => (
-                <SelectItem key={staff.id} value={staff.id}>
-                  {staff.first_name} {staff.last_name}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-        ) : (
-          <Popover>
-            <PopoverTrigger asChild>
-              <Button variant="outline" role="combobox" className="w-[200px] justify-between">
-                <span>
-                  {safeSelectedStaffIds.length === 0
-                    ? "Select staff members"
-                    : `${safeSelectedStaffIds.length} selected`}
-                </span>
-                <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
-              </Button>
-            </PopoverTrigger>
-            <PopoverContent className="w-[200px] p-0">
-              <Command>
-                <CommandEmpty>No staff found.</CommandEmpty>
-                <CommandGroup>
-                  <CommandItem
-                    onSelect={() => handleStaffSelect('all')}
-                    className="cursor-pointer"
-                  >
-                    <div className="flex items-center gap-2">
-                      <div className={cn(
-                        "flex h-4 w-4 items-center justify-center rounded-sm border border-primary",
-                        allSelected ? "bg-primary text-primary-foreground" : "opacity-50"
-                      )}>
-                        {allSelected && <Check className="h-3 w-3" />}
-                      </div>
-                      <span>Select All</span>
-                    </div>
-                  </CommandItem>
-                  {safeStaffMembers.map((staff) => (
+        {safeStaffMembers.length > 0 && (
+          view === 'week' ? (
+            <Select
+              value={safeSelectedStaffIds[0] || ''}
+              onValueChange={(value) => onStaffChange([value])}
+            >
+              <SelectTrigger className="w-[200px]">
+                <SelectValue placeholder="Select staff member" />
+              </SelectTrigger>
+              <SelectContent>
+                {safeStaffMembers.map((staff) => (
+                  <SelectItem key={staff.id} value={staff.id}>
+                    {staff.first_name} {staff.last_name}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          ) : (
+            <Popover>
+              <PopoverTrigger asChild>
+                <Button variant="outline" role="combobox" className="w-[200px] justify-between">
+                  <span>
+                    {safeSelectedStaffIds.length === 0
+                      ? "Select staff members"
+                      : `${safeSelectedStaffIds.length} selected`}
+                  </span>
+                  <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+                </Button>
+              </PopoverTrigger>
+              <PopoverContent className="w-[200px] p-0">
+                <Command>
+                  <CommandEmpty>No staff found.</CommandEmpty>
+                  <CommandGroup>
                     <CommandItem
-                      key={staff.id}
-                      onSelect={() => handleStaffSelect(staff.id)}
+                      onSelect={() => handleStaffSelect('all')}
                       className="cursor-pointer"
                     >
                       <div className="flex items-center gap-2">
                         <div className={cn(
                           "flex h-4 w-4 items-center justify-center rounded-sm border border-primary",
-                          safeSelectedStaffIds.includes(staff.id) ? "bg-primary text-primary-foreground" : "opacity-50"
+                          allSelected ? "bg-primary text-primary-foreground" : "opacity-50"
                         )}>
-                          {safeSelectedStaffIds.includes(staff.id) && <Check className="h-3 w-3" />}
+                          {allSelected && <Check className="h-3 w-3" />}
                         </div>
-                        <span>{staff.first_name} {staff.last_name}</span>
+                        <span>Select All</span>
                       </div>
                     </CommandItem>
-                  ))}
-                </CommandGroup>
-              </Command>
-            </PopoverContent>
-          </Popover>
+                    {safeStaffMembers.map((staff) => (
+                      <CommandItem
+                        key={staff.id}
+                        onSelect={() => handleStaffSelect(staff.id)}
+                        className="cursor-pointer"
+                      >
+                        <div className="flex items-center gap-2">
+                          <div className={cn(
+                            "flex h-4 w-4 items-center justify-center rounded-sm border border-primary",
+                            safeSelectedStaffIds.includes(staff.id) ? "bg-primary text-primary-foreground" : "opacity-50"
+                          )}>
+                            {safeSelectedStaffIds.includes(staff.id) && <Check className="h-3 w-3" />}
+                          </div>
+                          <span>{staff.first_name} {staff.last_name}</span>
+                        </div>
+                      </CommandItem>
+                    ))}
+                  </CommandGroup>
+                </Command>
+              </PopoverContent>
+            </Popover>
+          )
         )}
       </div>
     </div>
