@@ -1,4 +1,11 @@
+import { Info } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 
 interface CampaignCardProps {
   id: string;
@@ -27,6 +34,8 @@ export function CampaignCard({
     }
   };
 
+  const lastMinuteInfo = `The Fill Last Minute Openings feature is used to fill unbooked appointments in the final 24-48 hours. It starts by looking at the open spots on your calendar, and then, based on your unique business history, determines how likely those spots are to be booked in the coming days. The spots that are unlikely to be booked are then offered to select clients who have expressed interest.`;
+
   return (
     <div 
       className={`p-4 bg-card rounded-lg border shadow-sm transition-all duration-200 
@@ -45,6 +54,20 @@ export function CampaignCard({
                 <Badge variant="default" className="bg-primary">
                   ACTIVE
                 </Badge>
+              )}
+              {id === 'last-minute' && (
+                <TooltipProvider>
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <Info className="h-4 w-4 text-muted-foreground cursor-help" />
+                    </TooltipTrigger>
+                    <TooltipContent className="max-w-[400px] p-4">
+                      <p className="text-sm leading-relaxed">
+                        {lastMinuteInfo}
+                      </p>
+                    </TooltipContent>
+                  </Tooltip>
+                </TooltipProvider>
               )}
             </div>
             <p className="text-muted-foreground text-sm">
