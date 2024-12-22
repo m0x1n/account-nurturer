@@ -2,12 +2,18 @@ import { Auth } from "@supabase/auth-ui-react";
 import { ThemeSupa } from "@supabase/auth-ui-shared";
 import { supabase } from "@/integrations/supabase/client";
 import { useNavigate } from "react-router-dom";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useToast } from "@/hooks/use-toast";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 
 const Login = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
+  const [phone, setPhone] = useState("");
+  const [otp, setOtp] = useState("");
+  const [showOtp, setShowOtp] = useState(false);
 
   useEffect(() => {
     const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
@@ -17,7 +23,6 @@ const Login = () => {
       if (event === 'USER_UPDATED' && session) {
         navigate("/onboarding");
       }
-      // Handle auth errors
       if (event === 'USER_DELETED' || event === 'SIGNED_OUT') {
         toast({
           title: "Signed out",
@@ -29,41 +34,123 @@ const Login = () => {
     return () => subscription.unsubscribe();
   }, [navigate, toast]);
 
+  const handleSendOtp = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!phone) {
+      toast({
+        title: "Error",
+        description: "Please enter your phone number",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    const { error } = await supabase.auth.signInWithOtp({
+      phone,
+    });
+
+    if (error) {
+      toast({
+        title: "Error",
+        description: error.message,
+        variant: "destructive",
+      });
+      return;
+    }
+
+    toast({
+      title: "OTP Sent",
+      description: "Please check your phone for the verification code",
+    });
+    setShowOtp(true);
+  };
+
+  const handleVerifyOtp = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!otp) {
+      toast({
+        title: "Error",
+        description: "Please enter the verification code",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    const { error } = await supabase.auth.verifyOtp({
+      phone,
+      token: otp,
+      type: 'sms'
+    });
+
+    if (error) {
+      toast({
+        title: "Error",
+        description: error.message,
+        variant: "destructive",
+      });
+      return;
+    }
+
+    // Success is handled by the onAuthStateChange listener
+  };
+
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
       <div className="max-w-md w-full space-y-8">
         <div>
           <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900">
-            Welcome back
+            Welcome
           </h2>
           <p className="mt-2 text-center text-sm text-gray-600">
-            Sign in to your account or create a new one
+            Sign in with your phone number
           </p>
         </div>
         <div className="mt-8">
-          <Auth
-            supabaseClient={supabase}
-            appearance={{ 
-              theme: ThemeSupa,
-              variables: {
-                default: {
-                  colors: {
-                    brand: '#404040',
-                    brandAccent: '#171717'
-                  }
-                }
-              }
-            }}
-            theme="light"
-            providers={[]}
-            onError={(error) => {
-              toast({
-                title: "Error",
-                description: error.message,
-                variant: "destructive",
-              });
-            }}
-          />
+          {!showOtp ? (
+            <form onSubmit={handleSendOtp} className="space-y-6">
+              <div>
+                <Label htmlFor="phone">Phone Number</Label>
+                <Input
+                  id="phone"
+                  type="tel"
+                  placeholder="+1234567890"
+                  value={phone}
+                  onChange={(e) => setPhone(e.target.value)}
+                  className="mt-1"
+                />
+              </div>
+              <Button type="submit" className="w-full">
+                Send Code
+              </Button>
+            </form>
+          ) : (
+            <form onSubmit={handleVerifyOtp} className="space-y-6">
+              <div>
+                <Label htmlFor="otp">Verification Code</Label>
+                <Input
+                  id="otp"
+                  type="text"
+                  placeholder="Enter verification code"
+                  value={otp}
+                  onChange={(e) => setOtp(e.target.value)}
+                  className="mt-1"
+                />
+              </div>
+              <div className="flex gap-4">
+                <Button 
+                  type="button" 
+                  variant="outline" 
+                  onClick={() => setShowOtp(false)}
+                  className="flex-1"
+                >
+                  Back
+                </Button>
+                <Button type="submit" className="flex-1">
+                  Verify
+                </Button>
+              </div>
+            </form>
+          )}
         </div>
       </div>
     </div>
