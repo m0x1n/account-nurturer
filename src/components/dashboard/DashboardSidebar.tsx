@@ -1,4 +1,4 @@
-import { Home, ShoppingBag, Calendar, Users, Users2, ShoppingCart, BarChart2, Mail, Settings, Plus, Link, LogOut } from "lucide-react";
+import { Home, ShoppingBag, Calendar, Users, Users2, ShoppingCart, BarChart2, Mail, Settings, Plus, Link, LogOut, LayoutDashboard, CheckSquare } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   Sidebar,
@@ -12,7 +12,15 @@ import {
 } from "@/components/ui/sidebar";
 
 const mainMenuItems = [
-  { title: "Home", icon: Home, url: "/dashboard" },
+  { 
+    title: "Home", 
+    icon: Home, 
+    url: "/dashboard",
+    submenu: [
+      { title: "Dashboard", icon: LayoutDashboard, url: "/dashboard" },
+      { title: "Setup Checklist", icon: CheckSquare, url: "/dashboard/setup-checklist" }
+    ]
+  },
   { title: "Services and Products", icon: ShoppingBag, url: "/dashboard/services" },
   { title: "Bookings", icon: Calendar, url: "/dashboard/bookings" },
   { title: "Clients", icon: Users, url: "/dashboard/clients" },
@@ -42,12 +50,33 @@ export function DashboardSidebar({ onLogout }: DashboardSidebarProps) {
             <SidebarMenu>
               {mainMenuItems.map((item) => (
                 <SidebarMenuItem key={item.title}>
-                  <SidebarMenuButton asChild>
-                    <a href={item.url} className="flex items-center gap-3">
-                      <item.icon className="h-4 w-4" />
-                      <span>{item.title}</span>
-                    </a>
-                  </SidebarMenuButton>
+                  {item.submenu ? (
+                    <>
+                      <SidebarMenuButton asChild>
+                        <a href={item.url} className="flex items-center gap-3">
+                          <item.icon className="h-4 w-4" />
+                          <span>{item.title}</span>
+                        </a>
+                      </SidebarMenuButton>
+                      <div className="pl-8 mt-2 space-y-1">
+                        {item.submenu.map((subItem) => (
+                          <SidebarMenuButton key={subItem.title} asChild>
+                            <a href={subItem.url} className="flex items-center gap-3 text-sm">
+                              <subItem.icon className="h-4 w-4" />
+                              <span>{subItem.title}</span>
+                            </a>
+                          </SidebarMenuButton>
+                        ))}
+                      </div>
+                    </>
+                  ) : (
+                    <SidebarMenuButton asChild>
+                      <a href={item.url} className="flex items-center gap-3">
+                        <item.icon className="h-4 w-4" />
+                        <span>{item.title}</span>
+                      </a>
+                    </SidebarMenuButton>
+                  )}
                 </SidebarMenuItem>
               ))}
             </SidebarMenu>

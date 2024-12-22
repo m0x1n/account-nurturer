@@ -1,7 +1,7 @@
 import { Button } from "@/components/ui/button";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Routes, Route, Navigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
-import { LogOut, Home, ShoppingBag, Calendar, Users, Users2, ShoppingCart, BarChart2, Mail, Settings, Plus, Link } from "lucide-react";
+import { LogOut } from "lucide-react";
 import { useToast } from "@/components/ui/use-toast";
 import { SidebarProvider } from "@/components/ui/sidebar";
 import { DashboardSidebar } from "./DashboardSidebar";
@@ -30,7 +30,12 @@ const DashboardLayout = () => {
     <SidebarProvider>
       <div className="min-h-screen flex w-full bg-background">
         <DashboardSidebar onLogout={handleLogout} />
-        <DashboardContent />
+        <Routes>
+          <Route index element={<DashboardContent />} />
+          <Route path="dashboard" element={<DashboardContent />} />
+          <Route path="setup-checklist" element={<div>Setup Checklist Coming Soon...</div>} />
+          <Route path="*" element={<Navigate to="/dashboard" replace />} />
+        </Routes>
       </div>
     </SidebarProvider>
   );
