@@ -18,7 +18,7 @@ export function StaffColumn({ staff, appointments, currentDate, currentTimeTop, 
   const getAppointmentStyle = (startTime: string, endTime: string) => {
     const start = new Date(startTime);
     const end = new Date(endTime);
-    const minutesFromMidnight = differenceInMinutes(start, dayStart);
+    const minutesFromMidnight = differenceInMinutes(start, startOfDay(start));
     const duration = differenceInMinutes(end, start);
     
     return {
@@ -64,7 +64,13 @@ export function StaffColumn({ staff, appointments, currentDate, currentTimeTop, 
 
       {/* Appointments */}
       {staffAppointments.map((appointment) => {
+        const startDate = new Date(appointment.start_time);
         const style = getAppointmentStyle(appointment.start_time, appointment.end_time);
+        
+        // Only show appointments for the current day
+        if (format(startDate, 'yyyy-MM-dd') !== format(currentDate, 'yyyy-MM-dd')) {
+          return null;
+        }
         
         return (
           <div
