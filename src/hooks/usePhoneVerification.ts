@@ -1,8 +1,13 @@
 import { useState, useEffect } from "react";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
+import { sendPhoneVerification, verifyPhoneOtp } from "@/utils/phoneVerification";
 
-export const usePhoneVerification = (email: string, onSuccess: () => void) => {
+interface UsePhoneVerificationProps {
+  onSuccess: () => void;
+}
+
+export const usePhoneVerification = ({ onSuccess }: UsePhoneVerificationProps) => {
   const [phone, setPhone] = useState("");
   const [otp, setOtp] = useState("");
   const [showOtp, setShowOtp] = useState(false);
@@ -54,21 +59,7 @@ export const usePhoneVerification = (email: string, onSuccess: () => void) => {
     setIsProcessing(true);
 
     try {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) {
-        // If no session, sign in with OTP
-        const { error: signInError } = await supabase.auth.signInWithOtp({
-          phone,
-        });
-        if (signInError) throw signInError;
-      } else {
-        // If session exists, update phone
-        const { error: updateError } = await supabase.auth.updateUser({ 
-          phone,
-        });
-        if (updateError) throw updateError;
-      }
-      
+      await sendPhoneVerification(supabase, phone);
       toast({
         title: "Verification Code Sent",
         description: "Please check your phone for the verification code",
@@ -77,32 +68,22 @@ export const usePhoneVerification = (email: string, onSuccess: () => void) => {
     } catch (error: any) {
       console.error('Error in phone verification:', error);
       
-      // Parse the error message for rate limit information
       let cooldown = 0;
       let errorMessage = error.message;
       
-      try {
-        if (error.message.includes('rate_limit')) {
-          // Try to parse the JSON body if it exists
+      if (error.message.includes('rate_limit')) {
+        try {
           const bodyJson = JSON.parse(error.body || '{}');
           const message = bodyJson.message || error.message;
-          
-          // Extract seconds from the message
           const match = message.match(/after (\d+) seconds/);
-          if (match && match[1]) {
-            cooldown = parseInt(match[1]);
-          } else {
-            cooldown = 60; // Default cooldown if we can't parse the seconds
-          }
-          
+          cooldown = match && match[1] ? parseInt(match[1]) : 60;
+          errorMessage = `Please wait ${cooldown} seconds before trying again`;
+          setCooldownSeconds(cooldown);
+        } catch (parseError) {
+          cooldown = 60;
           errorMessage = `Please wait ${cooldown} seconds before trying again`;
           setCooldownSeconds(cooldown);
         }
-      } catch (parseError) {
-        console.error('Error parsing rate limit message:', parseError);
-        cooldown = 60; // Fallback cooldown
-        errorMessage = `Please wait ${cooldown} seconds before trying again`;
-        setCooldownSeconds(cooldown);
       }
       
       toast({
@@ -131,35 +112,13 @@ export const usePhoneVerification = (email: string, onSuccess: () => void) => {
     setIsProcessing(true);
 
     try {
-      // Verify the phone OTP
-      const { data: { user }, error: verifyError } = await supabase.auth.verifyOtp({
-        phone,
-        token: otp,
-        type: 'sms'
+      await verifyPhoneOtp(supabase, phone, otp);
+      toast({
+        title: "Success",
+        description: "Phone number verified successfully",
       });
-
-      if (verifyError) throw verifyError;
-
-      if (user) {
-        // Update the profile with verified phone
-        const { error: updateError } = await supabase
-          .from('profiles')
-          .update({ 
-            phone,
-            phone_verified: true 
-          })
-          .eq('id', user.id);
-
-        if (updateError) throw updateError;
-
-        toast({
-          title: "Success",
-          description: "Phone number verified successfully",
-        });
-        
-        setIsVerified(true);
-        onSuccess();
-      }
+      setIsVerified(true);
+      onSuccess();
     } catch (error: any) {
       console.error('Error verifying OTP:', error);
       toast({

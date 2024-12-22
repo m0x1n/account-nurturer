@@ -2,7 +2,6 @@ import { useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { supabase } from "@/integrations/supabase/client";
 import { usePhoneVerification } from "@/hooks/usePhoneVerification";
 
 interface PhoneStepProps {
@@ -26,28 +25,18 @@ const PhoneStep = ({ formData, updateFormData, onNext, onBack }: PhoneStepProps)
     cooldownSeconds,
     handleSendOtp,
     handleVerifyOtp,
-  } = usePhoneVerification(formData.email, () => {
-    updateFormData({ phone });
-    onNext();
+  } = usePhoneVerification({
+    onSuccess: () => {
+      updateFormData({ phone });
+      onNext();
+    },
   });
 
   useEffect(() => {
-    const checkPhoneVerification = async () => {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (user?.phone) {
-        const { data } = await supabase
-          .from('profiles')
-          .select('phone_verified')
-          .eq('id', user.id)
-          .single();
-        
-        if (data?.phone_verified) {
-          setIsVerified(true);
-        }
-      }
-    };
-    checkPhoneVerification();
-  }, []);
+    if (formData.phone) {
+      setPhone(formData.phone);
+    }
+  }, [formData.phone]);
 
   return (
     <div className="space-y-6">
