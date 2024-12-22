@@ -9,11 +9,53 @@ interface EmailStepProps {
   formData: { email: string };
   updateFormData: (data: { email: string }) => void;
   onNext: () => void;
+  setStep: (step: number) => void;
+  setCompletedSteps: (steps: { email: boolean; phone: boolean; personalDetails: boolean; business: boolean }) => void;
 }
 
-const EmailStep = ({ formData, updateFormData, onNext }: EmailStepProps) => {
+const EmailStep = ({ formData, updateFormData, onNext, setStep, setCompletedSteps }: EmailStepProps) => {
   const [email, setEmail] = useState(formData.email);
   const { toast } = useToast();
+
+  const checkUserProgress = async (email: string) => {
+    const { data: existingUser } = await supabase
+      .from('profiles')
+      .select('*')
+      .eq('id', (await supabase.auth.getUser()).data.user?.id)
+      .single();
+
+    if (existingUser) {
+      const completedSteps = {
+        email: true,
+        phone: existingUser.phone_verified || false,
+        personalDetails: !!(existingUser.first_name && existingUser.last_name),
+        business: false
+      };
+
+      // Check if user has a business
+      const { data: business } = await supabase
+        .from('businesses')
+        .select('*')
+        .eq('owner_id', existingUser.id)
+        .single();
+
+      completedSteps.business = !!business;
+
+      // Set completed steps
+      setCompletedSteps(completedSteps);
+
+      // Determine which step to resume from
+      let resumeStep = 1;
+      if (completedSteps.business) resumeStep = 5;
+      else if (completedSteps.personalDetails) resumeStep = 4;
+      else if (completedSteps.phone) resumeStep = 3;
+      else if (completedSteps.email) resumeStep = 2;
+
+      setStep(resumeStep);
+      updateFormData({ email });
+      onNext();
+    }
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -36,10 +78,9 @@ const EmailStep = ({ formData, updateFormData, onNext }: EmailStepProps) => {
 
     const { data: { user } } = await supabase.auth.getUser();
     if (user) {
-      // If the email hasn't changed, just proceed
+      // If the email hasn't changed, check progress and proceed
       if (user.email === email) {
-        updateFormData({ email });
-        onNext();
+        await checkUserProgress(email);
         return;
       }
 
@@ -80,11 +121,7 @@ const EmailStep = ({ formData, updateFormData, onNext }: EmailStepProps) => {
           const isEmailExists = errorBody.code === 'email_exists';
 
           if (isEmailExists) {
-            toast({
-              title: "Email Already Registered",
-              description: "This email is already in use. Please use a different email address or contact support if you think this is a mistake.",
-              variant: "destructive",
-            });
+            await checkUserProgress(email);
             return;
           }
 
