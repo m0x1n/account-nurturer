@@ -35,7 +35,7 @@ export function BoostCampaignConfig({ isOpen, onClose }: BoostCampaignConfigProp
   const nextSevenDays = Array.from({ length: 7 }, (_, i) => {
     const date = addDays(new Date(), i);
     return {
-      date,
+      date: format(date, "yyyy-MM-dd"), // Format date as ISO string
       enabled: true,
       formatted: format(date, "EEE, MMM d"),
     };
@@ -52,7 +52,14 @@ export function BoostCampaignConfig({ isOpen, onClose }: BoostCampaignConfigProp
   };
 
   const handleSave = async () => {
-    if (!business?.id) return;
+    if (!business?.id) {
+      toast({
+        title: "Error",
+        description: "Business data not available",
+        variant: "destructive",
+      });
+      return;
+    }
 
     try {
       const { error } = await supabase
@@ -84,6 +91,7 @@ export function BoostCampaignConfig({ isOpen, onClose }: BoostCampaignConfigProp
       });
       onClose();
     } catch (error) {
+      console.error("Error saving campaign:", error);
       toast({
         title: "Error",
         description: "Failed to save campaign configuration",
@@ -124,6 +132,7 @@ export function BoostCampaignConfig({ isOpen, onClose }: BoostCampaignConfigProp
         description: "Please check your inbox for the test email",
       });
     } catch (error) {
+      console.error("Error sending test email:", error);
       toast({
         title: "Error",
         description: "Failed to send test email",
