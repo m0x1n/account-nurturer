@@ -149,19 +149,30 @@ export function DayView({ currentDate, selectedStaffIds = [] }: DayViewProps) {
           {/* Current time indicator */}
           {format(currentDate, 'yyyy-MM-dd') === format(new Date(), 'yyyy-MM-dd') && (
             <div 
-              className="absolute right-0 z-20 flex items-center"
+              className="absolute left-0 right-0 z-20"
               style={{ top: `${currentTimeTop}%` }}
             >
-              <div className="bg-red-500 text-white text-xs px-2 py-1 rounded-full -mr-2">
-                {format(new Date(), 'h:mm a')}
+              <div className="flex items-center">
+                <div className="bg-red-500 text-white text-xs px-2 py-1 rounded-full ml-auto mr-2">
+                  {format(new Date(), 'h:mm a')}
+                </div>
               </div>
-              <div className="flex-1 h-px bg-red-500" />
             </div>
           )}
         </div>
 
-        {/* Staff columns */}
+        {/* Staff columns with current time line */}
         <ScrollArea className="flex-1 relative">
+          {/* Current time line overlay */}
+          {format(currentDate, 'yyyy-MM-dd') === format(new Date(), 'yyyy-MM-dd') && (
+            <div 
+              className="absolute left-0 right-0 z-10 pointer-events-none"
+              style={{ top: `${currentTimeTop}%` }}
+            >
+              <div className="w-full h-px bg-red-500" />
+            </div>
+          )}
+          
           <div className="flex">
             {staffData?.map((staff) => (
               <StaffColumn
