@@ -4,28 +4,11 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
-import { isAfter } from "date-fns";
+import { Campaign } from "../types/campaignTypes";
+import { getCampaignType, getCampaignSubtype, isBoostCampaignActive } from "../utils/campaignUtils";
 
 interface CampaignTableRowProps {
-  campaign: {
-    id: string;
-    name: string;
-    campaign_type: string;
-    status: string;
-    created_at: string;
-    settings?: {
-      schedule?: Array<{
-        date: string;
-        enabled: boolean;
-      }>;
-    };
-    campaign_metrics?: Array<{
-      users_targeted: number;
-      percent_opened: number;
-      percent_clicked: number;
-      percent_unsubscribed: number;
-    }>;
-  };
+  campaign: Campaign;
   onArchive: () => void;
 }
 
@@ -54,41 +37,12 @@ export function CampaignTableRow({ campaign, onArchive }: CampaignTableRowProps)
     onArchive();
   };
 
-  const getCampaignType = () => {
-    return "Smart";
-  };
-
-  const getCampaignSubtype = (type: string) => {
-    const subtypeMap: { [key: string]: string } = {
-      'boost': 'Boost',
-      'last-minute': 'Fill Last Minute Openings',
-      'slow-days': 'Fill Slow Days',
-      'limited-time': 'Limited Time Specials',
-      'reminder': 'Reminder to Book Again',
-      'rescue': 'Rescue Lost Customers',
-      'manual': 'Manual Campaign'
-    };
-    return subtypeMap[type.toLowerCase()] || type;
-  };
-
-  const isBoostCampaignActive = () => {
-    if (campaign.campaign_type !== 'boost' || !campaign.settings?.schedule) {
-      return false;
-    }
-
-    const lastDay = campaign.settings.schedule
-      .filter(day => day.enabled)
-      .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())[0];
-
-    return lastDay && isAfter(new Date(lastDay.date), new Date());
-  };
-
   return (
-    <TableRow key={campaign.id}>
+    <TableRow>
       <TableCell className="font-medium">
         <div className="flex items-center gap-2">
           {campaign.name}
-          {isBoostCampaignActive() && (
+          {isBoostCampaignActive(campaign) && (
             <Badge variant="default" className="bg-primary">
               ACTIVE
             </Badge>

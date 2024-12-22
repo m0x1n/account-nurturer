@@ -5,6 +5,7 @@ import {
 import { CampaignTableHeader } from "./table/CampaignTableHeader";
 import { CampaignTableRow } from "./table/CampaignTableRow";
 import { useCampaignsQuery } from "./table/useCampaignsQuery";
+import { Campaign } from "./types/campaignTypes";
 
 export function CampaignsTable() {
   const { data: campaigns, isLoading, invalidate } = useCampaignsQuery();
@@ -18,7 +19,7 @@ export function CampaignsTable() {
       <Table>
         <CampaignTableHeader />
         <TableBody>
-          {campaigns?.map((campaign) => (
+          {campaigns?.map((campaign: Campaign) => (
             <CampaignTableRow 
               key={campaign.id} 
               campaign={campaign} 
