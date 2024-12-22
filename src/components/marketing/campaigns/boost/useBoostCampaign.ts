@@ -63,6 +63,11 @@ export const useBoostCampaign = (
     try {
       const targetAudienceSize = await calculateTargetAudience(targetingOption, daysThreshold);
 
+      // Get the earliest and latest enabled dates from scheduledDays
+      const enabledDays = scheduledDays.filter(day => day.enabled);
+      const startDate = enabledDays.length > 0 ? enabledDays[0].date : null;
+      const endDate = enabledDays.length > 0 ? enabledDays[enabledDays.length - 1].date : null;
+
       // Format schedule data for database storage
       const scheduleForDb = scheduledDays.map(({ date, enabled }) => ({
         date,
@@ -77,6 +82,8 @@ export const useBoostCampaign = (
           campaign_subtype: "boost",
           name: campaignName,
           is_active: isBoostStillValid(),
+          start_date: startDate,
+          end_date: endDate,
           settings: {
             targeting: {
               type: targetingOption,
