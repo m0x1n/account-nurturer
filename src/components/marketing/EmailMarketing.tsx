@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { useBusinessData } from "@/hooks/useBusinessData";
+import { BoostCampaignConfig } from "./campaigns/BoostCampaignConfig";
 
 interface CampaignToggleProps {
   name: string;
@@ -37,6 +38,7 @@ const CampaignToggle = ({ name, description, isActive, onToggle, onConfigure }: 
 export function EmailMarketing() {
   const { data: business } = useBusinessData();
   const { toast } = useToast();
+  const [showBoostConfig, setShowBoostConfig] = useState(false);
   const [campaigns, setCampaigns] = useState([
     {
       name: "Boost Campaigns",
@@ -74,6 +76,13 @@ export function EmailMarketing() {
     if (!business?.id) return;
 
     const campaign = campaigns[index];
+    
+    // If it's the Boost Campaign and it's being turned on, show the config
+    if (index === 0 && !campaign.isActive) {
+      setShowBoostConfig(true);
+      return;
+    }
+
     const newCampaigns = [...campaigns];
     newCampaigns[index] = { ...campaign, isActive: !campaign.isActive };
 
@@ -104,7 +113,11 @@ export function EmailMarketing() {
   };
 
   const handleConfigure = (index: number) => {
-    // Configuration modal will be implemented later
+    if (index === 0) {
+      setShowBoostConfig(true);
+      return;
+    }
+
     toast({
       title: "Coming Soon",
       description: "Campaign configuration will be available soon.",
@@ -134,6 +147,11 @@ export function EmailMarketing() {
           Create One-off Campaign
         </Button>
       </div>
+
+      <BoostCampaignConfig 
+        isOpen={showBoostConfig}
+        onClose={() => setShowBoostConfig(false)}
+      />
     </div>
   );
 }
