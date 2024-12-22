@@ -31,47 +31,46 @@ const Onboarding = () => {
   });
 
   useEffect(() => {
+    const checkSession = async () => {
+      try {
+        const { data: { session } } = await supabase.auth.getSession();
+        
+        if (!session) {
+          navigate("/login");
+          return;
+        }
+
+        // Set the email from the session
+        setFormData(prev => ({
+          ...prev,
+          email: session.user.email || "",
+        }));
+        
+        setIsLoading(false);
+      } catch (error) {
+        console.error("Session check error:", error);
+        toast({
+          title: "Error",
+          description: "Failed to check authentication status",
+          variant: "destructive",
+        });
+        navigate("/login");
+      }
+    };
+
     checkSession();
-  }, []);
 
-  const checkSession = async () => {
-    try {
-      const { data: { session }, error: sessionError } = await supabase.auth.getSession();
-      
-      if (sessionError) {
-        console.error("Session error:", sessionError);
-        await supabase.auth.signOut();
+    // Set up auth state change listener
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+      if (event === 'SIGNED_OUT') {
         navigate("/login");
-        return;
       }
+    });
 
-      if (!session) {
-        navigate("/login");
-        return;
-      }
-
-      // Check if the user still exists
-      const { data: { user }, error: userError } = await supabase.auth.getUser();
-      
-      if (userError || !user) {
-        console.error("User error:", userError);
-        // Sign out if the token is invalid or user doesn't exist
-        await supabase.auth.signOut();
-        navigate("/login");
-        return;
-      }
-
-      setFormData((prev) => ({
-        ...prev,
-        email: user.email || "",
-      }));
-      setIsLoading(false);
-    } catch (error) {
-      console.error("Session check error:", error);
-      await supabase.auth.signOut();
-      navigate("/login");
-    }
-  };
+    return () => {
+      subscription.unsubscribe();
+    };
+  }, [navigate, toast]);
 
   const updateFormData = (data: Partial<typeof formData>) => {
     setFormData((prev) => ({
