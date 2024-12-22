@@ -1,14 +1,11 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { SidebarTrigger } from "@/components/ui/sidebar";
 import { NotificationsPanel } from "./NotificationsPanel";
-import { Bell, Eye, EyeOff } from "lucide-react";
-import { Button } from "@/components/ui/button";
 import { useState } from "react";
 import { SalesBreakdown } from "./metrics/SalesBreakdown";
 import { ClientsBreakdown } from "./metrics/ClientsBreakdown";
 import { CapacityBreakdown } from "./metrics/CapacityBreakdown";
-import { Switch } from "@/components/ui/switch";
-import { Label } from "@/components/ui/label";
+import { DashboardHeader } from "./header/DashboardHeader";
+import { MetricsGrid } from "./metrics/MetricsGrid";
 
 const salesData = [
   { name: "Mon", sales: 15000 },
@@ -36,27 +33,13 @@ const capacityData = [
 ];
 
 const chartConfig = {
-  sales: {
-    color: "#0ea5e9",
-  },
-  clients: {
-    color: "#10b981",
-  },
-  capacity: {
-    color: "#6366f1",
-  },
-  new: {
-    color: "#f97316",
-  },
-  existing: {
-    color: "#10b981",
-  },
-  used: {
-    color: "#6366f1",
-  },
-  available: {
-    color: "#e2e8f0",
-  },
+  sales: { color: "#0ea5e9" },
+  clients: { color: "#10b981" },
+  capacity: { color: "#6366f1" },
+  new: { color: "#f97316" },
+  existing: { color: "#10b981" },
+  used: { color: "#6366f1" },
+  available: { color: "#e2e8f0" },
 };
 
 export function DashboardContent() {
@@ -78,92 +61,18 @@ export function DashboardContent() {
   return (
     <main className="flex-1 overflow-y-auto">
       <div className="container px-4 py-6">
-        <div className="flex items-center justify-between mb-8">
-          <div className="flex items-center gap-4">
-            <h1 className="text-3xl font-bold">Insights snapshot</h1>
-            <div className="flex items-center space-x-3 px-3 py-2 rounded-md bg-secondary/50">
-              <Switch
-                id="insights-mode"
-                checked={showInsights}
-                onCheckedChange={setShowInsights}
-                className="data-[state=checked]:bg-primary data-[state=unchecked]:bg-muted-foreground/20 h-[24px] w-[44px]"
-              />
-              <Label 
-                htmlFor="insights-mode" 
-                className="flex items-center gap-2 text-sm font-medium cursor-pointer select-none"
-              >
-                {showInsights ? (
-                  <>
-                    <Eye className="h-4 w-4 text-primary" />
-                    <span>Show Insights</span>
-                  </>
-                ) : (
-                  <>
-                    <EyeOff className="h-4 w-4 text-muted-foreground" />
-                    <span>Hide Insights</span>
-                  </>
-                )}
-              </Label>
-            </div>
-          </div>
-          <div className="flex items-center gap-4">
-            <Button
-              variant="ghost"
-              size="icon"
-              onClick={() => setShowNotifications(!showNotifications)}
-            >
-              <Bell className="h-5 w-5" />
-            </Button>
-            <SidebarTrigger />
-          </div>
-        </div>
+        <DashboardHeader
+          showInsights={showInsights}
+          onInsightsChange={setShowInsights}
+          onNotificationsClick={() => setShowNotifications(!showNotifications)}
+        />
 
         {showInsights && (
           <>
-            <div className="grid gap-6 md:grid-cols-3">
-              <Card 
-                className={`cursor-pointer transition-all ${selectedMetric === 'sales' ? 'ring-2 ring-primary' : ''}`}
-                onClick={() => setSelectedMetric('sales')}
-              >
-                <CardHeader>
-                  <CardTitle className="text-sm font-medium text-muted-foreground">
-                    SALES
-                  </CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <div className="text-2xl font-bold">$133,201</div>
-                  <p className="text-xs text-green-500">+3% since last month</p>
-                </CardContent>
-              </Card>
-              <Card 
-                className={`cursor-pointer transition-all ${selectedMetric === 'clients' ? 'ring-2 ring-primary' : ''}`}
-                onClick={() => setSelectedMetric('clients')}
-              >
-                <CardHeader>
-                  <CardTitle className="text-sm font-medium text-muted-foreground">
-                    CLIENTS SERVED
-                  </CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <div className="text-2xl font-bold">293</div>
-                  <p className="text-xs text-green-500">+3% since last month</p>
-                </CardContent>
-              </Card>
-              <Card 
-                className={`cursor-pointer transition-all ${selectedMetric === 'capacity' ? 'ring-2 ring-primary' : ''}`}
-                onClick={() => setSelectedMetric('capacity')}
-              >
-                <CardHeader>
-                  <CardTitle className="text-sm font-medium text-muted-foreground">
-                    UTILIZATION
-                  </CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <div className="text-2xl font-bold">24%</div>
-                  <p className="text-xs text-green-500">+1% since last month</p>
-                </CardContent>
-              </Card>
-            </div>
+            <MetricsGrid
+              selectedMetric={selectedMetric}
+              onMetricSelect={setSelectedMetric}
+            />
 
             <div className="mt-8">
               {renderBreakdown()}
