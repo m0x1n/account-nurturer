@@ -1,11 +1,18 @@
+import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
+import { supabase } from "@/integrations/supabase/client";
 
 const Index = () => {
   const navigate = useNavigate();
 
-  const handleGetStarted = () => {
-    navigate("/onboarding");
+  const handleGetStarted = async () => {
+    const { data: { session } } = await supabase.auth.getSession();
+    if (session) {
+      navigate("/onboarding");
+    } else {
+      navigate("/login");
+    }
   };
 
   const handleSignIn = () => {
