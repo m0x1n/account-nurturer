@@ -12,6 +12,7 @@ import Settings from "@/pages/dashboard/Settings";
 import POS from "@/pages/dashboard/POS";
 import Insights from "@/pages/dashboard/Insights";
 import Marketing from "@/pages/dashboard/Marketing";
+import EmailMarketing from "@/pages/dashboard/marketing/EmailMarketing";
 import AddOns from "@/pages/dashboard/AddOns";
 import QuickLinks from "@/pages/dashboard/QuickLinks";
 import ServicesAndProducts from "@/pages/dashboard/ServicesAndProducts";
@@ -55,6 +56,7 @@ const DashboardLayout = () => {
             <Route path="pos" element={<POS />} />
             <Route path="insights" element={<Insights />} />
             <Route path="marketing" element={<Marketing />} />
+            <Route path="marketing/email" element={<EmailMarketing />} />
             <Route path="add-ons" element={<AddOns />} />
             <Route path="quick-links" element={<QuickLinks />} />
             <Route path="settings" element={<Settings />} />
