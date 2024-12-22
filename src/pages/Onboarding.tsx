@@ -23,19 +23,32 @@ const Onboarding = () => {
   });
 
   useEffect(() => {
-    checkSession();
-  }, []);
+    const checkAuth = async () => {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session) {
+        navigate('/login');
+        return;
+      }
 
-  const checkSession = async () => {
-    const { data: { session } } = await supabase.auth.getSession();
-    // Only pre-fill email if user is already authenticated
-    if (session?.user) {
-      setFormData((prev) => ({
-        ...prev,
-        email: session.user.email || "",
-      }));
-    }
-  };
+      // Pre-fill email if user is authenticated
+      if (session.user?.email) {
+        setFormData((prev) => ({
+          ...prev,
+          email: session.user?.email || "",
+        }));
+      }
+    };
+
+    checkAuth();
+
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+      if (event === 'SIGNED_OUT') {
+        navigate('/login');
+      }
+    });
+
+    return () => subscription.unsubscribe();
+  }, [navigate]);
 
   const updateFormData = (data: Partial<typeof formData>) => {
     setFormData((prev) => ({
@@ -56,7 +69,6 @@ const Onboarding = () => {
     if (step < totalSteps) {
       setStep((prev) => prev + 1);
     } else {
-      // Handle completion - redirect to dashboard
       toast({
         title: "Welcome!",
         description: "Your account has been set up. Let's get started!",

@@ -4,6 +4,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
+import { useNavigate } from "react-router-dom";
 
 interface EmailStepProps {
   formData: { email: string };
@@ -14,6 +15,7 @@ interface EmailStepProps {
 const EmailStep = ({ formData, updateFormData, onNext }: EmailStepProps) => {
   const [email, setEmail] = useState(formData.email);
   const { toast } = useToast();
+  const navigate = useNavigate();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -44,21 +46,45 @@ const EmailStep = ({ formData, updateFormData, onNext }: EmailStepProps) => {
       }
 
       try {
-        const { error } = await supabase.auth.updateUser({ email });
-        if (error) {
-          // Check if it's an email_exists error from the error object
-          const isEmailExists = error.message?.includes('email_exists') || 
-                              (error as any)?.code === 'email_exists';
+        // Check if the email exists in auth.users
+        const { data: userExists, error: checkError } = await supabase.rpc('check_email_exists', { email_to_check: email });
+        
+        if (checkError) {
+          toast({
+            title: "Error",
+            description: "Failed to check email status",
+            variant: "destructive",
+          });
+          return;
+        }
 
-          if (isEmailExists) {
+        if (userExists) {
+          // Check if the user has completed onboarding
+          const { data: profile } = await supabase
+            .from('profiles')
+            .select('first_name, last_name')
+            .eq('id', user.id)
+            .single();
+
+          if (profile?.first_name && profile?.last_name) {
+            // User has completed onboarding, redirect to login
             toast({
-              title: "Email Already Registered",
-              description: "This email is already in use. Please use a different email address or contact support if you think this is a mistake.",
-              variant: "destructive",
+              title: "Account Exists",
+              description: "This email is already registered. Please sign in.",
             });
+            navigate('/login');
+            return;
+          } else {
+            // User exists but hasn't completed onboarding
+            updateFormData({ email });
+            onNext();
             return;
           }
+        }
 
+        // New email, proceed with update
+        const { error } = await supabase.auth.updateUser({ email });
+        if (error) {
           toast({
             title: "Error",
             description: error.message,
@@ -74,33 +100,11 @@ const EmailStep = ({ formData, updateFormData, onNext }: EmailStepProps) => {
         updateFormData({ email });
         onNext();
       } catch (error: any) {
-        // Handle JSON error response
-        try {
-          const errorBody = typeof error.body === 'string' ? JSON.parse(error.body) : error;
-          const isEmailExists = errorBody.code === 'email_exists';
-
-          if (isEmailExists) {
-            toast({
-              title: "Email Already Registered",
-              description: "This email is already in use. Please use a different email address or contact support if you think this is a mistake.",
-              variant: "destructive",
-            });
-            return;
-          }
-
-          toast({
-            title: "Error",
-            description: errorBody.message || error.message,
-            variant: "destructive",
-          });
-        } catch {
-          // If JSON parsing fails, show the original error
-          toast({
-            title: "Error",
-            description: error.message,
-            variant: "destructive",
-          });
-        }
+        toast({
+          title: "Error",
+          description: error.message,
+          variant: "destructive",
+        });
       }
     }
   };
