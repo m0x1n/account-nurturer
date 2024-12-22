@@ -1,4 +1,3 @@
-import { ChevronDown, ChevronUp } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 
 interface CampaignCardProps {
@@ -22,8 +21,18 @@ export function CampaignCard({
   expandedId,
   onExpand,
 }: CampaignCardProps) {
+  const handleClick = () => {
+    if (!isComingSoon) {
+      onExpand(id);
+    }
+  };
+
   return (
-    <div className="p-4 bg-card rounded-lg border shadow-sm">
+    <div 
+      className={`p-4 bg-card rounded-lg border shadow-sm transition-all duration-200 
+        ${!isComingSoon ? 'hover:shadow-md hover:-translate-y-0.5 cursor-pointer' : ''}`}
+      onClick={handleClick}
+    >
       <div className="flex items-start justify-between">
         <div className="flex items-start gap-4">
           <div className="mt-1 text-primary">
@@ -43,20 +52,7 @@ export function CampaignCard({
             </p>
           </div>
         </div>
-        <div className="flex items-center gap-4">
-          {!isComingSoon && (
-            <button
-              className="flex items-center gap-1 text-sm text-primary hover:text-primary/80"
-              onClick={() => onExpand(id)}
-            >
-              Configure
-              {expandedId === id ? (
-                <ChevronUp className="h-4 w-4" />
-              ) : (
-                <ChevronDown className="h-4 w-4" />
-              )}
-            </button>
-          )}
+        <div>
           {isComingSoon && (
             <span className="text-sm text-muted-foreground">Coming Soon</span>
           )}
