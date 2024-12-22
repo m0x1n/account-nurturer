@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import { format, startOfDay } from "date-fns";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
@@ -16,9 +16,26 @@ interface DayViewProps {
 export function DayView({ currentDate, selectedStaffIds = [] }: DayViewProps) {
   const [currentTimeTop, setCurrentTimeTop] = useState<number>(0);
   const [scrollPosition, setScrollPosition] = useState(0);
+  const [visibleStaffCount, setVisibleStaffCount] = useState(4);
+  const containerRef = useRef<HTMLDivElement>(null);
   const hours = Array.from({ length: 24 }, (_, i) => i);
   const dayStart = startOfDay(currentDate);
   const staffColumnWidth = 200;
+
+  // Calculate visible staff count based on container width
+  useEffect(() => {
+    const calculateVisibleStaff = () => {
+      if (containerRef.current) {
+        const containerWidth = containerRef.current.offsetWidth - 84; // Subtract time column (20px) and scroll buttons (32px each)
+        const newVisibleCount = Math.floor(containerWidth / staffColumnWidth);
+        setVisibleStaffCount(Math.max(1, newVisibleCount)); // Ensure at least 1 staff member is visible
+      }
+    };
+
+    calculateVisibleStaff();
+    window.addEventListener('resize', calculateVisibleStaff);
+    return () => window.removeEventListener('resize', calculateVisibleStaff);
+  }, []);
 
   // Update current time indicator position
   useEffect(() => {
@@ -113,12 +130,12 @@ export function DayView({ currentDate, selectedStaffIds = [] }: DayViewProps) {
   };
 
   const handleScrollRight = () => {
-    const maxScroll = (staffData.length - 4) * staffColumnWidth;
+    const maxScroll = Math.max(0, (staffData?.length || 0) - visibleStaffCount) * staffColumnWidth;
     setScrollPosition(Math.min(maxScroll, scrollPosition + staffColumnWidth));
   };
 
   return (
-    <div className="flex flex-col h-[calc(100vh-200px)]">
+    <div className="flex flex-col h-[calc(100vh-200px)]" ref={containerRef}>
       {/* Staff header with scroll buttons */}
       <div className="flex items-center border-b bg-white sticky top-0 z-20">
         <div className="w-20 flex-shrink-0" /> {/* Time column space */}
@@ -136,11 +153,11 @@ export function DayView({ currentDate, selectedStaffIds = [] }: DayViewProps) {
             className="flex transition-transform duration-300"
             style={{ transform: `translateX(-${scrollPosition}px)` }}
           >
-            {staffData.map((staff) => (
+            {staffData?.map((staff) => (
               <StaffHeader
                 key={staff.id}
                 staff={staff}
-                workingHours={workingHours.find(wh => wh.is_open)}
+                workingHours={workingHours?.find(wh => wh.is_open)}
               />
             ))}
           </div>
@@ -149,7 +166,7 @@ export function DayView({ currentDate, selectedStaffIds = [] }: DayViewProps) {
           variant="ghost"
           size="icon"
           onClick={handleScrollRight}
-          disabled={scrollPosition >= (staffData.length - 4) * staffColumnWidth}
+          disabled={!staffData || scrollPosition >= (staffData.length - visibleStaffCount) * staffColumnWidth}
           className="h-12"
         >
           <ChevronRight className="h-4 w-4" />
@@ -178,11 +195,11 @@ export function DayView({ currentDate, selectedStaffIds = [] }: DayViewProps) {
             className="flex transition-transform duration-300"
             style={{ transform: `translateX(-${scrollPosition}px)` }}
           >
-            {staffData.map((staff) => (
+            {staffData?.map((staff) => (
               <StaffColumn
                 key={staff.id}
                 staff={staff}
-                appointments={appointments}
+                appointments={appointments || []}
                 currentDate={currentDate}
                 currentTimeTop={currentTimeTop}
                 dayStart={dayStart}
