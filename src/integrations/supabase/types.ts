@@ -351,6 +351,8 @@ export type Database = {
           campaign_subtype: string | null
           campaign_type: string
           created_at: string
+          custom_message: string | null
+          custom_subject: string | null
           id: string
           is_active: boolean | null
           name: string
@@ -364,6 +366,8 @@ export type Database = {
           campaign_subtype?: string | null
           campaign_type: string
           created_at?: string
+          custom_message?: string | null
+          custom_subject?: string | null
           id?: string
           is_active?: boolean | null
           name: string
@@ -377,6 +381,8 @@ export type Database = {
           campaign_subtype?: string | null
           campaign_type?: string
           created_at?: string
+          custom_message?: string | null
+          custom_subject?: string | null
           id?: string
           is_active?: boolean | null
           name?: string

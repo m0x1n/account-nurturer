@@ -5,22 +5,15 @@ import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Input } from "@/components/ui/input";
 import { useForm } from "react-hook-form";
 import { Label } from "@/components/ui/label";
+import { supabase } from "@/integrations/supabase/client";
+import { CustomMessageSection } from "./last-minute/CustomMessageSection";
+import { LastMinuteFormValues } from "./last-minute/types";
+import { useToast } from "@/hooks/use-toast";
 
 interface LastMinuteCampaignConfigProps {
   isOpen: boolean;
   onClose: () => void;
   onSaveSuccess: (isActive: boolean) => void;
-}
-
-interface LastMinuteFormValues {
-  isEnabled: boolean;
-  sendEmail: boolean;
-  sendSMS: boolean;
-  enableDiscounts: boolean;
-  discountType: "percent" | "money";
-  discountValue: number;
-  customSubject: boolean;
-  customMessage: boolean;
 }
 
 export function LastMinuteCampaignConfig({ 
@@ -29,6 +22,7 @@ export function LastMinuteCampaignConfig({
   onSaveSuccess 
 }: LastMinuteCampaignConfigProps) {
   const [isSaving, setIsSaving] = useState(false);
+  const { toast } = useToast();
 
   const form = useForm<LastMinuteFormValues>({
     defaultValues: {
@@ -40,17 +34,48 @@ export function LastMinuteCampaignConfig({
       discountValue: 25,
       customSubject: false,
       customMessage: false,
+      subjectText: "",
+      messageText: "",
     },
   });
 
   const handleSubmit = async (values: LastMinuteFormValues) => {
     setIsSaving(true);
     try {
-      // TODO: Implement the save functionality
-      console.log("Saving Last Minute Campaign settings:", values);
+      const { error } = await supabase
+        .from('marketing_campaigns')
+        .insert({
+          campaign_type: 'smart',
+          campaign_subtype: 'last-minute',
+          name: 'Last Minute Campaign',
+          is_active: values.isEnabled,
+          settings: {
+            sendEmail: values.sendEmail,
+            sendSMS: values.sendSMS,
+            enableDiscounts: values.enableDiscounts,
+            discountType: values.discountType,
+            discountValue: values.discountValue,
+          },
+          custom_subject: values.customSubject ? values.subjectText : null,
+          custom_message: values.customMessage ? values.messageText : null,
+        });
+
+      if (error) throw error;
+      
       onSaveSuccess(values.isEnabled);
+      toast({
+        title: values.isEnabled ? "Campaign Activated" : "Campaign Saved",
+        description: values.isEnabled 
+          ? "Your last minute campaign is now running" 
+          : "Your settings have been saved",
+      });
     } catch (error) {
       console.error("Error saving Last Minute Campaign:", error);
+      toast({
+        title: "Error",
+        description: "Failed to save campaign settings",
+        variant: "destructive",
+      });
     } finally {
       setIsSaving(false);
     }
@@ -175,44 +200,16 @@ export function LastMinuteCampaignConfig({
                       className="w-20"
                     />
                   </FormControl>
-                  <span>% off</span>
+                  <span>
+                    {form.watch("discountType") === "percent" ? "% off" : "$ off"}
+                  </span>
                 </FormItem>
               )}
             />
           </div>
         )}
 
-        <FormField
-          control={form.control}
-          name="customSubject"
-          render={({ field }) => (
-            <FormItem className="flex items-center justify-between space-y-0">
-              <FormLabel>Custom Subject Line</FormLabel>
-              <FormControl>
-                <Switch
-                  checked={field.value}
-                  onCheckedChange={field.onChange}
-                />
-              </FormControl>
-            </FormItem>
-          )}
-        />
-
-        <FormField
-          control={form.control}
-          name="customMessage"
-          render={({ field }) => (
-            <FormItem className="flex items-center justify-between space-y-0">
-              <FormLabel>Custom Message</FormLabel>
-              <FormControl>
-                <Switch
-                  checked={field.value}
-                  onCheckedChange={field.onChange}
-                />
-              </FormControl>
-            </FormItem>
-          )}
-        />
+        <CustomMessageSection form={form} />
       </form>
     </Form>
   );
