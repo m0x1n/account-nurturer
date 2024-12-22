@@ -1,6 +1,8 @@
 import { Button } from "@/components/ui/button";
 import { CheckCircle2, AlertTriangle } from "lucide-react";
 import { Alert, AlertDescription } from "@/components/ui/alert";
+import { supabase } from "@/integrations/supabase/client";
+import { useToast } from "@/hooks/use-toast";
 
 interface CompletionStepProps {
   formData: {
@@ -15,6 +17,28 @@ interface CompletionStepProps {
 }
 
 const CompletionStep = ({ formData, onNext, onBack }: CompletionStepProps) => {
+  const { toast } = useToast();
+
+  const handleComplete = async () => {
+    const { data: { user } } = await supabase.auth.getUser();
+    if (user) {
+      const { error } = await supabase
+        .from('profiles')
+        .update({ completed_onboarding: true })
+        .eq('id', user.id);
+
+      if (error) {
+        toast({
+          title: "Error",
+          description: "Failed to update profile status",
+          variant: "destructive",
+        });
+        return;
+      }
+    }
+    onNext();
+  };
+
   return (
     <div className="space-y-6 text-center">
       <div className="flex justify-center">
@@ -43,7 +67,7 @@ const CompletionStep = ({ formData, onNext, onBack }: CompletionStepProps) => {
         <Button type="button" variant="outline" onClick={onBack} className="flex-1">
           Back
         </Button>
-        <Button onClick={onNext} className="flex-1">
+        <Button onClick={handleComplete} className="flex-1">
           Go to Dashboard
         </Button>
       </div>

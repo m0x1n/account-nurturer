@@ -210,6 +210,7 @@ export type Database = {
       }
       profiles: {
         Row: {
+          completed_onboarding: boolean | null
           created_at: string
           email_verified: boolean | null
           first_name: string | null
@@ -220,6 +221,7 @@ export type Database = {
           updated_at: string
         }
         Insert: {
+          completed_onboarding?: boolean | null
           created_at?: string
           email_verified?: boolean | null
           first_name?: string | null
@@ -230,6 +232,7 @@ export type Database = {
           updated_at?: string
         }
         Update: {
+          completed_onboarding?: boolean | null
           created_at?: string
           email_verified?: boolean | null
           first_name?: string | null
