@@ -36,8 +36,36 @@ const EmailStep = ({ formData, updateFormData, onNext }: EmailStepProps) => {
 
     const { data: { user } } = await supabase.auth.getUser();
     if (user) {
-      const { error } = await supabase.auth.updateUser({ email });
-      if (error) {
+      // Check if the email is different from the current one
+      if (user.email === email) {
+        updateFormData({ email });
+        onNext();
+        return;
+      }
+
+      try {
+        const { error } = await supabase.auth.updateUser({ email });
+        if (error) {
+          if (error.message.includes("email_exists")) {
+            toast({
+              title: "Error",
+              description: "This email is already registered. Please use a different email or contact support if you think this is a mistake.",
+              variant: "destructive",
+            });
+            return;
+          }
+          toast({
+            title: "Error",
+            description: error.message,
+            variant: "destructive",
+          });
+          return;
+        }
+        toast({
+          title: "Verification Email Sent",
+          description: "Please check your inbox to verify your email address. You can continue with the setup while waiting.",
+        });
+      } catch (error: any) {
         toast({
           title: "Error",
           description: error.message,
@@ -45,10 +73,6 @@ const EmailStep = ({ formData, updateFormData, onNext }: EmailStepProps) => {
         });
         return;
       }
-      toast({
-        title: "Verification Email Sent",
-        description: "Please check your inbox to verify your email address. You can continue with the setup while waiting.",
-      });
     }
 
     updateFormData({ email });
