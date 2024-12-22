@@ -5,7 +5,7 @@ interface MarketingCardProps {
   icon: LucideIcon;
   title: string;
   description: string;
-  features: string[];
+  features?: string[];
 }
 
 export function MarketingCard({ icon: Icon, title, description, features }: MarketingCardProps) {
@@ -18,13 +18,15 @@ export function MarketingCard({ icon: Icon, title, description, features }: Mark
         </CardTitle>
         <CardDescription className="font-sans text-sm">{description}</CardDescription>
       </CardHeader>
-      <CardContent>
-        <ul className="list-disc pl-4 space-y-2 text-muted-foreground font-sans">
-          {features.map((feature, index) => (
-            <li key={index}>{feature}</li>
-          ))}
-        </ul>
-      </CardContent>
+      {features && features.length > 0 && (
+        <CardContent>
+          <ul className="list-disc pl-4 space-y-2 text-muted-foreground font-sans">
+            {features.map((feature, index) => (
+              <li key={index}>{feature}</li>
+            ))}
+          </ul>
+        </CardContent>
+      )}
     </Card>
   );
 }

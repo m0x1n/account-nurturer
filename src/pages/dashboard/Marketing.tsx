@@ -20,24 +20,24 @@ export default function Marketing() {
         <h2 className="text-lg font-semibold mb-4">Marketing Overview</h2>
         <MarketingSection>
           <MarketingCard
+            icon={Target}
             title="Engage"
             description="Connect with your customers through personalized campaigns"
-            icon={<Target className="h-5 w-5" />}
           />
           <MarketingCard
+            icon={Gift}
             title="Promote"
             description="Create and manage special offers and promotions"
-            icon={<Gift className="h-5 w-5" />}
           />
           <MarketingCard
+            icon={BarChart3}
             title="Analyze"
             description="Track the performance of your marketing efforts"
-            icon={<BarChart3 className="h-5 w-5" />}
           />
           <MarketingCard
+            icon={Share2}
             title="Share"
             description="Spread the word about your business on social media"
-            icon={<Share2 className="h-5 w-5" />}
           />
         </MarketingSection>
       </div>
