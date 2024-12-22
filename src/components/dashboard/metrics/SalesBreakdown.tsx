@@ -30,9 +30,13 @@ export function SalesBreakdown({ salesData }: SalesBreakdownProps) {
   ];
 
   const CustomLegend = () => {
-    return (
+    const midPoint = Math.ceil(pieData.length / 2);
+    const firstColumn = pieData.slice(0, midPoint);
+    const secondColumn = pieData.slice(midPoint);
+
+    const LegendColumn = ({ items }: { items: typeof pieData }) => (
       <div className="space-y-2">
-        {pieData.map((item, index) => (
+        {items.map((item) => (
           <div key={item.name} className="flex items-center gap-2">
             <div
               className="h-2.5 w-2.5 rounded-full"
@@ -44,14 +48,13 @@ export function SalesBreakdown({ salesData }: SalesBreakdownProps) {
             </span>
           </div>
         ))}
-        <div className="pt-1">
-          <div className="flex items-center gap-2">
-            <span className="text-sm text-muted-foreground">Total Sales</span>
-            <span className="text-sm font-medium">
-              {pieData.reduce((acc, curr) => acc + curr.value, 0)} | 100%
-            </span>
-          </div>
-        </div>
+      </div>
+    );
+
+    return (
+      <div className="flex gap-8">
+        <LegendColumn items={firstColumn} />
+        <LegendColumn items={secondColumn} />
       </div>
     );
   };
