@@ -1,15 +1,33 @@
-import { PenTool, Mail, MessageSquare } from "lucide-react";
+import { PenTool, Mail, MessageSquare, ChevronUp } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
+import { useNavigate } from "react-router-dom";
 
 export default function ManualCampaign() {
+  const navigate = useNavigate();
+
+  const handleNavigateUp = () => {
+    navigate('/dashboard/marketing/engage');
+  };
+
   return (
     <div className="p-6 min-h-screen bg-gradient-to-br from-background to-secondary/20">
-      <div className="flex items-center gap-2 mb-6">
-        <PenTool className="h-6 w-6 text-primary" />
-        <h1 className="text-2xl font-serif font-bold bg-clip-text text-transparent bg-gradient-to-r from-primary to-primary-dark">
-          Create Manual Campaign
-        </h1>
+      <div className="flex items-center justify-between mb-6">
+        <div className="flex items-center gap-2">
+          <PenTool className="h-6 w-6 text-primary" />
+          <h1 className="text-2xl font-serif font-bold bg-clip-text text-transparent bg-gradient-to-r from-primary to-primary-dark">
+            Create Manual Campaign
+          </h1>
+        </div>
+        <Button
+          variant="ghost"
+          size="sm"
+          onClick={handleNavigateUp}
+          className="flex items-center gap-2"
+        >
+          <ChevronUp className="h-4 w-4" />
+          <span>Back to Engage</span>
+        </Button>
       </div>
 
       <div className="grid gap-6 max-w-4xl mx-auto">

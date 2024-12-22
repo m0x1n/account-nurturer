@@ -4,6 +4,8 @@ import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { BoostCampaignConfig } from "@/components/marketing/campaigns/BoostCampaignConfig";
+import { ChevronUp } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 
 interface CampaignToggle {
   id: string;
@@ -14,6 +16,7 @@ interface CampaignToggle {
 
 const EmailMarketing = () => {
   const { toast } = useToast();
+  const navigate = useNavigate();
   const [configureBoost, setConfigureBoost] = useState(false);
   const [campaigns, setCampaigns] = useState<CampaignToggle[]>([
     {
@@ -53,6 +56,10 @@ const EmailMarketing = () => {
       isActive: false,
     },
   ]);
+
+  const handleNavigateUp = () => {
+    navigate('/dashboard/marketing');
+  };
 
   const handleToggle = async (id: string) => {
     try {
@@ -112,9 +119,20 @@ const EmailMarketing = () => {
     <div className="p-6 space-y-6">
       <div className="flex justify-between items-center">
         <h1 className="text-2xl font-bold">Email Marketing</h1>
-        <Button variant="outline" onClick={() => handleConfigure("custom")}>
-          Create Custom Campaign
-        </Button>
+        <div className="flex gap-4">
+          <Button variant="outline" onClick={() => handleConfigure("custom")}>
+            Create Custom Campaign
+          </Button>
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={handleNavigateUp}
+            className="flex items-center gap-2"
+          >
+            <ChevronUp className="h-4 w-4" />
+            <span>Back to Marketing</span>
+          </Button>
+        </div>
       </div>
 
       <div className="grid gap-6">

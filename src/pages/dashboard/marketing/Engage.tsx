@@ -1,19 +1,35 @@
-import { Target, Zap, PenTool } from "lucide-react";
+import { Target, Zap, PenTool, ChevronUp } from "lucide-react";
 import { MarketingCard } from "@/components/marketing/MarketingCard";
 import { MarketingSection } from "@/components/marketing/MarketingSection";
 import { CampaignsTable } from "@/components/marketing/campaigns/CampaignsTable";
 import { useNavigate } from "react-router-dom";
+import { Button } from "@/components/ui/button";
 
 export default function Engage() {
   const navigate = useNavigate();
 
+  const handleNavigateUp = () => {
+    navigate('/dashboard/marketing');
+  };
+
   return (
     <div className="p-6 min-h-screen bg-gradient-to-br from-background to-secondary/20">
-      <div className="flex items-center gap-2 mb-6">
-        <Target className="h-6 w-6 text-primary" />
-        <h1 className="text-2xl font-serif font-bold bg-clip-text text-transparent bg-gradient-to-r from-primary to-primary-dark">
-          Engage
-        </h1>
+      <div className="flex items-center justify-between mb-6">
+        <div className="flex items-center gap-2">
+          <Target className="h-6 w-6 text-primary" />
+          <h1 className="text-2xl font-serif font-bold bg-clip-text text-transparent bg-gradient-to-r from-primary to-primary-dark">
+            Engage
+          </h1>
+        </div>
+        <Button
+          variant="ghost"
+          size="sm"
+          onClick={handleNavigateUp}
+          className="flex items-center gap-2"
+        >
+          <ChevronUp className="h-4 w-4" />
+          <span>Back to Marketing</span>
+        </Button>
       </div>
 
       <div className="mb-8">
