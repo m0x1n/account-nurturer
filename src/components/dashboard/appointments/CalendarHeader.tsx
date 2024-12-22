@@ -1,9 +1,9 @@
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { ChevronLeft, ChevronRight, Check } from "lucide-react";
+import { ChevronLeft, ChevronRight, Check, ChevronsUpDown } from "lucide-react";
 import { format } from "date-fns";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
-import { Command, CommandGroup, CommandItem } from "@/components/ui/command";
+import { Command, CommandEmpty, CommandGroup, CommandItem } from "@/components/ui/command";
 import { cn } from "@/lib/utils";
 
 interface CalendarHeaderProps {
@@ -129,32 +129,32 @@ export function CalendarHeader({
         ) : (
           <Popover>
             <PopoverTrigger asChild>
-              <Button variant="outline" className="w-[200px] justify-between">
-                <span className="truncate">
+              <Button variant="outline" role="combobox" className="w-[200px] justify-between">
+                <span>
                   {selectedStaffIds.length === 0
                     ? "Select staff members"
                     : `${selectedStaffIds.length} selected`}
                 </span>
-                <Check className={cn(
-                  "ml-2 h-4 w-4",
-                  allSelected ? "opacity-100" : "opacity-0"
-                )} />
+                <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
               </Button>
             </PopoverTrigger>
-            <PopoverContent className="w-[200px] p-0" align="end">
-              <Command className="w-full">
+            <PopoverContent className="w-[200px] p-0">
+              <Command>
+                <CommandEmpty>No staff found.</CommandEmpty>
                 <CommandGroup>
                   <CommandItem
                     onSelect={() => handleStaffSelect('all')}
                     className="cursor-pointer"
                   >
-                    <Check
-                      className={cn(
-                        "mr-2 h-4 w-4",
-                        allSelected ? "opacity-100" : "opacity-0"
-                      )}
-                    />
-                    <span>Select All</span>
+                    <div className="flex items-center gap-2">
+                      <div className={cn(
+                        "flex h-4 w-4 items-center justify-center rounded-sm border border-primary",
+                        allSelected ? "bg-primary text-primary-foreground" : "opacity-50"
+                      )}>
+                        {allSelected && <Check className="h-3 w-3" />}
+                      </div>
+                      <span>Select All</span>
+                    </div>
                   </CommandItem>
                   {staffMembers.map((staff) => (
                     <CommandItem
@@ -162,13 +162,15 @@ export function CalendarHeader({
                       onSelect={() => handleStaffSelect(staff.id)}
                       className="cursor-pointer"
                     >
-                      <Check
-                        className={cn(
-                          "mr-2 h-4 w-4",
-                          selectedStaffIds.includes(staff.id) ? "opacity-100" : "opacity-0"
-                        )}
-                      />
-                      <span>{staff.first_name} {staff.last_name}</span>
+                      <div className="flex items-center gap-2">
+                        <div className={cn(
+                          "flex h-4 w-4 items-center justify-center rounded-sm border border-primary",
+                          selectedStaffIds.includes(staff.id) ? "bg-primary text-primary-foreground" : "opacity-50"
+                        )}>
+                          {selectedStaffIds.includes(staff.id) && <Check className="h-3 w-3" />}
+                        </div>
+                        <span>{staff.first_name} {staff.last_name}</span>
+                      </div>
                     </CommandItem>
                   ))}
                 </CommandGroup>
