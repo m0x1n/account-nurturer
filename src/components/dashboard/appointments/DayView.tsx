@@ -9,6 +9,25 @@ interface DayViewProps {
   selectedStaffIds: string[];
 }
 
+interface Appointment {
+  id: string;
+  business_id: string | null;
+  client_id: string | null;
+  service_id: string | null;
+  staff_id: string | null; // Added staff_id to the type
+  start_time: string;
+  end_time: string;
+  status: string | null;
+  notes: string | null;
+  client?: {
+    first_name: string;
+    last_name: string;
+  };
+  service?: {
+    name: string;
+  };
+}
+
 export function DayView({ currentDate, selectedStaffIds }: DayViewProps) {
   const hours = Array.from({ length: 24 }, (_, i) => i);
 
@@ -56,7 +75,7 @@ export function DayView({ currentDate, selectedStaffIds }: DayViewProps) {
         .eq('business_id', businesses[0].id);
 
       if (error) throw error;
-      return data || [];
+      return (data || []) as Appointment[];
     }
   });
 

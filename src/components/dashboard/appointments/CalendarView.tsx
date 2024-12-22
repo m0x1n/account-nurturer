@@ -11,7 +11,7 @@ export function CalendarView() {
   const [view, setView] = useState<"day" | "week">("day");
   const [selectedStaffIds, setSelectedStaffIds] = useState<string[]>([]);
 
-  const { data: staffMembers } = useQuery({
+  const { data: staffMembers = [] } = useQuery({
     queryKey: ['staff-members'],
     queryFn: async () => {
       const { data: businesses } = await supabase
@@ -40,7 +40,7 @@ export function CalendarView() {
           currentDate={currentDate}
           view={view}
           selectedStaffIds={selectedStaffIds}
-          staffMembers={staffMembers}
+          staffMembers={staffMembers || []}
           onDateChange={setCurrentDate}
           onViewChange={setView}
           onStaffChange={setSelectedStaffIds}
