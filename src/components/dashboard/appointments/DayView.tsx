@@ -22,7 +22,7 @@ export function DayView({ currentDate, selectedStaffIds = [] }: DayViewProps) {
   const hours = Array.from({ length: 24 }, (_, i) => i);
   const dayStart = startOfDay(currentDate);
 
-  // Calculate visible staff count based on container width
+  // Calculate visible staff count based on container width, accounting for time column
   useEffect(() => {
     const calculateVisibleStaff = () => {
       if (containerRef.current) {
@@ -50,7 +50,6 @@ export function DayView({ currentDate, selectedStaffIds = [] }: DayViewProps) {
     return () => clearInterval(interval);
   }, []);
 
-  // Fetch staff members and their appointments
   const { data: staffData = [] } = useQuery({
     queryKey: ['staff-members'],
     queryFn: async () => {
@@ -177,7 +176,10 @@ export function DayView({ currentDate, selectedStaffIds = [] }: DayViewProps) {
       {/* Main calendar grid */}
       <div className="flex flex-1 border rounded-lg bg-white overflow-hidden">
         {/* Time column */}
-        <div className="flex-shrink-0 border-r bg-white z-10" style={{ width: TIME_COLUMN_WIDTH }}>
+        <div 
+          className="flex-shrink-0 border-r bg-white z-10" 
+          style={{ width: TIME_COLUMN_WIDTH }}
+        >
           {hours.map((hour) => (
             <div
               key={hour}
