@@ -1,6 +1,5 @@
 import { useState, useEffect } from "react";
 import { useToast } from "@/hooks/use-toast";
-import { sendVerificationCode, verifyPhoneNumber } from "@/utils/phoneVerification";
 import { supabase } from "@/integrations/supabase/client";
 
 export const usePhoneVerification = (email: string, onSuccess: () => void) => {
@@ -55,7 +54,21 @@ export const usePhoneVerification = (email: string, onSuccess: () => void) => {
     setIsProcessing(true);
 
     try {
-      await sendVerificationCode(phone, email);
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) {
+        // If no session, sign in with OTP
+        const { error: signInError } = await supabase.auth.signInWithOtp({
+          email,
+          options: {
+            data: { phone }
+          }
+        });
+        if (signInError) throw signInError;
+      } else {
+        // If session exists, update phone
+        const { error: updateError } = await supabase.auth.updateUser({ phone });
+        if (updateError) throw updateError;
+      }
       
       toast({
         title: "Verification Code Sent",
@@ -119,9 +132,32 @@ export const usePhoneVerification = (email: string, onSuccess: () => void) => {
     setIsProcessing(true);
 
     try {
-      const { data: { user } } = await supabase.auth.getUser();
+      // First verify the OTP
+      const { data: { user }, error: verifyError } = await supabase.auth.verifyOtp({
+        email,
+        token: otp,
+        type: 'email'
+      });
+
+      if (verifyError) throw verifyError;
+
       if (user) {
-        await verifyPhoneNumber(phone, user.id);
+        // Update the profile with verified phone
+        const { error: updateError } = await supabase
+          .from('profiles')
+          .update({ 
+            phone,
+            phone_verified: true 
+          })
+          .eq('id', user.id);
+
+        if (updateError) throw updateError;
+
+        toast({
+          title: "Success",
+          description: "Phone number verified successfully",
+        });
+        
         setIsVerified(true);
         onSuccess();
       }
