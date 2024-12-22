@@ -19,14 +19,14 @@ const COLORS = {
 };
 
 export function SalesBreakdown({ salesData }: SalesBreakdownProps) {
-  // Transform weekly sales data into category breakdown
+  // Transform weekly sales data into category breakdown with values adding up to 100%
   const pieData = [
-    { name: "Memberships", value: 30 },
-    { name: "Packages", value: 28 },
+    { name: "Memberships", value: 35 },
+    { name: "Packages", value: 25 },
     { name: "Products", value: 20 },
-    { name: "Appointments", value: 15 },
-    { name: "Gift Cards", value: 13 },
-    { name: "Other", value: 9 },
+    { name: "Appointments", value: 10 },
+    { name: "Gift Cards", value: 7 },
+    { name: "Other", value: 3 },
   ];
 
   const CustomLegend = () => {
