@@ -3,7 +3,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { ChevronLeft, ChevronRight, Check } from "lucide-react";
 import { format } from "date-fns";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
-import { Command, CommandEmpty, CommandGroup, CommandItem } from "@/components/ui/command";
+import { Command, CommandGroup, CommandItem } from "@/components/ui/command";
 import { cn } from "@/lib/utils";
 
 interface CalendarHeaderProps {
@@ -136,10 +136,10 @@ export function CalendarHeader({
               </Button>
             </PopoverTrigger>
             <PopoverContent className="w-[200px] p-0" align="end">
-              <Command>
+              <Command className="w-full">
                 <CommandGroup>
                   <CommandItem
-                    value="all"
+                    value="Select All"
                     onSelect={() => handleStaffSelect('all')}
                     className="cursor-pointer"
                   >
@@ -154,7 +154,7 @@ export function CalendarHeader({
                   {staffMembers.map((staff) => (
                     <CommandItem
                       key={staff.id}
-                      value={staff.id}
+                      value={`${staff.first_name} ${staff.last_name}`}
                       onSelect={() => handleStaffSelect(staff.id)}
                       className="cursor-pointer"
                     >
