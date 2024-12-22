@@ -10,7 +10,13 @@ interface EmailStepProps {
 }
 
 const EmailStep = (props: EmailStepProps) => {
-  const { email, setEmail, handleSubmit } = useEmailStep(props);
+  const { email, setEmail, handleSubmit } = useEmailStep({
+    formData: props.formData,
+    updateFormData: props.updateFormData,
+    onNext: props.onNext,
+    setStep: props.setStep,
+    setCompletedSteps: props.setCompletedSteps
+  });
 
   return (
     <EmailForm

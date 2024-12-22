@@ -24,10 +24,13 @@ export const useEmailStep = ({
   const navigate = useNavigate();
 
   const checkUserProgress = async (email: string) => {
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) return;
+
     const { data: existingUser } = await supabase
       .from('profiles')
       .select('*')
-      .eq('id', (await supabase.auth.getUser()).data.user?.id)
+      .eq('id', user.id)
       .single();
 
     if (existingUser) {
@@ -84,19 +87,22 @@ export const useEmailStep = ({
       const emailExists = await checkEmailStatus(email);
 
       if (emailExists) {
-        const { data: profile } = await supabase
-          .from('profiles')
-          .select('completed_onboarding')
-          .eq('id', (await supabase.auth.getUser()).data.user?.id)
-          .maybeSingle();
+        const { data: { user } } = await supabase.auth.getUser();
+        if (user) {
+          const { data: profile } = await supabase
+            .from('profiles')
+            .select('completed_onboarding')
+            .eq('id', user.id)
+            .maybeSingle();
 
-        if (profile?.completed_onboarding) {
-          toast({
-            title: "Account Exists",
-            description: "This email is already associated with an account. Please sign in.",
-          });
-          navigate("/login");
-          return;
+          if (profile?.completed_onboarding) {
+            toast({
+              title: "Account Exists",
+              description: "This email is already associated with an account. Please sign in.",
+            });
+            navigate("/login");
+            return;
+          }
         }
       }
 
@@ -126,8 +132,13 @@ export const useEmailStep = ({
             variant: "destructive",
           });
         }
+      } else {
+        // If no user is logged in, just proceed with the email
+        updateFormData({ email });
+        onNext();
       }
     } catch (error: any) {
+      console.error("Error in handleSubmit:", error);
       toast({
         title: "Error",
         description: "An error occurred while checking email status",

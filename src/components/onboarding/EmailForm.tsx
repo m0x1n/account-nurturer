@@ -9,8 +9,13 @@ interface EmailFormProps {
 }
 
 const EmailForm = ({ email, onEmailChange, onSubmit }: EmailFormProps) => {
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    onSubmit(e);
+  };
+
   return (
-    <form onSubmit={onSubmit} className="space-y-6">
+    <form onSubmit={handleSubmit} className="space-y-6">
       <div className="space-y-2">
         <h2 className="text-2xl font-bold text-gray-900">Welcome!</h2>
         <p className="text-gray-500">Let's start with your email address</p>
@@ -24,6 +29,7 @@ const EmailForm = ({ email, onEmailChange, onSubmit }: EmailFormProps) => {
           onChange={(e) => onEmailChange(e.target.value)}
           placeholder="you@example.com"
           className="w-full"
+          required
         />
       </div>
       <Button type="submit" className="w-full">
