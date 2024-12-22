@@ -48,8 +48,18 @@ export function CampaignTableRow({ campaign, onArchive }: CampaignTableRowProps)
   };
 
   const getCampaignType = (type: string) => {
-    const smartTypes = ['boost', 'last-minute', 'slow-days', 'limited-time', 'reminder', 'rescue'];
-    return smartTypes.includes(type.toLowerCase()) ? 'Smart' : 'Manual';
+    // List of all possible smart campaign types
+    const smartCampaignTypes = [
+      'boost',
+      'last-minute',
+      'slow-days',
+      'limited-time',
+      'reminder',
+      'rescue'
+    ];
+    
+    // Check if the campaign type matches any of our smart campaign types
+    return smartCampaignTypes.includes(type.toLowerCase()) ? 'Smart' : 'Manual';
   };
 
   const getCampaignSubtype = (type: string) => {
@@ -59,7 +69,8 @@ export function CampaignTableRow({ campaign, onArchive }: CampaignTableRowProps)
       'slow-days': 'Fill Slow Days',
       'limited-time': 'Limited Time Specials',
       'reminder': 'Reminder to Book Again',
-      'rescue': 'Rescue Lost Customers'
+      'rescue': 'Rescue Lost Customers',
+      'manual': 'Manual Campaign'
     };
     return subtypeMap[type.toLowerCase()] || type;
   };
