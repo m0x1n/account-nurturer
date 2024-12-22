@@ -1,8 +1,9 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
+import { supabase } from "@/integrations/supabase/client";
 
 interface PhoneStepProps {
   formData: { phone: string };
@@ -15,9 +16,28 @@ const PhoneStep = ({ formData, updateFormData, onNext, onBack }: PhoneStepProps)
   const [phone, setPhone] = useState(formData.phone);
   const [otp, setOtp] = useState("");
   const [showOtp, setShowOtp] = useState(false);
+  const [isVerified, setIsVerified] = useState(false);
   const { toast } = useToast();
 
-  const handleSendOtp = (e: React.FormEvent) => {
+  useEffect(() => {
+    const checkPhoneVerification = async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (user?.phone) {
+        const { data } = await supabase
+          .from('profiles')
+          .select('phone_verified')
+          .eq('id', user.id)
+          .single();
+        
+        if (data?.phone_verified) {
+          setIsVerified(true);
+        }
+      }
+    };
+    checkPhoneVerification();
+  }, []);
+
+  const handleSendOtp = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!phone) {
       toast({
@@ -27,6 +47,21 @@ const PhoneStep = ({ formData, updateFormData, onNext, onBack }: PhoneStepProps)
       });
       return;
     }
+
+    // Update phone in auth if different
+    const { data: { user } } = await supabase.auth.getUser();
+    if (user?.phone !== phone) {
+      const { error } = await supabase.auth.updateUser({ phone });
+      if (error) {
+        toast({
+          title: "Error",
+          description: error.message,
+          variant: "destructive",
+        });
+        return;
+      }
+    }
+
     // Simulate sending OTP
     toast({
       title: "OTP Sent",
@@ -35,7 +70,7 @@ const PhoneStep = ({ formData, updateFormData, onNext, onBack }: PhoneStepProps)
     setShowOtp(true);
   };
 
-  const handleVerifyOtp = (e: React.FormEvent) => {
+  const handleVerifyOtp = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!otp) {
       toast({
@@ -45,9 +80,28 @@ const PhoneStep = ({ formData, updateFormData, onNext, onBack }: PhoneStepProps)
       });
       return;
     }
-    // Simulate OTP verification
-    updateFormData({ phone });
-    onNext();
+
+    // In a real app, verify the OTP with Supabase
+    // For now, we'll simulate verification
+    const { data: { user } } = await supabase.auth.getUser();
+    if (user) {
+      const { error } = await supabase
+        .from('profiles')
+        .update({ phone, phone_verified: true })
+        .eq('id', user.id);
+
+      if (error) {
+        toast({
+          title: "Error",
+          description: "Failed to verify phone number",
+          variant: "destructive",
+        });
+        return;
+      }
+
+      updateFormData({ phone });
+      onNext();
+    }
   };
 
   return (
@@ -74,9 +128,15 @@ const PhoneStep = ({ formData, updateFormData, onNext, onBack }: PhoneStepProps)
             <Button type="button" variant="outline" onClick={onBack} className="flex-1">
               Back
             </Button>
-            <Button type="submit" className="flex-1">
-              Send Code
-            </Button>
+            {isVerified ? (
+              <Button type="button" onClick={onNext} className="flex-1">
+                Continue
+              </Button>
+            ) : (
+              <Button type="submit" className="flex-1">
+                Send Code
+              </Button>
+            )}
           </div>
         </form>
       ) : (

@@ -1,8 +1,8 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
 import { useToast } from "@/hooks/use-toast";
+import { supabase } from "@/integrations/supabase/client";
 import EmailStep from "@/components/onboarding/EmailStep";
 import PhoneStep from "@/components/onboarding/PhoneStep";
 import PersonalDetailsStep from "@/components/onboarding/PersonalDetailsStep";
@@ -22,8 +22,44 @@ const Onboarding = () => {
   const { toast } = useToast();
   const totalSteps = 5;
 
-  const updateFormData = (data: Partial<typeof formData>) => {
+  useEffect(() => {
+    const checkSession = async () => {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session) {
+        navigate('/login');
+        return;
+      }
+      // Pre-fill email if available
+      if (session.user.email) {
+        setFormData(prev => ({ ...prev, email: session.user.email }));
+      }
+    };
+    checkSession();
+  }, [navigate]);
+
+  const updateFormData = async (data: Partial<typeof formData>) => {
     setFormData((prev) => ({ ...prev, ...data }));
+    
+    // If we're updating profile data, sync it to Supabase
+    if (data.firstName || data.lastName || data.phone) {
+      const { error } = await supabase
+        .from('profiles')
+        .update({
+          first_name: data.firstName || formData.firstName,
+          last_name: data.lastName || formData.lastName,
+          phone: data.phone || formData.phone,
+        })
+        .eq('id', (await supabase.auth.getUser()).data.user?.id);
+
+      if (error) {
+        toast({
+          title: "Error",
+          description: "Failed to update profile. Please try again.",
+          variant: "destructive",
+        });
+        return;
+      }
+    }
   };
 
   const nextStep = () => {

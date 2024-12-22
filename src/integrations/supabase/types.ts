@@ -9,7 +9,288 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
-      [_ in never]: never
+      bank_accounts: {
+        Row: {
+          account_number: string
+          business_id: string | null
+          created_at: string
+          id: string
+          routing_number: string
+          updated_at: string
+          verified: boolean | null
+        }
+        Insert: {
+          account_number: string
+          business_id?: string | null
+          created_at?: string
+          id?: string
+          routing_number: string
+          updated_at?: string
+          verified?: boolean | null
+        }
+        Update: {
+          account_number?: string
+          business_id?: string | null
+          created_at?: string
+          id?: string
+          routing_number?: string
+          updated_at?: string
+          verified?: boolean | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "bank_accounts_business_id_fkey"
+            columns: ["business_id"]
+            isOneToOne: false
+            referencedRelation: "businesses"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      booking_links: {
+        Row: {
+          active: boolean | null
+          business_id: string | null
+          created_at: string
+          id: string
+          slug: string
+          updated_at: string
+        }
+        Insert: {
+          active?: boolean | null
+          business_id?: string | null
+          created_at?: string
+          id?: string
+          slug: string
+          updated_at?: string
+        }
+        Update: {
+          active?: boolean | null
+          business_id?: string | null
+          created_at?: string
+          id?: string
+          slug?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "booking_links_business_id_fkey"
+            columns: ["business_id"]
+            isOneToOne: false
+            referencedRelation: "businesses"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      business_hours: {
+        Row: {
+          business_id: string | null
+          close_time: string | null
+          created_at: string
+          day_of_week: number | null
+          id: string
+          is_open: boolean | null
+          open_time: string | null
+          updated_at: string
+        }
+        Insert: {
+          business_id?: string | null
+          close_time?: string | null
+          created_at?: string
+          day_of_week?: number | null
+          id?: string
+          is_open?: boolean | null
+          open_time?: string | null
+          updated_at?: string
+        }
+        Update: {
+          business_id?: string | null
+          close_time?: string | null
+          created_at?: string
+          day_of_week?: number | null
+          id?: string
+          is_open?: boolean | null
+          open_time?: string | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "business_hours_business_id_fkey"
+            columns: ["business_id"]
+            isOneToOne: false
+            referencedRelation: "businesses"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      businesses: {
+        Row: {
+          address: string | null
+          address_verified: boolean | null
+          created_at: string
+          id: string
+          name: string | null
+          owner_id: string | null
+          start_date: string | null
+          status: string | null
+          updated_at: string
+        }
+        Insert: {
+          address?: string | null
+          address_verified?: boolean | null
+          created_at?: string
+          id?: string
+          name?: string | null
+          owner_id?: string | null
+          start_date?: string | null
+          status?: string | null
+          updated_at?: string
+        }
+        Update: {
+          address?: string | null
+          address_verified?: boolean | null
+          created_at?: string
+          id?: string
+          name?: string | null
+          owner_id?: string | null
+          start_date?: string | null
+          status?: string | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "businesses_owner_id_fkey"
+            columns: ["owner_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      clients: {
+        Row: {
+          business_id: string | null
+          created_at: string
+          email: string | null
+          first_name: string
+          id: string
+          last_name: string
+          phone: string | null
+          updated_at: string
+        }
+        Insert: {
+          business_id?: string | null
+          created_at?: string
+          email?: string | null
+          first_name: string
+          id?: string
+          last_name: string
+          phone?: string | null
+          updated_at?: string
+        }
+        Update: {
+          business_id?: string | null
+          created_at?: string
+          email?: string | null
+          first_name?: string
+          id?: string
+          last_name?: string
+          phone?: string | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "clients_business_id_fkey"
+            columns: ["business_id"]
+            isOneToOne: false
+            referencedRelation: "businesses"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      profiles: {
+        Row: {
+          created_at: string
+          email_verified: boolean | null
+          first_name: string | null
+          id: string
+          last_name: string | null
+          phone: string | null
+          phone_verified: boolean | null
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          email_verified?: boolean | null
+          first_name?: string | null
+          id: string
+          last_name?: string | null
+          phone?: string | null
+          phone_verified?: boolean | null
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          email_verified?: boolean | null
+          first_name?: string | null
+          id?: string
+          last_name?: string | null
+          phone?: string | null
+          phone_verified?: boolean | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      services: {
+        Row: {
+          business_id: string | null
+          cancellation_hours: number | null
+          created_at: string
+          deposit_amount: number | null
+          deposit_type: string | null
+          description: string | null
+          forfeit_deposit: boolean | null
+          id: string
+          name: string
+          price: number
+          updated_at: string
+        }
+        Insert: {
+          business_id?: string | null
+          cancellation_hours?: number | null
+          created_at?: string
+          deposit_amount?: number | null
+          deposit_type?: string | null
+          description?: string | null
+          forfeit_deposit?: boolean | null
+          id?: string
+          name: string
+          price: number
+          updated_at?: string
+        }
+        Update: {
+          business_id?: string | null
+          cancellation_hours?: number | null
+          created_at?: string
+          deposit_amount?: number | null
+          deposit_type?: string | null
+          description?: string | null
+          forfeit_deposit?: boolean | null
+          id?: string
+          name?: string
+          price?: number
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "services_business_id_fkey"
+            columns: ["business_id"]
+            isOneToOne: false
+            referencedRelation: "businesses"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Views: {
       [_ in never]: never

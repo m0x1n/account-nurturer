@@ -1,8 +1,9 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
+import { supabase } from "@/integrations/supabase/client";
 
 interface PersonalDetailsStepProps {
   formData: { firstName: string; lastName: string };
@@ -16,7 +17,26 @@ const PersonalDetailsStep = ({ formData, updateFormData, onNext, onBack }: Perso
   const [lastName, setLastName] = useState(formData.lastName);
   const { toast } = useToast();
 
-  const handleSubmit = (e: React.FormEvent) => {
+  useEffect(() => {
+    const fetchProfile = async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (user) {
+        const { data } = await supabase
+          .from('profiles')
+          .select('first_name, last_name')
+          .eq('id', user.id)
+          .single();
+        
+        if (data) {
+          setFirstName(data.first_name || '');
+          setLastName(data.last_name || '');
+        }
+      }
+    };
+    fetchProfile();
+  }, []);
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!firstName || !lastName) {
       toast({
@@ -26,8 +46,26 @@ const PersonalDetailsStep = ({ formData, updateFormData, onNext, onBack }: Perso
       });
       return;
     }
-    updateFormData({ firstName, lastName });
-    onNext();
+
+    const { data: { user } } = await supabase.auth.getUser();
+    if (user) {
+      const { error } = await supabase
+        .from('profiles')
+        .update({ first_name: firstName, last_name: lastName })
+        .eq('id', user.id);
+
+      if (error) {
+        toast({
+          title: "Error",
+          description: "Failed to update profile",
+          variant: "destructive",
+        });
+        return;
+      }
+
+      updateFormData({ firstName, lastName });
+      onNext();
+    }
   };
 
   return (

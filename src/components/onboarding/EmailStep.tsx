@@ -1,8 +1,9 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
+import { supabase } from "@/integrations/supabase/client";
 
 interface EmailStepProps {
   formData: { email: string };
@@ -12,9 +13,28 @@ interface EmailStepProps {
 
 const EmailStep = ({ formData, updateFormData, onNext }: EmailStepProps) => {
   const [email, setEmail] = useState(formData.email);
+  const [isVerified, setIsVerified] = useState(false);
   const { toast } = useToast();
 
-  const handleSubmit = (e: React.FormEvent) => {
+  useEffect(() => {
+    const checkEmailVerification = async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (user?.email) {
+        const { data } = await supabase
+          .from('profiles')
+          .select('email_verified')
+          .eq('id', user.id)
+          .single();
+        
+        if (data?.email_verified) {
+          setIsVerified(true);
+        }
+      }
+    };
+    checkEmailVerification();
+  }, []);
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!email) {
       toast({
@@ -32,13 +52,27 @@ const EmailStep = ({ formData, updateFormData, onNext }: EmailStepProps) => {
       });
       return;
     }
-    updateFormData({ email });
-    // Simulate sending verification email
-    toast({
-      title: "Verification Email Sent",
-      description: "Please check your inbox to verify your email address",
-    });
-    onNext();
+
+    // Update email in auth if different
+    const { data: { user } } = await supabase.auth.getUser();
+    if (user?.email !== email) {
+      const { error } = await supabase.auth.updateUser({ email });
+      if (error) {
+        toast({
+          title: "Error",
+          description: error.message,
+          variant: "destructive",
+        });
+        return;
+      }
+      toast({
+        title: "Verification Email Sent",
+        description: "Please check your inbox to verify your email address",
+      });
+    } else if (isVerified) {
+      updateFormData({ email });
+      onNext();
+    }
   };
 
   return (
@@ -59,7 +93,7 @@ const EmailStep = ({ formData, updateFormData, onNext }: EmailStepProps) => {
         />
       </div>
       <Button type="submit" className="w-full">
-        Continue
+        {isVerified ? "Continue" : "Verify Email"}
       </Button>
     </form>
   );
