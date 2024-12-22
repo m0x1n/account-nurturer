@@ -1,6 +1,5 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip } from "recharts";
-import { Calendar, Clock, User } from "lucide-react";
 
 const COLORS = {
   appointments: "#4ADE80",  // Light green for Appointments
@@ -32,19 +31,6 @@ export function CapacityBreakdown({ capacityData }: CapacityBreakdownProps) {
     const firstColumn = pieData.slice(0, midPoint);
     const secondColumn = pieData.slice(midPoint);
 
-    const getIcon = (name: string) => {
-      switch (name.toLowerCase().replace(' ', '')) {
-        case 'appointments':
-          return <Calendar className="h-4 w-4" />;
-        case 'blockedtime':
-          return <Clock className="h-4 w-4" />;
-        case 'admin':
-          return <User className="h-4 w-4" />;
-        default:
-          return null;
-      }
-    };
-
     const LegendColumn = ({ items }: { items: typeof pieData }) => (
       <div className="space-y-2">
         {items.map((item) => (
@@ -53,7 +39,6 @@ export function CapacityBreakdown({ capacityData }: CapacityBreakdownProps) {
               className="h-2.5 w-2.5 rounded-full"
               style={{ backgroundColor: COLORS[item.name.toLowerCase().replace(' ', '') as keyof typeof COLORS] }}
             />
-            {getIcon(item.name)}
             <span className="text-sm text-muted-foreground">{item.name}</span>
             <span className="text-sm font-medium">
               {item.value} | {item.value}%
