@@ -4,8 +4,8 @@ import {
   Sidebar,
   SidebarContent,
   SidebarGroup,
-  SidebarGroupContent,
   SidebarGroupLabel,
+  SidebarGroupContent,
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
@@ -28,8 +28,14 @@ const mainMenuItems = [
   { title: "Point of Sale", icon: ShoppingCart, url: "/dashboard/pos" },
   { title: "Insights", icon: BarChart2, url: "/dashboard/insights" },
   { title: "Marketing", icon: Mail, url: "/dashboard/marketing" },
-  { title: "Settings", icon: Settings, url: "/dashboard/settings" },
-  { title: "Payment Settings", icon: CreditCard, url: "/dashboard/payment-settings" },
+  { 
+    title: "Settings", 
+    icon: Settings, 
+    url: "/dashboard/settings",
+    submenu: [
+      { title: "Payment Settings", icon: CreditCard, url: "/dashboard/payment-settings" }
+    ]
+  },
 ];
 
 const additionalItems = [
