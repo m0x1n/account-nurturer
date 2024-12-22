@@ -8,7 +8,7 @@ interface StaffColumnProps {
   dayStart: Date;
 }
 
-export function StaffColumn({ staff, appointments, currentDate }: StaffColumnProps) {
+export function StaffColumn({ staff, appointments, currentDate, currentTimeTop }: StaffColumnProps) {
   const hours = Array.from({ length: 24 }, (_, i) => i);
 
   return (
@@ -27,6 +27,16 @@ export function StaffColumn({ staff, appointments, currentDate }: StaffColumnPro
             ))}
         </div>
       ))}
+      
+      {/* Current time line */}
+      {format(currentDate, 'yyyy-MM-dd') === format(new Date(), 'yyyy-MM-dd') && (
+        <div 
+          className="absolute left-0 right-0 z-10"
+          style={{ top: `${currentTimeTop * 4}px` }}
+        >
+          <div className="w-full h-px bg-red-500" />
+        </div>
+      )}
     </div>
   );
 }
