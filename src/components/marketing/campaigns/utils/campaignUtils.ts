@@ -35,3 +35,22 @@ export const isBoostCampaignActive = (campaign: Campaign): boolean => {
 
   return lastDay ? isAfter(new Date(lastDay.date), new Date()) : false;
 };
+
+export const isCampaignActive = (campaign: Campaign): boolean => {
+  // Return false if campaign is explicitly not active or has an end date in the past
+  if (!campaign.is_active || (campaign.end_date && !isAfter(new Date(campaign.end_date), new Date()))) {
+    return false;
+  }
+
+  // For boost campaigns, check schedule
+  if (campaign.campaign_subtype === 'boost') {
+    return isBoostCampaignActive(campaign);
+  }
+
+  // For last-minute campaigns, check if it's marked as active and doesn't have an end date
+  if (campaign.campaign_subtype === 'last-minute') {
+    return campaign.is_active && (!campaign.end_date || isAfter(new Date(campaign.end_date), new Date()));
+  }
+
+  return campaign.is_active;
+};

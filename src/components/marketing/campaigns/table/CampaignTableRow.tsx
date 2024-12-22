@@ -5,7 +5,7 @@ import { Badge } from "@/components/ui/badge";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { Campaign } from "../types/campaignTypes";
-import { getCampaignType, getCampaignSubtype, isBoostCampaignActive } from "../utils/campaignUtils";
+import { getCampaignType, getCampaignSubtype, isCampaignActive } from "../utils/campaignUtils";
 import { format } from "date-fns";
 
 interface CampaignTableRowProps {
@@ -48,7 +48,7 @@ export function CampaignTableRow({ campaign, onArchive }: CampaignTableRowProps)
       <TableCell className="font-medium">
         <div className="flex items-center gap-2">
           {campaign.name}
-          {isBoostCampaignActive(campaign) && (
+          {isCampaignActive(campaign) && (
             <Badge variant="default" className="bg-primary">
               ACTIVE
             </Badge>
