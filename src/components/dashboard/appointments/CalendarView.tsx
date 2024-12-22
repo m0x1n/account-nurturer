@@ -11,7 +11,7 @@ export function CalendarView() {
   const [view, setView] = useState<"day" | "week">("day");
   const [selectedStaffIds, setSelectedStaffIds] = useState<string[]>([]);
 
-  const { data: staffMembers = [] } = useQuery({
+  const { data: staffMembers = [], isLoading } = useQuery({
     queryKey: ['staff-members'],
     queryFn: async () => {
       const { data: businesses } = await supabase
@@ -33,27 +33,36 @@ export function CalendarView() {
     }
   });
 
+  // Ensure we have valid staff IDs by filtering against actual staff members
+  const validSelectedStaffIds = selectedStaffIds.filter(id => 
+    staffMembers.some(staff => staff.id === id)
+  );
+
   return (
     <Card>
       <CardContent className="p-6">
         <CalendarHeader
           currentDate={currentDate}
           view={view}
-          selectedStaffIds={selectedStaffIds}
-          staffMembers={staffMembers || []}
+          selectedStaffIds={validSelectedStaffIds}
+          staffMembers={staffMembers}
           onDateChange={setCurrentDate}
           onViewChange={setView}
           onStaffChange={setSelectedStaffIds}
         />
-        {view === "day" ? (
+        {isLoading ? (
+          <div className="flex items-center justify-center h-96">
+            Loading...
+          </div>
+        ) : view === "day" ? (
           <DayView
             currentDate={currentDate}
-            selectedStaffIds={selectedStaffIds}
+            selectedStaffIds={validSelectedStaffIds}
           />
         ) : (
           <WeekView
             currentDate={currentDate}
-            selectedStaffId={selectedStaffIds[0]}
+            selectedStaffId={validSelectedStaffIds[0]}
           />
         )}
       </CardContent>
