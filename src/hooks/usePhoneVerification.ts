@@ -59,7 +59,6 @@ export const usePhoneVerification = (email: string, onSuccess: () => void) => {
         // If no session, sign in with OTP
         const { error: signInError } = await supabase.auth.signInWithOtp({
           phone,
-          type: 'sms'
         });
         if (signInError) throw signInError;
       } else {
