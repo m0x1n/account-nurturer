@@ -252,28 +252,46 @@ export type Database = {
           campaign_id: string | null
           created_at: string
           id: string
+          percent_clicked: number | null
+          percent_opened: number | null
+          percent_unsubscribed: number | null
           revenue_lift: number | null
           updated_at: string
+          users_clicked: number | null
           users_engaged: number | null
+          users_opened: number | null
           users_targeted: number | null
+          users_unsubscribed: number | null
         }
         Insert: {
           campaign_id?: string | null
           created_at?: string
           id?: string
+          percent_clicked?: number | null
+          percent_opened?: number | null
+          percent_unsubscribed?: number | null
           revenue_lift?: number | null
           updated_at?: string
+          users_clicked?: number | null
           users_engaged?: number | null
+          users_opened?: number | null
           users_targeted?: number | null
+          users_unsubscribed?: number | null
         }
         Update: {
           campaign_id?: string | null
           created_at?: string
           id?: string
+          percent_clicked?: number | null
+          percent_opened?: number | null
+          percent_unsubscribed?: number | null
           revenue_lift?: number | null
           updated_at?: string
+          users_clicked?: number | null
           users_engaged?: number | null
+          users_opened?: number | null
           users_targeted?: number | null
+          users_unsubscribed?: number | null
         }
         Relationships: [
           {

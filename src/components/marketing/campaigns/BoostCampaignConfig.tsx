@@ -10,6 +10,7 @@ import { TargetingSection } from "./boost/TargetingSection";
 import { ScheduleSection } from "./boost/ScheduleSection";
 import { OfferSection } from "./boost/OfferSection";
 import { ServicesSection } from "./boost/ServicesSection";
+import { CampaignNameSection } from "./boost/CampaignNameSection";
 
 interface BoostCampaignConfigProps {
   isOpen: boolean;
@@ -21,6 +22,7 @@ export function BoostCampaignConfig({ isOpen, onClose }: BoostCampaignConfigProp
   const { data: business } = useBusinessData();
   const { data: services } = useBusinessServices(business?.id);
   
+  const [campaignName, setCampaignName] = useState("");
   const [targetingOption, setTargetingOption] = useState("all");
   const [daysThreshold, setDaysThreshold] = useState("30");
   const [discountType, setDiscountType] = useState("percent");
@@ -73,7 +75,7 @@ export function BoostCampaignConfig({ isOpen, onClose }: BoostCampaignConfigProp
         .upsert({
           business_id: business.id,
           campaign_type: "email",
-          name: "Boost Campaign",
+          name: campaignName,
           is_active: true,
           settings: {
             targeting: {
@@ -156,6 +158,12 @@ export function BoostCampaignConfig({ isOpen, onClose }: BoostCampaignConfigProp
   return (
     <div className="bg-background rounded-lg border p-6 space-y-8">
       <div className="space-y-8">
+        <CampaignNameSection
+          discountType={discountType}
+          discountValue={discountValue}
+          onNameChange={setCampaignName}
+        />
+
         <TargetingSection
           targetingOption={targetingOption}
           daysThreshold={daysThreshold}
@@ -185,7 +193,8 @@ export function BoostCampaignConfig({ isOpen, onClose }: BoostCampaignConfigProp
 
         {showPreview && (
           <div className="p-4 border rounded-lg bg-muted">
-            <h4 className="font-medium mb-2">Your offer: {discountValue}{discountType === "percent" ? "% off" : "$ off"} today & tomorrow!</h4>
+            <h4 className="font-medium mb-2">Campaign Name: {campaignName}</h4>
+            <p>Your offer: {discountValue}{discountType === "percent" ? "% off" : "$ off"} today & tomorrow!</p>
           </div>
         )}
 
