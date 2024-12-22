@@ -140,7 +140,10 @@ export default function SmartCampaigns() {
             </div>
             {expandedId === campaign.id && campaign.id === "boost" && (
               <div className="pl-10 pr-4 pb-4">
-                <BoostCampaignConfig onClose={() => setExpandedId(null)} />
+                <BoostCampaignConfig 
+                  isOpen={expandedId === campaign.id} 
+                  onClose={() => setExpandedId(null)} 
+                />
               </div>
             )}
           </div>
