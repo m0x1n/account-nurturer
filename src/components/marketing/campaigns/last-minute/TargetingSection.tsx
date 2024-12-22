@@ -5,11 +5,12 @@ import { LastMinuteFormValues } from "./types";
 
 interface TargetingSectionProps {
   form: UseFormReturn<LastMinuteFormValues>;
+  readOnly?: boolean;
 }
 
-export function TargetingSection({ form }: TargetingSectionProps) {
+export function TargetingSection({ form, readOnly }: TargetingSectionProps) {
   return (
-    <div className="space-y-4">
+    <div className={`space-y-4 ${readOnly ? 'opacity-70' : ''}`}>
       <FormField
         control={form.control}
         name="isEnabled"
@@ -41,6 +42,7 @@ export function TargetingSection({ form }: TargetingSectionProps) {
               <Switch
                 checked={field.value}
                 onCheckedChange={field.onChange}
+                disabled={readOnly}
               />
             </FormControl>
           </FormItem>
@@ -58,6 +60,7 @@ export function TargetingSection({ form }: TargetingSectionProps) {
                 <Switch
                   checked={field.value}
                   onCheckedChange={field.onChange}
+                  disabled={readOnly}
                 />
               </FormControl>
             </div>

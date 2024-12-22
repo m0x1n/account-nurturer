@@ -139,6 +139,7 @@ export function LastMinuteCampaignConfig({
 
   const values = form.watch();
   const isSaveDisabled = isSaving || (values.isEnabled && !values.sendEmail && !values.sendSMS);
+  const isReadOnly = values.isEnabled;
 
   if (!isOpen) return null;
 
@@ -146,17 +147,25 @@ export function LastMinuteCampaignConfig({
     <div className="bg-background rounded-lg border p-6 space-y-8">
       <Form {...form}>
         <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-8">
-          <TargetingSection form={form} />
-          <DiscountSection form={form} />
-          <CustomMessageSection form={form} />
+          <TargetingSection form={form} readOnly={isReadOnly} />
+          <DiscountSection form={form} readOnly={isReadOnly} />
+          <CustomMessageSection form={form} readOnly={isReadOnly} />
           
           <div className="flex justify-end gap-4">
-            <Button variant="outline" onClick={onClose}>
-              Cancel
-            </Button>
-            <Button type="submit" disabled={isSaving}>
-              Save Campaign
-            </Button>
+            {isReadOnly ? (
+              <Button type="button" variant="outline" onClick={onClose}>
+                Close
+              </Button>
+            ) : (
+              <>
+                <Button variant="outline" onClick={onClose}>
+                  Cancel
+                </Button>
+                <Button type="submit" disabled={isSaveDisabled}>
+                  Save Campaign
+                </Button>
+              </>
+            )}
           </div>
         </form>
       </Form>

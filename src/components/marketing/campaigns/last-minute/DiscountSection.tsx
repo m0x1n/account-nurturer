@@ -8,13 +8,14 @@ import { LastMinuteFormValues } from "./types";
 
 interface DiscountSectionProps {
   form: UseFormReturn<LastMinuteFormValues>;
+  readOnly?: boolean;
 }
 
-export function DiscountSection({ form }: DiscountSectionProps) {
+export function DiscountSection({ form, readOnly }: DiscountSectionProps) {
   const showDiscountOptions = form.watch("enableDiscounts");
 
   return (
-    <div className="space-y-4">
+    <div className={`space-y-4 ${readOnly ? 'opacity-70' : ''}`}>
       <FormField
         control={form.control}
         name="enableDiscounts"
@@ -26,6 +27,7 @@ export function DiscountSection({ form }: DiscountSectionProps) {
                 <Switch
                   checked={field.value}
                   onCheckedChange={field.onChange}
+                  disabled={readOnly}
                 />
               </FormControl>
             </div>
@@ -49,6 +51,7 @@ export function DiscountSection({ form }: DiscountSectionProps) {
                     onValueChange={field.onChange}
                     defaultValue={field.value}
                     className="flex gap-4"
+                    disabled={readOnly}
                   >
                     <div className="flex items-center space-x-2">
                       <RadioGroupItem value="percent" id="percent" />
@@ -74,6 +77,7 @@ export function DiscountSection({ form }: DiscountSectionProps) {
                     type="number"
                     {...field}
                     className="w-20"
+                    readOnly={readOnly}
                   />
                 </FormControl>
                 <span>

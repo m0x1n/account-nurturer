@@ -7,14 +7,15 @@ import { LastMinuteFormValues } from "./types";
 
 interface CustomMessageSectionProps {
   form: UseFormReturn<LastMinuteFormValues>;
+  readOnly?: boolean;
 }
 
-export function CustomMessageSection({ form }: CustomMessageSectionProps) {
+export function CustomMessageSection({ form, readOnly }: CustomMessageSectionProps) {
   const showSubjectInput = form.watch("customSubject");
   const showMessageInput = form.watch("customMessage");
 
   return (
-    <div className="space-y-4">
+    <div className={`space-y-4 ${readOnly ? 'opacity-70' : ''}`}>
       <FormField
         control={form.control}
         name="customSubject"
@@ -26,6 +27,7 @@ export function CustomMessageSection({ form }: CustomMessageSectionProps) {
                 <Switch
                   checked={field.value}
                   onCheckedChange={field.onChange}
+                  disabled={readOnly}
                 />
               </FormControl>
             </div>
@@ -40,6 +42,7 @@ export function CustomMessageSection({ form }: CustomMessageSectionProps) {
                         {...field}
                         placeholder="Enter subject line"
                         maxLength={100}
+                        readOnly={readOnly}
                       />
                     </FormControl>
                     <p className="text-sm text-muted-foreground">
@@ -64,6 +67,7 @@ export function CustomMessageSection({ form }: CustomMessageSectionProps) {
                 <Switch
                   checked={field.value}
                   onCheckedChange={field.onChange}
+                  disabled={readOnly}
                 />
               </FormControl>
             </div>
@@ -79,6 +83,7 @@ export function CustomMessageSection({ form }: CustomMessageSectionProps) {
                         placeholder="Enter your custom message"
                         maxLength={250}
                         className="h-24"
+                        readOnly={readOnly}
                       />
                     </FormControl>
                     <p className="text-sm text-muted-foreground">
