@@ -48,7 +48,7 @@ export function CalendarHeader({
   };
 
   const handleStaffSelect = (staffId: string) => {
-    if (!staffMembers.length) return;
+    if (!staffMembers || staffMembers.length === 0) return;
 
     if (view === 'week') {
       // In week view, only allow single selection
@@ -66,7 +66,10 @@ export function CalendarHeader({
     }
   };
 
-  const allSelected = staffMembers.length > 0 && selectedStaffIds.length === staffMembers.length;
+  // Ensure we have valid arrays to work with
+  const validStaffMembers = Array.isArray(staffMembers) ? staffMembers : [];
+  const validSelectedStaffIds = Array.isArray(selectedStaffIds) ? selectedStaffIds : [];
+  const allSelected = validStaffMembers.length > 0 && validSelectedStaffIds.length === validStaffMembers.length;
 
   return (
     <div className="flex items-center justify-between mb-4">
@@ -105,17 +108,17 @@ export function CalendarHeader({
             Week
           </Button>
         </div>
-        {staffMembers.length > 0 && (
+        {validStaffMembers.length > 0 && (
           view === 'week' ? (
             <Select
-              value={selectedStaffIds[0] || ''}
+              value={validSelectedStaffIds[0] || ''}
               onValueChange={(value) => onStaffChange([value])}
             >
               <SelectTrigger className="w-[200px]">
                 <SelectValue placeholder="Select staff member" />
               </SelectTrigger>
               <SelectContent>
-                {staffMembers.map((staff) => (
+                {validStaffMembers.map((staff) => (
                   <SelectItem key={staff.id} value={staff.id}>
                     {staff.first_name} {staff.last_name}
                   </SelectItem>
@@ -127,9 +130,9 @@ export function CalendarHeader({
               <PopoverTrigger asChild>
                 <Button variant="outline" role="combobox" className="w-[200px] justify-between">
                   <span>
-                    {selectedStaffIds.length === 0
+                    {validSelectedStaffIds.length === 0
                       ? "Select staff members"
-                      : `${selectedStaffIds.length} selected`}
+                      : `${validSelectedStaffIds.length} selected`}
                   </span>
                   <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
                 </Button>
@@ -152,7 +155,7 @@ export function CalendarHeader({
                         <span>Select All</span>
                       </div>
                     </CommandItem>
-                    {staffMembers.map((staff) => (
+                    {validStaffMembers.map((staff) => (
                       <CommandItem
                         key={staff.id}
                         onSelect={() => handleStaffSelect(staff.id)}
@@ -161,9 +164,9 @@ export function CalendarHeader({
                         <div className="flex items-center gap-2">
                           <div className={cn(
                             "flex h-4 w-4 items-center justify-center rounded-sm border border-primary",
-                            selectedStaffIds.includes(staff.id) ? "bg-primary text-primary-foreground" : "opacity-50"
+                            validSelectedStaffIds.includes(staff.id) ? "bg-primary text-primary-foreground" : "opacity-50"
                           )}>
-                            {selectedStaffIds.includes(staff.id) && <Check className="h-3 w-3" />}
+                            {validSelectedStaffIds.includes(staff.id) && <Check className="h-3 w-3" />}
                           </div>
                           <span>{staff.first_name} {staff.last_name}</span>
                         </div>
