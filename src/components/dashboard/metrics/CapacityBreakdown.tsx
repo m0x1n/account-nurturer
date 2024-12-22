@@ -2,11 +2,11 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip } from "recharts";
 
 const COLORS = {
-  appointments: "#9b87f5",    // Primary Purple
-  timeoff: "#7E69AB",        // Secondary Purple
-  holidays: "#6E59A5",       // Tertiary Purple
-  blockedtime: "#D6BCFA",    // Light Purple
-  admin: "#E5DEFF",          // Soft Purple
+  appointments: "#377DF7",    // Primary Blue
+  timeoff: "#2B63C6",        // Darker Blue
+  holidays: "#5691F8",       // Lighter Blue
+  blockedtime: "#F2F2F2",    // Light Gray
+  admin: "#D9D9D9",          // Darker Gray
 };
 
 interface CapacityBreakdownProps {

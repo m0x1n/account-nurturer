@@ -10,12 +10,12 @@ interface SalesBreakdownProps {
 }
 
 const COLORS = {
-  memberships: "#9b87f5",    // Primary Purple
-  packages: "#7E69AB",       // Secondary Purple
-  products: "#6E59A5",       // Tertiary Purple
-  appointments: "#D6BCFA",   // Light Purple
-  giftcards: "#E5DEFF",     // Soft Purple
-  other: "#8B5CF6",         // Vivid Purple
+  memberships: "#377DF7",    // Primary Blue
+  packages: "#2B63C6",       // Darker Blue
+  products: "#5691F8",       // Lighter Blue
+  appointments: "#F2F2F2",   // Light Gray
+  giftcards: "#D9D9D9",      // Darker Gray
+  other: "#000000",         // Black
 };
 
 export function SalesBreakdown({ salesData }: SalesBreakdownProps) {
