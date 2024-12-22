@@ -23,7 +23,7 @@ const Login = () => {
       if (event === 'USER_UPDATED' && session) {
         navigate("/onboarding");
       }
-      if (event === 'USER_DELETED' || event === 'SIGNED_OUT') {
+      if (event === 'SIGNED_OUT') {
         toast({
           title: "Signed out",
           description: "You have been signed out successfully",

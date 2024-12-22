@@ -26,9 +26,9 @@ const CompletionStep = ({ formData, onNext, onBack }: CompletionStepProps) => {
           Thanks for joining us, {formData.firstName}! Your account has been created successfully.
         </p>
       </div>
-      <Alert variant="warning" className="text-left">
-        <AlertTriangle className="h-4 w-4" />
-        <AlertDescription>
+      <Alert className="text-left border-yellow-500 bg-yellow-50">
+        <AlertTriangle className="h-4 w-4 text-yellow-600" />
+        <AlertDescription className="text-yellow-700">
           Please verify your email address to fully enable your account. Check your inbox for the verification link.
         </AlertDescription>
       </Alert>
