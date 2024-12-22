@@ -10,7 +10,6 @@ interface TargetingSectionProps {
 export function TargetingSection({ form }: TargetingSectionProps) {
   return (
     <div className="space-y-4">
-      <FormLabel className="text-sm font-medium">Communication Channels</FormLabel>
       <FormField
         control={form.control}
         name="sendEmail"

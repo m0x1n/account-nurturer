@@ -15,7 +15,6 @@ export function DiscountSection({ form }: DiscountSectionProps) {
 
   return (
     <div className="space-y-4">
-      <FormLabel className="text-sm font-medium">Discount Settings</FormLabel>
       <FormField
         control={form.control}
         name="enableDiscounts"
