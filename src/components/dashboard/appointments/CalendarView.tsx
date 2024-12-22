@@ -12,81 +12,48 @@ export function CalendarView() {
   const [selectedStaffIds, setSelectedStaffIds] = useState<string[]>([]);
 
   const { data: staffMembers } = useQuery({
-    queryKey: ["staff"],
+    queryKey: ['staff-members'],
     queryFn: async () => {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) throw new Error("Not authenticated");
-
       const { data: businesses } = await supabase
-        .from("businesses")
-        .select("*")
-        .eq('owner_id', user.id)
+        .from('businesses')
+        .select('id')
         .limit(1);
 
-      if (!businesses?.length) return [];
+      if (!businesses || businesses.length === 0) {
+        return [];
+      }
 
       const { data, error } = await supabase
-        .from("staff_members")
-        .select("*")
+        .from('staff_members')
+        .select('*')
         .eq('business_id', businesses[0].id);
 
       if (error) throw error;
-      return data;
-    }
-  });
-
-  const { data: appointments } = useQuery({
-    queryKey: ["appointments", currentDate, view, selectedStaffIds],
-    queryFn: async () => {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) throw new Error("Not authenticated");
-
-      const { data: businesses } = await supabase
-        .from("businesses")
-        .select("*")
-        .eq('owner_id', user.id)
-        .limit(1);
-
-      if (!businesses?.length) return [];
-
-      const { data, error } = await supabase
-        .from('appointments')
-        .select(`
-          *,
-          client:clients(first_name, last_name),
-          service:services(name, price)
-        `)
-        .eq('business_id', businesses[0].id);
-
-      if (error) throw error;
-      return data;
+      return data || [];
     }
   });
 
   return (
     <Card>
-      <CardContent className="pt-6">
+      <CardContent className="p-6">
         <CalendarHeader
           currentDate={currentDate}
           view={view}
           selectedStaffIds={selectedStaffIds}
+          staffMembers={staffMembers}
           onDateChange={setCurrentDate}
           onViewChange={setView}
           onStaffChange={setSelectedStaffIds}
-          staffMembers={staffMembers || []}
         />
         {view === "day" ? (
           <DayView
-            date={currentDate}
-            appointments={appointments || []}
-            staffMembers={staffMembers || []}
+            currentDate={currentDate}
             selectedStaffIds={selectedStaffIds}
           />
         ) : (
           <WeekView
-            startDate={currentDate}
-            appointments={appointments || []}
-            staffMember={staffMembers?.find(s => s.id === selectedStaffIds[0])}
+            currentDate={currentDate}
+            selectedStaffId={selectedStaffIds[0]}
           />
         )}
       </CardContent>
