@@ -6,6 +6,7 @@ import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { useBusinessData } from "@/hooks/useBusinessData";
 import { BoostCampaignConfig } from "./campaigns/BoostCampaignConfig";
+import { ReminderCampaignConfig } from "./campaigns/ReminderCampaignConfig";
 
 interface CampaignToggleProps {
   name: string;
@@ -39,6 +40,7 @@ export function EmailMarketing() {
   const { data: business } = useBusinessData();
   const { toast } = useToast();
   const [showBoostConfig, setShowBoostConfig] = useState(false);
+  const [showReminderConfig, setShowReminderConfig] = useState(false);
   const [campaigns, setCampaigns] = useState([
     {
       name: "Boost Campaigns",
@@ -77,10 +79,15 @@ export function EmailMarketing() {
 
     const campaign = campaigns[index];
     
-    // If it's the Boost Campaign and it's being turned on, show the config
-    if (index === 0 && !campaign.isActive) {
-      setShowBoostConfig(true);
-      return;
+    // Show config when turning on specific campaigns
+    if (!campaign.isActive) {
+      if (index === 0) {
+        setShowBoostConfig(true);
+        return;
+      } else if (index === 4) { // Reminder campaign
+        setShowReminderConfig(true);
+        return;
+      }
     }
 
     const newCampaigns = [...campaigns];
@@ -115,6 +122,9 @@ export function EmailMarketing() {
   const handleConfigure = (index: number) => {
     if (index === 0) {
       setShowBoostConfig(true);
+      return;
+    } else if (index === 4) { // Reminder campaign
+      setShowReminderConfig(true);
       return;
     }
 
@@ -151,6 +161,11 @@ export function EmailMarketing() {
       <BoostCampaignConfig 
         isOpen={showBoostConfig}
         onClose={() => setShowBoostConfig(false)}
+      />
+
+      <ReminderCampaignConfig
+        isOpen={showReminderConfig}
+        onClose={() => setShowReminderConfig(false)}
       />
     </div>
   );
