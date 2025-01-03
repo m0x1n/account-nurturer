@@ -1,4 +1,5 @@
 import { format } from "date-fns";
+import { STAFF_COLUMN_WIDTH } from "./constants";
 
 interface StaffColumnProps {
   staff: any;
@@ -12,7 +13,14 @@ export function StaffColumn({ staff, appointments, currentDate, currentTimeTop }
   const hours = Array.from({ length: 24 }, (_, i) => i);
 
   return (
-    <div className="flex-1 min-w-[200px] border-r relative">
+    <div 
+      className="border-r relative"
+      style={{ 
+        width: `${STAFF_COLUMN_WIDTH}px`, 
+        minWidth: `${STAFF_COLUMN_WIDTH}px`,
+        maxWidth: `${STAFF_COLUMN_WIDTH}px`
+      }}
+    >
       {hours.map((hour) => (
         <div key={hour} className="h-16 border-b relative">
           {appointments
