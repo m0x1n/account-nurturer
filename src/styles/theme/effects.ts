@@ -5,14 +5,15 @@ export const effects = {
     sm: '0.25rem'
   },
   boxShadow: {
-    'sm': '0 1px 2px 0 rgb(0 0 0 / 0.05)',
-    'DEFAULT': '0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1)',
-    'md': '0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1)',
-    'lg': '0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1)',
-    'xl': '0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1)',
+    'sm': '0 1px 2px rgba(0, 0, 0, 0.05)',
+    'DEFAULT': '0 1px 3px rgba(0, 0, 0, 0.1)',
+    'md': '0 4px 6px rgba(0, 0, 0, 0.05)',
+    'lg': '0 10px 15px rgba(0, 0, 0, 0.03)',
+    'xl': '0 20px 25px rgba(0, 0, 0, 0.02)',
   },
   backgroundImage: {
-    'primary-gradient': 'linear-gradient(135deg, #1371D6 0%, #0E4F96 100%)',
-    'secondary-gradient': 'linear-gradient(135deg, #F5F7F9 0%, #E1E7EC 100%)',
+    'primary-gradient': 'linear-gradient(45deg, #0095F6, #00D1F2)',
+    'secondary-gradient': 'linear-gradient(45deg, #FAFAFA, #F1F1F1)',
+    'instagram-gradient': 'linear-gradient(45deg, #405DE6, #5851DB, #833AB4, #C13584, #E1306C, #FD1D1D, #F56040, #F77737, #FCAF45, #FFDC80)',
   }
 };

@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Lato:wght@300;400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
 
 @layer base {
   body {
@@ -6,16 +6,24 @@
   }
 
   h1, h2, h3, h4, h5, h6 {
-    @apply font-serif font-medium tracking-tight;
+    @apply font-sans font-semibold tracking-tight text-foreground;
   }
 
-  h1 { @apply text-display-xl; }
-  h2 { @apply text-display-lg; }
-  h3 { @apply text-display; }
-  h4 { @apply text-title-lg; }
-  h5 { @apply text-title; }
-  h6 { @apply text-subtitle; }
+  h1 { @apply text-2xl sm:text-3xl; }
+  h2 { @apply text-xl sm:text-2xl; }
+  h3 { @apply text-lg sm:text-xl; }
+  h4 { @apply text-base sm:text-lg; }
+  h5 { @apply text-sm sm:text-base; }
+  h6 { @apply text-xs sm:text-sm; }
 
-  p { @apply text-body leading-relaxed; }
-  small { @apply text-small; }
+  p { @apply text-base leading-relaxed text-foreground; }
+  small { @apply text-sm text-muted-foreground; }
+
+  .instagram-text-primary {
+    @apply text-[#262626] dark:text-[#FAFAFA];
+  }
+
+  .instagram-text-secondary {
+    @apply text-[#8E8E8E] dark:text-[#A8A8A8];
+  }
 }

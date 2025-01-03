@@ -5,45 +5,45 @@ export const colors = {
   background: 'hsl(var(--background))',
   foreground: 'hsl(var(--foreground))',
   primary: {
-    DEFAULT: '#1371D6',
-    light: '#4C9AFF',
-    dark: '#0E4F96',
+    DEFAULT: '#0095F6',
+    light: '#1EA1F7',
+    dark: '#0081D6',
     foreground: '#FFFFFF'
   },
   secondary: {
-    DEFAULT: '#F5F7F9',
+    DEFAULT: '#FAFAFA',
     light: '#FFFFFF',
-    dark: '#E1E7EC',
-    foreground: '#1E2B3A'
+    dark: '#F1F1F1',
+    foreground: '#262626'
   },
   success: {
-    DEFAULT: '#2D7738',
-    light: '#E3F1E4',
-    dark: '#1E5126',
+    DEFAULT: '#2ECC71',
+    light: '#E8F8F0',
+    dark: '#27AE60',
     foreground: '#FFFFFF'
   },
   warning: {
-    DEFAULT: '#F5A300',
-    light: '#FFF4D9',
-    dark: '#A86E00',
+    DEFAULT: '#F1C40F',
+    light: '#FEF9E7',
+    dark: '#F39C12',
     foreground: '#FFFFFF'
   },
   error: {
-    DEFAULT: '#D93F0B',
-    light: '#FFEDE6',
-    dark: '#982C08',
+    DEFAULT: '#E74C3C',
+    light: '#FDEDEC',
+    dark: '#C0392B',
     foreground: '#FFFFFF'
   },
   destructive: {
-    DEFAULT: '#D93F0B',
+    DEFAULT: '#E74C3C',
     foreground: '#FFFFFF'
   },
   muted: {
-    DEFAULT: '#F5F7F9',
-    foreground: '#6C7884'
+    DEFAULT: '#FAFAFA',
+    foreground: '#8E8E8E'
   },
   accent: {
-    DEFAULT: '#1371D6',
+    DEFAULT: '#0095F6',
     foreground: '#FFFFFF'
   },
   popover: {
@@ -55,13 +55,13 @@ export const colors = {
     foreground: 'hsl(var(--card-foreground))'
   },
   sidebar: {
-    DEFAULT: '#F5F7F9',
-    foreground: '#1E2B3A',
-    primary: '#1371D6',
+    DEFAULT: '#FFFFFF',
+    foreground: '#262626',
+    primary: '#0095F6',
     'primary-foreground': '#FFFFFF',
-    accent: '#E1E7EC',
-    'accent-foreground': '#1E2B3A',
-    border: '#CBD5E0',
-    ring: '#1371D6'
+    accent: '#F1F1F1',
+    'accent-foreground': '#262626',
+    border: '#DBDBDB',
+    ring: '#0095F6'
   }
 };

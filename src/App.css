@@ -1,7 +1,6 @@
 #root {
   max-width: 1280px;
   margin: 0 auto;
-  padding: 2rem;
   text-align: center;
 }
 
@@ -11,11 +10,13 @@
   will-change: filter;
   transition: filter 300ms;
 }
+
 .logo:hover {
-  filter: drop-shadow(0 0 2em #646cffaa);
+  filter: drop-shadow(0 0 2em rgba(0, 149, 246, 0.6));
 }
+
 .logo.react:hover {
-  filter: drop-shadow(0 0 2em #61dafbaa);
+  filter: drop-shadow(0 0 2em rgba(0, 149, 246, 0.6));
 }
 
 @keyframes logo-spin {
@@ -35,8 +36,40 @@
 
 .card {
   padding: 2em;
+  background: white;
+  border: 1px solid #DBDBDB;
+  border-radius: 8px;
 }
 
 .read-the-docs {
-  color: #888;
+  color: #8E8E8E;
+}
+
+/* Instagram-inspired layout containers */
+.instagram-container {
+  @apply max-w-[935px] mx-auto px-4;
+}
+
+.instagram-feed {
+  @apply max-w-[614px] mx-auto;
+}
+
+/* Instagram-inspired navigation */
+.instagram-nav {
+  @apply fixed top-0 left-0 right-0 h-[60px] bg-white border-b border-[#DBDBDB] z-50;
+}
+
+/* Instagram-inspired cards */
+.instagram-post {
+  @apply bg-white border border-[#DBDBDB] rounded-lg mb-4;
+}
+
+/* Instagram-inspired buttons */
+.instagram-action-button {
+  @apply p-2 hover:opacity-60 transition-opacity;
+}
+
+/* Instagram-inspired forms */
+.instagram-form-container {
+  @apply max-w-[350px] mx-auto;
 }
