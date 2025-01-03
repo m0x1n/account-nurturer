@@ -7,6 +7,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useBusinessData } from "@/hooks/useBusinessData";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Switch } from "@/components/ui/switch";
+import { Separator } from "@/components/ui/separator";
 
 interface ReminderCampaignConfigProps {
   isOpen: boolean;
@@ -24,18 +25,29 @@ export function ReminderCampaignConfig({ isOpen, onClose, onSaveSuccess }: Remin
     discountType: "percent",
     discountValue: 10,
     customMessage: "",
+    sendEmail: true,
+    sendSMS: false,
   });
 
   const handleSave = async (activate: boolean) => {
     if (!business?.id) return;
     
+    if (activate && !settings.sendEmail && !settings.sendSMS) {
+      toast({
+        title: "Validation Error",
+        description: "Please enable at least one communication channel (Email or SMS)",
+        variant: "destructive",
+      });
+      return;
+    }
+
     setIsLoading(true);
     try {
       const { error } = await supabase
         .from('marketing_campaigns')
         .upsert({
           business_id: business.id,
-          campaign_type: 'email',
+          campaign_type: 'smart',
           campaign_subtype: 'reminder',
           name: 'Reminder to Book Again',
           is_active: activate,
@@ -88,6 +100,44 @@ export function ReminderCampaignConfig({ isOpen, onClose, onSaveSuccess }: Remin
               Send reminders to clients who haven't visited in this many days
             </p>
           </div>
+
+          <div className="space-y-4">
+            <Label>Communication Channels</Label>
+            <div className="space-y-4">
+              <div className="flex items-center justify-between">
+                <div className="space-y-0.5">
+                  <Label>Email</Label>
+                  <p className="text-sm text-muted-foreground">
+                    Send reminder via email
+                  </p>
+                </div>
+                <Switch
+                  checked={settings.sendEmail}
+                  onCheckedChange={(checked) => setSettings(prev => ({
+                    ...prev,
+                    sendEmail: checked
+                  }))}
+                />
+              </div>
+              <div className="flex items-center justify-between">
+                <div className="space-y-0.5">
+                  <Label>SMS</Label>
+                  <p className="text-sm text-muted-foreground">
+                    Send reminder via text message
+                  </p>
+                </div>
+                <Switch
+                  checked={settings.sendSMS}
+                  onCheckedChange={(checked) => setSettings(prev => ({
+                    ...prev,
+                    sendSMS: checked
+                  }))}
+                />
+              </div>
+            </div>
+          </div>
+
+          <Separator />
 
           <div className="space-y-2">
             <div className="flex items-center justify-between">
