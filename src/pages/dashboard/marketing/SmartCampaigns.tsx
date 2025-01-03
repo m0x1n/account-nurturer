@@ -11,6 +11,7 @@ import {
 import { useToast } from "@/hooks/use-toast";
 import { BoostCampaignConfig } from "@/components/marketing/campaigns/BoostCampaignConfig";
 import { LastMinuteCampaignConfig } from "@/components/marketing/campaigns/LastMinuteCampaignConfig";
+import { ReminderCampaignConfig } from "@/components/marketing/campaigns/ReminderCampaignConfig";
 import { CampaignCard } from "@/components/marketing/smart-campaigns/CampaignCard";
 import { useCampaigns } from "@/components/marketing/smart-campaigns/useCampaigns";
 import { Button } from "@/components/ui/button";
@@ -55,7 +56,7 @@ const INITIAL_CAMPAIGNS = [
     description: "Automatically remind clients when it's time for their next appointment",
     icon: <Bell className="h-6 w-6" />,
     isActive: false,
-    isComingSoon: true
+    isComingSoon: false
   },
   {
     id: "rescue",
@@ -120,6 +121,25 @@ export default function SmartCampaigns() {
     });
   };
 
+  const handleReminderSaveSuccess = (isActive: boolean) => {
+    setCampaigns(prevCampaigns =>
+      prevCampaigns.map(campaign =>
+        campaign.id === "reminder"
+          ? { ...campaign, isActive, isDisabled: isActive }
+          : campaign
+      )
+    );
+    
+    setExpandedId(null);
+
+    toast({
+      title: isActive ? "Reminder Campaign Activated" : "Reminder Campaign Saved",
+      description: isActive 
+        ? "Your reminder campaign is now running" 
+        : "Your reminder campaign has been saved",
+    });
+  };
+
   return (
     <div className="p-6 space-y-6">
       <div className="flex items-center justify-between mb-6">
@@ -163,6 +183,15 @@ export default function SmartCampaigns() {
                   isOpen={expandedId === campaign.id} 
                   onClose={() => setExpandedId(null)}
                   onSaveSuccess={handleLastMinuteSaveSuccess}
+                />
+              </div>
+            )}
+            {expandedId === campaign.id && campaign.id === "reminder" && (
+              <div className="pl-10 pr-4 pb-4">
+                <ReminderCampaignConfig 
+                  isOpen={expandedId === campaign.id} 
+                  onClose={() => setExpandedId(null)}
+                  onSaveSuccess={handleReminderSaveSuccess}
                 />
               </div>
             )}
