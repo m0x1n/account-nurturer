@@ -1,5 +1,6 @@
 import { format } from "date-fns";
 import { STAFF_COLUMN_WIDTH } from "./constants";
+import { Check, X, Clock, Calendar, AlertCircle } from "lucide-react";
 
 interface StaffColumnProps {
   staff: any;
@@ -8,6 +9,21 @@ interface StaffColumnProps {
   currentTimeTop: number;
   dayStart: Date;
 }
+
+const getStatusIcon = (status: string) => {
+  switch (status?.toLowerCase()) {
+    case 'completed':
+      return <Check className="h-4 w-4 text-success-DEFAULT" />;
+    case 'cancelled':
+      return <X className="h-4 w-4 text-error-DEFAULT" />;
+    case 'scheduled':
+      return <Calendar className="h-4 w-4 text-primary-DEFAULT" />;
+    case 'pending':
+      return <Clock className="h-4 w-4 text-warning-DEFAULT" />;
+    default:
+      return <AlertCircle className="h-4 w-4 text-muted-foreground" />;
+  }
+};
 
 export function StaffColumn({ staff, appointments, currentDate, currentTimeTop }: StaffColumnProps) {
   const hours = Array.from({ length: 24 }, (_, i) => i);
@@ -30,7 +46,15 @@ export function StaffColumn({ staff, appointments, currentDate, currentTimeTop }
                 key={apt.id}
                 className="bg-primary/10 p-2 text-sm rounded mb-1"
               >
-                {apt.client?.first_name} {apt.client?.last_name} - {apt.service?.name}
+                <div className="flex items-center gap-2 mb-1">
+                  {getStatusIcon(apt.status)}
+                  <span className="font-medium">
+                    {apt.client?.first_name} {apt.client?.last_name}
+                  </span>
+                </div>
+                <span className="text-muted-foreground">
+                  {apt.service?.name}
+                </span>
               </div>
             ))}
         </div>
